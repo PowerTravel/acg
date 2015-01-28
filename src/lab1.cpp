@@ -1,10 +1,25 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
-#include "testinc.h"
-//#include <GL/gl.h>
-//#include <GL/glu.h>
-void initGLEW()
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include "ShaderTools.hpp"
+
+#include <iostream>
+
+
+char V_SHADER[] = "shaders/vshader.glsl";
+char F_SHADER[] = "shaders/fshader.glsl";
+
+void setUpWindow(int argc, char* argv[])
 {
+	glutInit(&argc, argv);
+	
+	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
+
+	glutInitWindowSize(1280, 720);
+	glutInitWindowPosition(10,10);
+	glutCreateWindow("GLUT Viewer");
+
 	glewInit();
 
 	if(	glewGetExtension("GL_ARB_fragment_shader") != GL_TRUE ||
@@ -15,6 +30,7 @@ void initGLEW()
 		std::cerr << "Driver does not support OpenGL shading language" << std::endl;
 		exit(1);
 	}
+
 }
 
 void display()
@@ -26,20 +42,25 @@ void display()
 	//glutPostRedisplay();
 }
 
+void setUpCallbacks()
+{
+	glutDisplayFunc(display);
+}
+
 int main(int argc, char* argv[])
 {
-	initGLEW();
-	//initShaders();
-
-	glutInit(&argc, argv);
+	GLuint program;
 	
-	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 
-	glutInitWindowSize(1280, 720);
-	glutInitWindowPosition(10,10);
-	glutCreateWindow("GLUT Viewer");
+	// Set up glut and glew
+	setUpWindow(argc, argv);
 
-	glutDisplayFunc(display);
+	// Load Shaders
+	initProgram("shaders/vshader.glsl", "shaders/fshader.glsl");
+	
+	// Load Objects here
+
+	setUpCallbacks();
 
 	glutMainLoop();
 

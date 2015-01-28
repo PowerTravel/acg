@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project 
-OBJ_FILES = lab1.o MainWindow.o
+OBJ_FILES = lab1.o MainWindow.o ShaderTools.o
 
 #TARGET specifies the name of our exectuable 
 TARGET = lab1.out
@@ -33,7 +33,7 @@ $(TARGET): $(OBJS)
 
 
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.cpp
-	$(CC) -MMD -MP  $(COMPILER_FLAGS) -I/home/jh/Desktop/LOL/include -c $< -o $@ 
+	$(CC) -MMD -MP  $(COMPILER_FLAGS) -Iinclude -c $< -o $@ 
 
 -include $(DEPS)
 

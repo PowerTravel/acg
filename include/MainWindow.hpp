@@ -3,15 +3,23 @@
 
 class MainWindow
 {
+    private:
+		
+		int windowID;
 
 	public:
+		struct Rect{
+			int x, y, h, w;
+		};		
+
+
 		MainWindow();
 		MainWindow(int x, int y);
 		virtual ~MainWindow();
-	
+		
 		bool isZombie();
 		bool isRunning();
-
+		
 		void getInput();
 		void update();
 		void draw();
@@ -19,10 +27,6 @@ class MainWindow
 		Rect getSize();
 		void setSize(Rect r);
 
-	private:
-		
-		int windowID;
-			
 		
 };
 
