@@ -1,7 +1,9 @@
 #include <GL/glew.h>
-#include <GL/glut.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+//#include <GL/glut.h>
+//#include <GL/gl.h>
+//#include <GL/glu.h>
+#include <GL/freeglut.h>
+#include <GL/freeglut_ext.h>
 #include "ShaderTools.hpp"
 
 #include <iostream>
@@ -10,15 +12,22 @@
 char V_SHADER[] = "shaders/vshader.glsl";
 char F_SHADER[] = "shaders/fshader.glsl";
 
-void setUpWindow(int argc, char* argv[])
+void setUpGlut(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
 	
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 
+	glutInitContextVersion(3,3);
+	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
+	glutInitContextProfile(GLUT_CORE_PROFILE);
+
 	glutInitWindowSize(1280, 720);
 	glutInitWindowPosition(10,10);
 	glutCreateWindow("GLUT Viewer");
+}
+
+void setUpGlew(){
 
 	glewInit();
 
@@ -30,7 +39,6 @@ void setUpWindow(int argc, char* argv[])
 		std::cerr << "Driver does not support OpenGL shading language" << std::endl;
 		exit(1);
 	}
-
 }
 
 void display()
@@ -49,13 +57,11 @@ void setUpCallbacks()
 
 int main(int argc, char* argv[])
 {
-	GLuint program;
-	
 
 	// Set up glut and glew
-	setUpWindow(argc, argv);
-
-	// Load Shaders
+	setUpGlut(argc, argv);
+	setUpGlew();
+	// Load Shaders, Add so that you get back a struct with the program id and the shader ids
 	initProgram("shaders/vshader.glsl", "shaders/fshader.glsl");
 	
 	// Load Objects here

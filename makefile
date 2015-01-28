@@ -20,7 +20,7 @@ CC = g++
 COMPILER_FLAGS = -std=c++11
 
 #LINKER_FLAGS specifies the libraries we're linking against 
-LINKER_FLAGS = -lGL -lGLU -lGLEW -lglut 
+LINKER_FLAGS = -lGL -lGLU -lGLEW -lglut
 
 
 DEPS := $(OBJS:.o=.d)
@@ -29,7 +29,7 @@ DEPS := $(OBJS:.o=.d)
 all : $(TARGET) 
 
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) $(LINKER_FLAGS) -o $(TARGET)
+	$(CC) $(OBJS) -o $(TARGET) $(LINKER_FLAGS) 
 
 
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.cpp
