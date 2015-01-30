@@ -18,9 +18,9 @@ void setUpGlut(int argc, char* argv[])
 	
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 
-	glutInitContextVersion(3,3);
-	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
-	glutInitContextProfile(GLUT_CORE_PROFILE);
+//	glutInitContextVersion(3,0);
+//	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
+//	glutInitContextProfile(GLUT_CORE_PROFILE);
 
 	glutInitWindowSize(1280, 720);
 	glutInitWindowPosition(10,10);
@@ -47,7 +47,7 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glutSwapBuffers();
-	//glutPostRedisplay();
+	glutPostRedisplay();
 }
 
 void setUpCallbacks()
