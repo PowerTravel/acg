@@ -56,5 +56,5 @@ class Vec3
 		float v[3];
 };
 
-#endif // VEC4_HPP
+#endif // VEC3_HPP
 

@@ -1,12 +1,13 @@
 #include <iostream>
 #include <cmath>
-#include "Hmat.h"
+#include "Hmat.hpp"
 using namespace std;
 
 bool testSubscript();
 bool testEquality();
 bool testAdd();
 bool testSub();
+bool testMult();
 bool testVecMult();
 bool testScalMult();
 bool testTranspose();
@@ -36,37 +37,42 @@ int main()
 		cout << "Failed 4" << endl;
 		return 4;
 	}
-	if( !testVecMult() )
+	if( !testMult() )
 	{
 		cout << "Failed 5" << endl;
 		return 5;
 	}
-	if( !testScalMult() )
+	if( !testVecMult() )
 	{
 		cout << "Failed 6" << endl;
 		return 6;
 	}
-	if( !testTranspose() )
+	if( !testScalMult() )
 	{
 		cout << "Failed 7" << endl;
 		return 7;
 	}
-	if( !testRowCol() )
+	if( !testTranspose() )
 	{
 		cout << "Failed 8" << endl;
 		return 8;
 	}
-
-	if( !testNorm() )
+	if( !testRowCol() )
 	{
 		cout << "Failed 9" << endl;
 		return 9;
 	}
 
-	if( !testInv() )
+	if( !testNorm() )
 	{
 		cout << "Failed 10" << endl;
 		return 10;
+	}
+
+	if( !testInv() )
+	{
+		cout << "Failed 11" << endl;
+		return 11;
 	}
 
 	cout << "Test went ok" << endl;
@@ -107,11 +113,11 @@ bool testSubscript()
 
 bool testEquality()
 {
-	Hvec r1,r2,r3,r4;
-	r1 = Hvec(1,2,3,4);
-	r2 = Hvec(5,6,7,8);
-	r3 = Hvec(9,10,11,12);
-	r4 = Hvec(13,14,15,16);
+	Vec4 r1,r2,r3,r4;
+	r1 = Vec4(1,2,3,4);
+	r2 = Vec4(5,6,7,8);
+	r3 = Vec4(9,10,11,12);
+	r4 = Vec4(13,14,15,16);
 	Hmat ref = Hmat(r1,r2,r3,r4);
 	Hmat m = ref;
 
@@ -183,7 +189,7 @@ bool testSub()
 	return true;
 }
 
-bool testVecMult()
+bool testMult()
 {
 	float f1[16] = {-10,8,-8,5,   6,4,1,-4,   8,-1,6,4,   8,4,-2,-2};
 	float f2[16] = {-8,3,5,10,   3,2,-8,10,   -7,2,5,-9,   0,8,2,10};
@@ -213,6 +219,26 @@ bool testVecMult()
 }
 
 
+bool testVecMult()
+{
+	float f1[16] = {1,2,1,3,   3,1,2,-4,   8,-1,6,4,   8,4,-2,-2};
+
+	Hmat mat = Hmat(f1);
+
+	Vec4 backAns4 = Vec4(20, -5, 40, 2);
+	Vec4 forwAns4 = Vec4(63, 17, 15, -1);
+
+	Vec3 vecAns3 = Vec3(8,11,24);
+	Vec3 pointAns3 = Vec3(11,7,28);
+
+	Vec4 v4 = Vec4(1,2,3,4);
+	Vec3 v3 = Vec3(1,2,3);
+	if(mat*v4 != backAns4 || v4*mat != forwAns4 || mat * v3 !=pointAns3 || v3* mat != vecAns3){
+		return false;
+	}
+
+	return true;
+}
 bool testScalMult()
 {
 	float scal = 2;

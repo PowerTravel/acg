@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project 
-OBJ_FILES = lab1.o ShaderTools.o
+OBJ_FILES = lab1.o Shader.o ObjectManager.o
 
 #TARGET specifies the name of our exectuable 
 TARGET = lab1.out
@@ -20,7 +20,7 @@ CC = g++
 COMPILER_FLAGS = -std=c++11
 
 #LINKER_FLAGS specifies the libraries we're linking against 
-LINKER_FLAGS = -lGL -lGLU -lGLEW -lglut
+LINKER_FLAGS = -lGL -lGLU -lGLEW -lglut -lassimp
 
 
 DEPS := $(OBJS:.o=.d)

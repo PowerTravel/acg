@@ -25,20 +25,20 @@ Vec4::~Vec4()
 
 
 // read
-std::istream& operator>>(std::istream& is, Vec4& v4)
+std::istream& operator>>(std::istream& is, Vec4& hv)
 {
-	is >> v4.v[0] >> v4.v[1] >> v4.v[2] >> v4.v[3];
+	is >> hv.v[0] >> hv.v[1] >> hv.v[2] >> hv.v[3];
 	
 	// initialize a default Vec4 if is is bad
-	if(!is){ v4 = Vec4(); }
+	if(!is){ hv = Vec4(); }
 
 	return is;
 }
 
 // write
-std::ostream& operator<<(std::ostream& os, const Vec4& v4)
+std::ostream& operator<<(std::ostream& os, const Vec4& hv)
 {
-	os << v4[0] << " " << v4[1] << " " << v4[2] << " " << v4[3]; 
+	os << hv[0] << " " << hv[1] << " " << hv[2] << " " << hv[3]; 
 	return os;
 }
 
@@ -76,21 +76,21 @@ Vec4 operator-(Vec4& v1, Vec4& v2)
 }
 
 // Scalar-Vector Multiplication
-Vec4 operator*(float& f, Vec4& v4)
+Vec4 operator*(float& f, Vec4& hv)
 {
 	// For some reason this function cant access the private member v
 	float x,y,z,w;
-	x = f*v4[0];
-	y = f*v4[1];
-	z = f*v4[2];
-	w = f*v4[3];
+	x = f*hv[0];
+	y = f*hv[1];
+	z = f*hv[2];
+	w = f*hv[3];
 	return Vec4(x,y,z,w);
 }
 
 // Scalar-Vector Multiplication
-Vec4 operator*(Vec4& v4, float f)
+Vec4 operator*(Vec4& hv, float f)
 {
-	return f*v4;
+	return f*hv;
 }
 
 // Subscript
@@ -112,9 +112,9 @@ const float& Vec4::operator[](int idx) const
 }
 
 // Equal to
-bool Vec4::operator==( const Vec4& v4 )
+bool Vec4::operator==( const Vec4& hv )
 {
-	if( (v[0]==v4[0]) && (v[1]==v4[1]) && (v[2]==v4[2]) && (v[3]==v4[3]) )
+	if( (v[0]==hv[0]) && (v[1]==hv[1]) && (v[2]==hv[2]) && (v[3]==hv[3]) )
 	{
 		return true;
 	}else{
@@ -124,9 +124,9 @@ bool Vec4::operator==( const Vec4& v4 )
 
 
 // Not equal to
-bool Vec4::operator!=( const Vec4& v4 )
+bool Vec4::operator!=( const Vec4& hv )
 {
-	return !( *this == v4 );
+	return !( *this == hv );
 }
 
 
@@ -184,16 +184,16 @@ float Vec4::norm(NormType type)
 
 
 // Compound vector Adition
-Vec4& Vec4::operator+=( Vec4& v4 )
+Vec4& Vec4::operator+=( Vec4& hv )
 {	
-	*this = *this + v4;
+	*this = *this + hv;
 	return *this;
 }
 
 // Compound Vector subtraction
-Vec4& Vec4::operator-=( Vec4& v4 )
+Vec4& Vec4::operator-=( Vec4& hv )
 {
-	*this = *this - v4;
+	*this = *this - hv;
 	return *this;
 }
 

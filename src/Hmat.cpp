@@ -1,11 +1,11 @@
-#include "Hmat.h"
+#include "Hmat.hpp"
 #include <stdexcept>
 Hmat::Hmat(TypeFlag type)
 {
-	m = std::vector<Hvec>(4);
+	m = std::vector<Vec4>(4);
 	for(int i=0; i<4; i++)
 	{
-		m[i]=Hvec();
+		m[i]=Vec4();
 		if(type == IDENTITY)
 		{
 			m[i][i] = 1.0f;
@@ -15,7 +15,7 @@ Hmat::Hmat(TypeFlag type)
 
 Hmat::Hmat(float mat[])
 {
-	m = std::vector<Hvec>(4);
+	m = std::vector<Vec4>(4);
 	for(int i = 0; i<4; i++)
 	{
 		float x,y,z,w;
@@ -23,13 +23,13 @@ Hmat::Hmat(float mat[])
 		y = mat[i*4+1];
 		z = mat[i*4+2];
 		w = mat[i*4+3];
-		m[i]=Hvec(x,y,z,w);
+		m[i]=Vec4(x,y,z,w);
 	}
 }
 
-Hmat::Hmat(Hvec r0, Hvec r1, Hvec r2, Hvec r3)
+Hmat::Hmat(Vec4 r0, Vec4 r1, Vec4 r2, Vec4 r3)
 {
-	m = std::vector<Hvec>(4);
+	m = std::vector<Vec4>(4);
 	m[0] = r0;
 	m[1] = r1;
 	m[2] = r2;
@@ -63,7 +63,7 @@ std::ostream& operator<<(std::ostream& os,const Hmat& hm)
 
 Hmat operator+(Hmat& m1, Hmat& m2)
 {
-	Hvec r0,r1,r2,r3;
+	Vec4 r0,r1,r2,r3;
 	r0 = m1.m[0] + m2.m[0];
 	r1 = m1.m[1] + m2.m[1];
 	r2 = m1.m[2] + m2.m[2];
@@ -73,7 +73,7 @@ Hmat operator+(Hmat& m1, Hmat& m2)
 
 Hmat operator-(Hmat& m1, Hmat& m2)
 {
-	Hvec r0,r1,r2,r3;
+	Vec4 r0,r1,r2,r3;
 	r0 = m1.m[0] - m2.m[0];
 	r1 = m1.m[1] - m2.m[1];
 	r2 = m1.m[2] - m2.m[2];
@@ -95,25 +95,42 @@ Hmat operator*(Hmat& m1, Hmat& m2)
 }
 
 // Vector matrix multiplicaion
-Hvec operator*(Hvec& hv, Hmat& hm)
+Vec4 operator*(Vec4& v4, Hmat& hm)
 {
 	float x, y, z, w;
-	x = hv*hm.col(0);
-	y = hv*hm.col(1);
-	z = hv*hm.col(2);
-	w = hv*hm.col(3);
-	return Hvec(x,y,z,w);
+	x = v4*hm.col(0);
+	y = v4*hm.col(1);
+	z = v4*hm.col(2);
+	w = v4*hm.col(3);
+	return Vec4(x,y,z,w);
 }
 
 // Matrix vector multiplication
-Hvec operator*(Hmat& hm, Hvec& hv)
+Vec4 operator*(Hmat& hm, Vec4& v4)
 {
 	float x, y, z, w;
-	x = hv*hm.row(0);
-	y = hv*hm.row(1);
-	z = hv*hm.row(2);
-	w = hv*hm.row(3);
-	return Hvec(x,y,z,w);
+	x = hm.row(0)*v4;
+	y = hm.row(1)*v4;
+	z = hm.row(2)*v4;
+	w = hm.row(3)*v4;
+	return Vec4(x,y,z,w);
+}
+
+
+// Vector matrix multiplicaion (Vector)
+Vec3 operator*(Vec3& v3, Hmat& hm)
+{
+	Vec4 v4 = Vec4(v3[0], v3[1], v3[2], 0);
+	v4 = hm*v4;
+	return Vec3(v4[0], v4[1], v4[2]);
+}
+
+// Matrix vector multiplication (Point)
+Vec3 operator*(Hmat& hm, Vec3& v3)
+{
+	Vec4 v4 = Vec4(v3[0], v3[1], v3[2], 1);
+	v4 = hm*v4;
+	return Vec3(v4[0], v4[1], v4[2]);
 }
 
 Hmat operator*(float& f, Hmat& hm)
@@ -131,7 +148,7 @@ Hmat operator*(Hmat& hm, float& f)
 	return f*hm;
 }
 
-Hvec& Hmat::operator[](int idx)
+Vec4& Hmat::operator[](int idx)
 {
 	if( (idx<0) || (idx>3) )
 	{
@@ -140,7 +157,7 @@ Hvec& Hmat::operator[](int idx)
 	return m[idx];
 }
 
-const Hvec& Hmat::operator[](int idx) const
+const Vec4& Hmat::operator[](int idx) const
 {
 	if( (idx<0) || (idx>3) )
 	{
@@ -204,7 +221,7 @@ Hmat& Hmat::operator*=(float& f)
 // Transpose
 Hmat Hmat::T()
 {
-	Hvec r0, r1, r2, r3;
+	Vec4 r0, r1, r2, r3;
 	r0=col(0);
 	r1=col(1);
 	r2=col(2);
@@ -212,7 +229,7 @@ Hmat Hmat::T()
 	return Hmat(r0, r1, r2,r3);
 }
 
-Hvec Hmat::row(int idx)
+Vec4 Hmat::row(int idx)
 {
 	if( (idx<0) || (idx>3) )
 	{
@@ -221,7 +238,7 @@ Hvec Hmat::row(int idx)
 	return m[idx];
 }
 
-Hvec Hmat::col(int idx)
+Vec4 Hmat::col(int idx)
 {
 	if( (idx<0) || (idx>3) )
 	{
@@ -234,7 +251,7 @@ Hvec Hmat::col(int idx)
 	z = m[2][idx];
 	w = m[3][idx];
 
-	return Hvec(x,y,z,w);
+	return Vec4(x,y,z,w);
 }
 
 float Hmat::norm(NormFlag type)
@@ -243,10 +260,10 @@ float Hmat::norm(NormFlag type)
 	// Max absolute column sum
 	if(type==Hmat::P1)
 	{
-		float f1 = col(0).norm(Hvec::L1); 
+		float f1 = col(0).norm(Vec4::L1); 
 		for(int i=1; i<4; i++)
 		{
-			float f2 = col(i).norm(Hvec::L1);
+			float f2 = col(i).norm(Vec4::L1);
 			if(f2>f1)
 			{
 				f1 = f2;
@@ -255,10 +272,10 @@ float Hmat::norm(NormFlag type)
 		ans = f1;
 	// Max absolute row sum
 	}else if(type == Hmat::INF){
-		float f1 = row(0).norm(Hvec::L1); 
+		float f1 = row(0).norm(Vec4::L1); 
 		for(int i=1; i<4; i++)
 		{
-			float f2 = row(i).norm(Hvec::L1);
+			float f2 = row(i).norm(Vec4::L1);
 			if(f2>f1)
 			{
 				f1 = f2;
