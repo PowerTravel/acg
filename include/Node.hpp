@@ -1,26 +1,26 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include "DList.hpp"
+#include <memory>
+#include "State.hpp"
+
+//#include "Visitor"
+
 class Node{
 
 	public:
 		Node();
 		virtual ~Node();
-		
-		void addChild( Node* node);
 
 		virtual void update();
 
-		void destroy();
+		//void accept(Visitor* v);
 
-		void release();
-
+		void setState(std::shared_ptr<State> s);
+		std::shared_ptr<State> getState();	
 	protected:
-		Dlist< Node* > childList;
-	private:
-		
+		std::shared_ptr<State> state;
 
-}
+};
 
 #endif //NODE_HPP

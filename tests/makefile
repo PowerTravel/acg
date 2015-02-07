@@ -1,3 +1,6 @@
+nodetest:
+	g++ -std=c++11 nodetest.cpp ../src/Node.cpp -I../include -o nodetest.out
+
 pqueuetest:
 	g++ -std=c++11 pqueuetest.cpp -I../include -o pqueuetest.out
 

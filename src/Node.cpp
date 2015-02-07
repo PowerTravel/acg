@@ -1,30 +1,33 @@
 #include "Node.hpp"
 
-void Node::Node()
+Node::Node()
 {
-	childList = Dlist< Node* >();
+	state = std::shared_ptr<State>();
 }
 
-void Node::~Node()
+Node::~Node()
 {
-	destroy();
+	state = NULL;
 }
 
-void Node::destroy()
+void Node::update()
 {
-	childList.first();
-	while(!childList.isEmpty())
-	{
-		std::weak_ptr<Node> w_child = childList.inspect();
-		if(!w_child.expired())
-		{
-			std::shared_ptr<Node> s_child = child.lock();
-			s_child->destroy();
-		}
-		childList.remove();
-	}
+
 }
 
-void Node::release(){}
+void Node::setState(std::shared_ptr<State> s)
+{
+	state = s;
+}
 
-void Node::update(){}
+std::shared_ptr<State> Node::getState()
+{
+	return state;
+}
+
+/*
+void Node::accept(Visitor* v)
+{
+	v->apply(this);
+}
+*/
