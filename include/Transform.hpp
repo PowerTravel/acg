@@ -9,7 +9,13 @@ class Transform: public Group
 		Transform();
 		virtual ~Transform();
 
+		void setPosition(Vec3 pos);
+
 		void update();
+
+	private:
+		Hmat m;
+		Vec4 pos;
 };
 
 #endif // TRANSFORM_HPP

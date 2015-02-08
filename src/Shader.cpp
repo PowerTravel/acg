@@ -1,5 +1,6 @@
 #include "Shader.hpp"
 
+Shader::Shader(){};
 
 // Initiates the gl program. Reads, compiles and links the shaders.
 Shader::Shader(const char* vShaderFile, const char* fShaderFile)

@@ -5,8 +5,7 @@
 #include <GL/freeglut.h>
 //#include <GL/freeglut_ext.h>
 #include "Shader.hpp"
-#include "ObjectManager.hpp"
-
+#include "Geometry.hpp"
 
 #include <iostream>
 #include <cstdio>
@@ -20,13 +19,18 @@ void display();
 void setUpGlew();
 void setUpCallbacks();
 
+void reshape(int w, int h);
+
 void testTriangle();
 void testRectangle();
+void testBox();
+void testCube();
 
 GLuint VAO;
 GLuint VBO;
 GLuint EBO;
 GLuint program;
+Geometry g;
 
 int main(int argc, char* argv[])
 {
@@ -37,26 +41,68 @@ int main(int argc, char* argv[])
 //	program = initProgram("shaders/vshader.glsl", "shaders/fshader.glsl");
 //	glUseProgram(program);
 
-	Shader shader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
-	shader.use();
-	// Load Objects here
-//	ObjectManager objMan = ObjectManager();
-//	objMan.loadFile("models/box.obj");
+	std::shared_ptr<State>  statePtr = std::shared_ptr<State>(new State);
+	statePtr->mShader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
 	
-//	ObjectManager::gpuBufferData buffData = objMan.getGeometryBufferData(0);
-//	glBindVertexArray(buffData.vertex_vbo);
+	g = Geometry("models/box.obj");	
+	g.setState(statePtr);
 
 
-	//testTriangle();
-	testRectangle();
+	setUpCallbacks();
+	
 
-	glutDisplayFunc(display);
 
 	glutMainLoop();
 
 	return 0;
 }
+ 
+void testBox()
+{
+	float vertices[] {	0.5f, 0.5f, 0.5f,	
+						0.5f, -0.5f, 0.5f,	
+						0.5f, -0.5f, -0.5f,	
+						0.5f, 0.5f, -0.5f,
 
+						-0.5f, 0.5f, -0.5f,	
+						-0.5f, -0.5f, -0.5f,	
+						-0.5f, -0.5f, 0.5f,	
+						-0.5f, 0.5f, 0.5f,
+
+						0.5f, 0.5f, -0.5f,	
+						0.5f, -0.5f, -0.5f,	
+						-0.5f, -0.5f, 0.5f,	
+						-0.5f, 0.5f, 0.5f,	
+						
+						-0.5f, 0.5f, 0.5f,	
+						-0.5f, -0.5f, 0.5f,	
+						0.5f, -0.5f, 0.5f,	
+						0.5f, 0.5f, 0.5f,
+
+						-0.5f, 0.5f, -0.5f,	
+						-0.5f, 0.5f, 0.5f,	
+						0.5f, 0.5f, 0.5f,	
+						0.5f, 0.5f, -0.5f,	
+						
+						-0.5f, -0.5f, -0.5f,	
+						0.5f, -0.5f, -0.5f,	
+						0.5f, -0.5f, 0.5f,	
+						-0.5f, -0.5f, 0.5f};
+	
+	
+	glGenVertexArrays(1,&VAO);
+	glGenBuffers(1,&VBO);
+	glBindVertexArray(VAO);
+	
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
+}
 
 void testTriangle()
 {
@@ -107,15 +153,54 @@ void testRectangle()
 
 }
 
+void testCube()
+{
+	GLfloat vertices[] { -0.5f, -0.5f, -0.5f,
+						 0.5f, -0.5f, -0.5f,
+						 0.5f, -0.5f, 0.5f,
+						-0.5f, -0.5f, 0.5f,
+						 -0.5f, 0.5f, 0.5f,
+						 0.5f, 0.5f, 0.5f,
+						 0.5f, 0.5f, -0.5f,
+	 					-0.5f, 0.5f, -0.5f};
+
+	GLuint indices[] = {6,3,2,7,
+						8,1,4,5,
+						7,2,1,8,
+						5,4,3,6,
+						8,5,6,7,
+						1,2,3,4};
+
+	glGenVertexArrays(1,&VAO);
+	glGenBuffers(1,&VBO);
+	glGenBuffers(1, &EBO);
+	
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	
+	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindVertexArray(0);
+
+}
+
 void display()
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glBindVertexArray(VAO);
-	//glDrawArrays(GL_TRIANGLES, 0, 3);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+//	glBindVertexArray(VAO);
+	//glDrawArrays(GL_TRIANGLES, 12, 24);
+//	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
+//	glBindVertexArray(0);
+
+	g.draw();
 
 	glutSwapBuffers();
 	glutPostRedisplay();
@@ -182,8 +267,14 @@ void setUpGlew()
 	GLEWprintSystemSpecs();	
 }
 
+void resize(int width, int height)
+{
+	glViewport(0,0,width,height);
+}
+
 void setUpCallbacks()
 {
 	glutDisplayFunc(display);
+	glutReshapeFunc(resize);
 }
 

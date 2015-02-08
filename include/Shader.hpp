@@ -8,6 +8,7 @@
 class Shader{
 
 	public:
+		Shader();
 		Shader(const char* vShaderFile, const char* fShaderFile);
 		virtual ~Shader();
 		void use();

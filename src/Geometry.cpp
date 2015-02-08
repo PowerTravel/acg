@@ -3,33 +3,40 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
+Geometry::Geometry()
+{
+	nrVertices = 0;
+	nrFaces = 0;
+	loaded = false;
+}
+
 Geometry::Geometry(const char* filePath)
 {
 
 	nrVertices = 0;
-	vertices = NULL;
-	normals = NULL;
-
 	nrFaces = 0;
-	faces = NULL;
 
-	loadFile(filePath);
+	loaded = loadFile(filePath);
 }
 
 Geometry::~Geometry()
 {
-	if(vertices !=NULL)
+	if(vertexBuffer)
 	{
-		delete[] vertices;
+		glDeleteBuffers(0, &vertexBuffer);	
 	}
-	if(normals !=NULL)
+	if(textureBuffer)
 	{
-		delete[] normals;
+		glDeleteBuffers(0, &textureBuffer);	
 	}
-	if(faces != NULL)
+	if(normalBuffer)
 	{
-		delete[] faces;
+		glDeleteBuffers(0, &normalBuffer);	
 	}
+//	if(faceBuffer)
+//	{
+//		glDeleteBuffers(0, &faceBuffer);	
+//	}
 }
 
 bool  Geometry::loadFile(const char* filePath){
@@ -45,105 +52,138 @@ bool  Geometry::loadFile(const char* filePath){
 	}
 	
 	const aiMesh* mesh = scene-> mMeshes[0];
-	if( !mesh || !createGeom(mesh) )
+	if( !mesh )
 	{
 		fprintf(stderr, "failed to load mesh. \n");
 		return false;
 	}
+	createGeom(mesh);
 	return true;
 }
 
-bool Geometry::createGeom( const aiMesh* mesh )
+void Geometry::createGeom( const aiMesh* mesh )
 {
 	nrVertices = mesh->mNumVertices;
 	nrFaces = mesh->mNumFaces;	
-
-//	vertices = std::vector<float>(3*nrVertices);
-//	faces = std::vector<int>(3 * nrFaces);
-//	normals = std::vector<float>(3*nrVertices);
-
-	try{
-		vertices = new float[3*nrVertices];
-		normals = new float[3*nrVertices];
-		faces = new int[3*nrFaces];
-	}catch(const std::bad_alloc& e){
-		fprintf(stderr,"%s \n", e.what() );
-		return false;
-	}
+	
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
 
 
 	// Copy over Vertices
-	for(int i = 0; i<nrVertices; i++)
-	{
-		aiVector3D v3 = mesh->mVertices[i];
-		vertices[3*i+0] = v3[0];
-		vertices[3*i+1] = v3[1];
-		vertices[3*i+2] = v3[2];
-		
-		aiVector3D n3 = mesh->mNormals[i];
-		normals[3*i+0]=n3[0];
-		normals[3*i+1]=n3[1];
-		normals[3*i+2]=n3[2];
+	if(mesh->HasPositions()){
+		float* vertices = new float[3*nrVertices];
+
+		for(int i = 0; i<nrVertices; i++)
+		{
+			vertices[3*i+0] = mesh->mVertices[i].x;
+			vertices[3*i+1] = mesh->mVertices[i].y;
+			vertices[3*i+2] = mesh->mVertices[i].z;
+		}
+
+		glGenBuffers(1, &vertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, 3*nrVertices*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
+		glEnableVertexAttribArray(0);
+		/*
+		for(int i=0; i<nrVertices; i++)
+		{
+			printf("%1.2f, %1.2f, %1.2f \n", vertices[i], vertices[i+1], vertices[i+2]);
+		}
+		*/
+		delete vertices;
 	}
+
+	if(mesh->HasTextureCoords(0)){
+		float* texCoords = new float[nrVertices * 2];
+		for(int i=0; i<nrVertices; i++)
+		{
+			texCoords[i*2+0] = mesh->mTextureCoords[0][i].x;
+			texCoords[i*2+1] = mesh->mTextureCoords[0][i].y;
+
+		}
 	
+		glGenBuffers(1, &textureBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, textureBuffer );
+		glBufferData(GL_ARRAY_BUFFER, 2*nrVertices*sizeof(GLfloat), texCoords, GL_STATIC_DRAW);
+	
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
+		glEnableVertexAttribArray(1);
+
+		/*
+		for(int i=0; i<nrVertices; i++)
+		{
+			printf("%1.2f, %1.2f \n", texCoords[i], texCoords[i+1]);
+		}
+		*/
+		delete texCoords;
+	}
+
+	if( mesh->HasNormals() ){
+		float* normals = new float[3*nrVertices];
+
+		for(int i = 0; i<nrVertices; i++){
+			normals[3*i+0]=mesh->mNormals[i].x;
+			normals[3*i+1]=mesh->mNormals[i].y;
+			normals[3*i+2]=mesh->mNormals[i].z;
+		}
+
+		glGenBuffers(1, &normalBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+		glBufferData(GL_ARRAY_BUFFER,3*nrVertices*sizeof(GLfloat), normals, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
+		glEnableVertexAttribArray(2);
+	/*	
+		for(int i=0; i<nrVertices; i++)
+		{
+			printf("%1.2f, %1.2f, %1.2f \n", normals[i], normals[i+1], normals[i+2]);
+		}
+	*/
+		delete normals;
+	}
+
+/*
 	// Copy over Faces and Normals
-	for(int i = 0; i<nrFaces; i++)
-	{
-		const aiFace& faceStruct = mesh->mFaces[i];
-		
-		unsigned int* f3 = faceStruct.mIndices;
-		
-		faces[3*i+0] = f3[0];
-		faces[3*i+1] = f3[1];
-		faces[3*i+2] = f3[2];
-	}
+	if( mesh->HasFaces()){
+		int* faces = new int[3*nrVertices];
+
+		for(int i = 0; i<nrFaces; i++)
+		{
+			faces[3*i+0] = mesh->mFaces[i].mIndices[0];
+			faces[3*i+1] = mesh->mFaces[i].mIndices[1];
+			faces[3*i+2] = mesh->mFaces[i].mIndices[2];
+		}
+
+		glGenBuffers(1, &faceBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3*nrFaces*sizeof(float), faces, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
+		glEnableVertexAttribArray(3);
+
+		for(int i=0; i<nrFaces; i++)
+		{
+			printf("%d, %d, %d \n", faces[i], faces[i+1], faces[i+2]);
+		}
 	
-	print();
-	return true;
-}
-
-void Geometry::loadToVBO()
-{
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, nrVertices*sizeof(float), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, nrFaces*sizeof(int), faces, GL_STATIC_DRAW);
-
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-
+		delete faces;
+	}	
+*/	
 	glBindVertexArray(0);
 }
 
 void Geometry::draw()
 {
-	glUseProgram(state->program);
-	glBindVertexArray(VAO);	
-	glDrawElements(GL_TRIANGLES, nrFaces, GL_UNSIGNED_INT, 0);
+	if(state != NULL){
+		state->mShader.use();
+	}
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, nrVertices-1);
+//	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
-void Geometry::print()
-{
-	printf("\nVertices:\n\n");
-	for(int i=0; i<nrVertices; i++)
-	{
-		printf("%1.2f, %1.2f, %1.2f ",vertices[i*3+0], vertices[i*3+1], vertices[i*3+2]);
-		printf(" - %1.2f, %1.2f, %1.2f \n", normals[i*3+0], normals[i*3+1], normals[i*3+2]);
-	}
 
-	printf("\nFaces - Normals:\n\n");
-	for(int i=0; i<nrFaces; i++)
-	{
-		printf("%d, %d, %d \n", faces[i*3+0], faces[i*3+1], faces[i*3+2]);
-	}
-}

@@ -9,6 +9,7 @@
 class Geometry : public Node{
 
 	public:
+		Geometry();
 		Geometry(const char* filePath);
 		virtual ~Geometry();
 
@@ -16,29 +17,20 @@ class Geometry : public Node{
 
 	private:
 
-	
-
+		bool loaded;
 
 		int nrVertices;
-//		std::vector< float > vertices;
-		float* vertices;
-		float* normals;
-
 		int nrFaces;
-		int* faces;
-
-		GLuint VAO;
-		GLuint VBO;
-		GLuint EBO;
-		//std::vector<int>faces;
-		//std::vector< float > normals;
-
-		bool loadFile(const char* filePath);
-		bool createGeom( const aiMesh* mesh );
-		void loadToVBO();
-		void print();
-
 		
+		GLuint VAO;
+		GLuint vertexBuffer;
+		GLuint textureBuffer;
+		GLuint normalBuffer;
+		//GLuint faceBuffer;
+		
+		bool loadFile(const char* filePath);
+		void createGeom( const aiMesh* mesh );
+
 
 };
 

@@ -3,7 +3,8 @@
 
 Transform::Transform()
 {
-
+	m = Hmat();
+	pos = Vec4();
 }
 
 Transform::~Transform()
@@ -13,5 +14,4 @@ Transform::~Transform()
 
 void Transform::update()
 {
-	printf("Haloj! \n");
 }

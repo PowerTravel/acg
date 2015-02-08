@@ -2,14 +2,14 @@
 #define STATE_HPP
 
 #include <GL/glew.h>
+#include "Shader.hpp"
 
-class State{
+struct State{
 	
-	public:
 		State();
 		virtual ~State();
-	
-		GLuint program;
+
+		Shader mShader;
 		
 };
 

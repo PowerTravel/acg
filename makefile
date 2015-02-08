@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project 
-OBJ_FILES = lab1.o Shader.o ObjectManager.o
+OBJ_FILES = lab1.o Shader.o Node.o Geometry.o State.o
 
 #TARGET specifies the name of our exectuable 
 TARGET = lab1.out
