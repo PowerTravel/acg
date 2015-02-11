@@ -4,12 +4,17 @@
 #include <memory>
 #include "State.hpp"
 #include "Node.hpp"
+#include <list>
 
 class Node;
 class Geometry;
 class Group;
 class Transform;
 
+#ifndef NODE_LIST
+#define NODE_LIST
+typedef std::list< Node* > NodeList;
+#endif //NODE_LIST
 
 class NodeVisitor{
 
@@ -25,6 +30,7 @@ class NodeVisitor{
 		virtual void apply(Transform* t);
 
 	private:
+		NodeList nList; 
 };
 
 

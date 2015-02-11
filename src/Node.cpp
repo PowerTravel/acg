@@ -4,6 +4,7 @@ Node::Node()
 {
 	state = NULL;
 	_type = NODE;
+	_state = CLOSED;
 }
 
 Node::~Node()
@@ -14,6 +15,22 @@ Node::~Node()
 void Node::update()
 {
 
+}
+
+
+Node::VisitedState Node::isOpened()
+{
+	return _state;
+}
+
+void Node::open()
+{
+	_state = OPEN;
+}
+
+void Node::close()
+{
+	_state = VISITED;
 }
 
 void Node::setState(std::shared_ptr<State> s)

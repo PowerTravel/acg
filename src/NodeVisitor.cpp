@@ -4,27 +4,32 @@
 #include "Group.hpp"
 #include "Transform.hpp"
 
-NodeVisitor::NodeVisitor(){}
+NodeVisitor::NodeVisitor()
+{
+	nList = NodeList();
+}
 NodeVisitor::~NodeVisitor(){}
 
 void NodeVisitor::traverse(Node* node)
 {
+	node->open();
+	nList.push_front(node);
 	if(node->getType() ==  Node::GROUP  )
 	{
 		Group* grpPtr =(Group*) node;
 		NodeList childList = grpPtr->childList;
 		for(NodeList::const_iterator ci = childList.begin(); ci != childList.end(); ci++)
 		{
-	//		printf("This is a Group, JUMP \n");
+//			printf("This is a Group, JUMP \n");
 			node->accept(*this);
-			traverse(ci->get());
-		
+			traverse(*ci);
 		}
 	}else{
 	//	printf("This is a Leaf, STOP \n");
-		Geometry* geomPtr = (Geometry*) node;
 		node->accept(*this);
 	}
+	nList.pop_front();
+	node->close();
 }
 
 

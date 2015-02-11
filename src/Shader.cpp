@@ -1,6 +1,8 @@
 #include "Shader.hpp"
 
-Shader::Shader(){};
+Shader::Shader(){
+	ut = UniTable();
+};
 
 // Initiates the gl program. Reads, compiles and links the shaders.
 Shader::Shader(const char* vShaderFile, const char* fShaderFile)
@@ -145,3 +147,31 @@ void Shader::use()
 	glUseProgram(this->program);
 }
 
+
+void Shader::createUniform(std::string name)
+{
+	GLuint location = glGetUniformLocation(program, name.c_str() );
+	std::pair< std::string, GLuint > pair(name,location);
+	ut.insert(pair);
+}
+#include <iostream>
+void Shader::setUniformMatrix(std::string name, float* data)
+{	
+	glUniformMatrix4fv(ut[name.c_str()], 1, GL_FALSE, data);
+}
+void Shader::setUniform1(std::string name, float* data)
+{
+	glUniform1fv(ut[name.c_str()], 1, data);
+}
+void Shader::setUniform2(std::string name, float* data)
+{
+	glUniform2fv(ut[name.c_str()], 1, data);
+}
+void Shader::setUniform3(std::string name, float* data)
+{
+	glUniform3fv(ut[name.c_str()], 1, data);
+}
+void Shader::setUniform4(std::string name, float* data)
+{
+	glUniform4fv(ut[name.c_str()], 1, data);
+}

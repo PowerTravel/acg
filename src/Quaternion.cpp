@@ -1,4 +1,6 @@
 #include "Quaternion.hpp"
+#include "Vec3.hpp"
+#include "Hmat.hpp"
 #include <cmath>
 
 #define ROTATE_ZERO_AXIS_EPSILON (float)1E-5
@@ -10,7 +12,13 @@ Quaternion::Quaternion()
 
 Quaternion::Quaternion(float x, float y, float z, float w)
 {
-	_v = Vec4(x,y,z,w);
+	set(x,y,z,w);
+}
+
+Quaternion::Quaternion(float angle, Vec3 axis)
+{
+	_v = Vec4(0,0,0,1);
+	makeRotate(angle, axis);
 }
 
 Quaternion::~Quaternion()
@@ -80,10 +88,9 @@ void Quaternion::set( Vec3& from, Vec3& to)
 
 void Quaternion::set(float x, float y, float z, float w)
 {
-	_v[0] = x;	
-	_v[1] = y;
-	_v[2] = z;
-	_v[3] = w;
+	_v = Vec4(x,y,z,w);
+	float norm = _v.norm();
+	_v = _v *(1/norm);
 }
 
 void Quaternion::set(Vec4 vec)
@@ -249,5 +256,34 @@ Vec4 Quaternion::asVec4()
 	return _v;
 }
 
+Hmat Quaternion::asHmat()
+{	
+	float x,y,z;
+	Vec4 r1,r2,r3,r4;
 
-//void get(Hmat& m) const;
+	x = 1-2*(_v[1]*_v[1] + _v[2]*_v[2]);
+	y = 2*(_v[0]*_v[1] - _v[2]*_v[3]);
+	z = 2*(_v[0]*_v[2] + _v[1]*_v[3]);
+	r1 = Vec4(x,y,z,0.0f);
+
+	x = 2*(_v[0]*_v[1] + _v[2]*_v[3]);
+	y = 1-2*(_v[0]*_v[0] + _v[2]*_v[2]);
+	z = 2*(_v[1]*_v[2] - _v[0]*_v[3]);
+	r2 = Vec4(x,y,z,0.0f);
+
+	x = 2*(_v[0]*_v[2] - _v[1]*_v[3]);
+	y = 2*(_v[1]*_v[2] + _v[0]*_v[3]);
+	z = 1-2*(_v[0]*_v[0] + _v[1]*_v[1]);
+	r3 = Vec4(x,y,z,0.0f);
+
+	r4 = Vec4(0.0f,0.0f,0.0f,1.0f);
+
+	return Hmat(r1,r2,r3,r4);
+
+}
+
+bool Quaternion::zeroRotation()
+{ 
+	return _v[0]==0.0 && _v[1]==0.0 && _v[2]==0.0 && _v[3]==1.0; 
+}
+

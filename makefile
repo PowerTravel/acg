@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project 
-OBJ_FILES = lab1.o Shader.o Node.o Geometry.o Transform.o State.o Group.o  NodeVisitor.o RenderVisitor.o UpdateVisitor.o
+OBJ_FILES = lab1.o Shader.o Node.o Geometry.o Transform.o State.o Group.o  NodeVisitor.o RenderVisitor.o UpdateVisitor.o Quaternion.o Vec3.o Vec4.o Hmat.o
 
 #TARGET specifies the name of our exectuable 
 TARGET = lab1.out

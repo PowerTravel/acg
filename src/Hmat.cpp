@@ -41,6 +41,17 @@ Hmat::~Hmat()
 
 }
 
+void Hmat::get(float mat[])
+{
+	for(int i = 0; i<4; i++)
+	{
+		for(int j = 0; j<4; j++)
+		{
+			mat[4*i+j] = m[i][j];
+		}
+	}
+}
+
 std::istream& operator>>(std::istream& is, Hmat& hm)
 {
 	is >> hm.m[0] >> hm.m[1] >> hm.m[2] >> hm.m[3];
@@ -509,7 +520,6 @@ float Hmat::getVal(int idx)
 		}
 		default:
 		{
-		std::cout << "lol"<<std::endl;
 			return 0.0;
 			break;
 		}

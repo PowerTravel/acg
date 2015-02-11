@@ -12,9 +12,9 @@ class Hmat
 	friend std::ostream& operator<<(std::ostream& os,const Hmat& hm);
 
 	// Matrix-Matrix Adition, Subtraction and multiplication;	
-	friend Hmat operator+(Hmat& h1, Hmat& h2);
-	friend Hmat operator-(Hmat& h1, Hmat& h2);
-	friend Hmat operator*(Hmat& h1, Hmat& h2);
+	friend Hmat operator+(Hmat& m1, Hmat& m2);
+	friend Hmat operator-(Hmat& m1, Hmat& m2);
+	friend Hmat operator*(Hmat& m1, Hmat& m2);
 	
 	// Vector-Matrix multiplication
 	friend Vec4 operator*(Vec4& v4, Hmat& m);
@@ -50,6 +50,8 @@ class Hmat
 		Hmat(float mat[]);
 		Hmat(Vec4 r0, Vec4 r1, Vec4 r2, Vec4 r3);
 		virtual ~Hmat();
+		
+		void get(float mat[]);
 
 		// Subscript
 		Vec4& operator[](int idx);

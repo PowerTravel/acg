@@ -45,18 +45,27 @@ int main(int argc, char* argv[])
 	setUpGlew();
 	// Load Shaders, Add so that you get back a struct with the program id and the shader ids
 	std::shared_ptr<State> statePtr = std::shared_ptr<State>(new State);
-	statePtr->mShader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");	
+	statePtr->mShader = Shader(V_SHADER, F_SHADER);	
 	statePtr->mShader.use();
-
+	statePtr->mShader.createUniform("T"); //  Sets the Transfomation Uniform
+	
+	
 	
 
-//	std::shared_ptr<Group> root = (std::shared_ptr<Group>) Scene::getInstance().root;
-	std::shared_ptr<Transform> transPtr = std::shared_ptr<Transform>(new Transform);
-
+	float angle = 0.0;
+	Vec3 axis = Vec3(1,1,0);
+	Vec3 trans = Vec3(0.0f,0.0f,0.0f);
+	Vec3 scale = Vec3(1,1,1);
+	
+	std::shared_ptr<Transform> transPtr = std::shared_ptr<Transform>(new Transform(angle, axis, trans, scale));
 	std::shared_ptr<Geometry> geomPtr = std::shared_ptr<Geometry>(new Geometry("models/box.obj") );
 	transPtr->addChild(geomPtr);
-	Scene::getInstance().root->addChild(transPtr);
 
+	geomPtr->setState(statePtr);
+	transPtr->setState(statePtr);
+	Scene::getInstance().root->setState(statePtr);
+
+	Scene::getInstance().root->addChild(transPtr);
 
 
 	RenderVisitor r = RenderVisitor();	
@@ -74,19 +83,112 @@ void display()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//glBindVertexArray(VAO);
-	//glDrawArrays(GL_TRIANGLES, 0, 24);
-	//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-	//glBindVertexArray(0);
-
-	//geomPtr->update();
-	//Scene::getInstance().root->update();
+		
+	Scene::getInstance().root->update();
 	renderVis.traverse(Scene::getInstance().root.get());
-	//g.update();
+
 
 	glutSwapBuffers();
 	glutPostRedisplay();
 }
+
+void setUpGlut(int argc, char* argv[])
+{
+	glutInit(&argc, argv);
+	
+	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
+
+	glutInitContextVersion(3,3);
+	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
+	glutInitContextProfile(GLUT_CORE_PROFILE);
+
+	glutInitWindowSize(1280, 720);
+	glutInitWindowPosition(10,10);
+	glutCreateWindow("GLUT Viewer");
+}
+
+void GLEWprintSystemSpecs()
+{
+	const GLubyte* vendor = glGetString(GL_VENDOR);
+	const GLubyte* renderer = glGetString(GL_RENDERER);
+	const GLubyte* version = glGetString(GL_VERSION);
+	const GLubyte* shading = glGetString(GL_SHADING_LANGUAGE_VERSION);
+	
+	GLint numExt;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &numExt);
+
+	GLint numLang; 
+	glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &numLang);
+	const GLubyte* extension = glGetStringi(GL_EXTENSIONS, numExt-1 );
+	const GLubyte* shadeVers = glGetStringi(GL_SHADING_LANGUAGE_VERSION, numLang-1 );
+
+	fprintf(stderr, "\n -=System Specs=- \n");
+	fprintf(stderr, "vendor = %s \n", vendor);
+	fprintf(stderr, "renderer = %s \n", renderer);
+	fprintf(stderr, "GL Version = %s \n", version);
+	fprintf(stderr, "Shading language version = %s \n", shading);
+	fprintf(stderr, "shading extenstion = %s \n\n", extension);
+
+}
+
+void setUpGlew()
+{
+	glewExperimental = GL_TRUE;
+	GLenum err = glewInit();
+	if (GLEW_OK != err){
+	  /* Problem: glewInit failed, something is seriously wrong. */
+	    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+	}
+	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+/*
+	if(	glewGetExtension("GL_ARB_fragment_shader") != GL_TRUE ||
+		glewGetExtension("GL_ARB_vertex_shader") != GL_TRUE ||
+		glewGetExtension("GL_ARB_shader_objects") != GL_TRUE ||
+		glewGetExtension("GL_ARB_shading_language_100") != GL_TRUE  )
+	{
+		std::cerr << "Driver does not support OpenGL shading language" << std::endl;
+		exit(1);
+	}
+*/
+	GLEWprintSystemSpecs();	
+}
+
+void resize(int width, int height)
+{
+    if(width<=height)
+    {
+        glViewport(0,(height-width)/2,width,width);
+    }else{
+        glViewport((width-height)/2,0,height,height);
+    }
+}
+
+void setUpCallbacks()
+{
+	glutDisplayFunc(display);
+	glutReshapeFunc(resize);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void testBox()
 {
@@ -235,81 +337,3 @@ void testCube()
 	glBindVertexArray(0);
 
 }
-
-void setUpGlut(int argc, char* argv[])
-{
-	glutInit(&argc, argv);
-	
-	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-
-	glutInitContextVersion(3,3);
-	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
-	glutInitContextProfile(GLUT_CORE_PROFILE);
-
-	glutInitWindowSize(1280, 720);
-	glutInitWindowPosition(10,10);
-	glutCreateWindow("GLUT Viewer");
-}
-
-void GLEWprintSystemSpecs()
-{
-	const GLubyte* vendor = glGetString(GL_VENDOR);
-	const GLubyte* renderer = glGetString(GL_RENDERER);
-	const GLubyte* version = glGetString(GL_VERSION);
-	const GLubyte* shading = glGetString(GL_SHADING_LANGUAGE_VERSION);
-	
-	GLint numExt;
-	glGetIntegerv(GL_NUM_EXTENSIONS, &numExt);
-
-	GLint numLang; 
-	glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &numLang);
-	const GLubyte* extension = glGetStringi(GL_EXTENSIONS, numExt-1 );
-	const GLubyte* shadeVers = glGetStringi(GL_SHADING_LANGUAGE_VERSION, numLang-1 );
-
-	fprintf(stderr, "\n -=System Specs=- \n");
-	fprintf(stderr, "vendor = %s \n", vendor);
-	fprintf(stderr, "renderer = %s \n", renderer);
-	fprintf(stderr, "GL Version = %s \n", version);
-	fprintf(stderr, "Shading language version = %s \n", shading);
-	fprintf(stderr, "shading extenstion = %s \n\n", extension);
-
-}
-
-void setUpGlew()
-{
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (GLEW_OK != err){
-	  /* Problem: glewInit failed, something is seriously wrong. */
-	    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-	}
-	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-/*
-	if(	glewGetExtension("GL_ARB_fragment_shader") != GL_TRUE ||
-		glewGetExtension("GL_ARB_vertex_shader") != GL_TRUE ||
-		glewGetExtension("GL_ARB_shader_objects") != GL_TRUE ||
-		glewGetExtension("GL_ARB_shading_language_100") != GL_TRUE  )
-	{
-		std::cerr << "Driver does not support OpenGL shading language" << std::endl;
-		exit(1);
-	}
-*/
-	GLEWprintSystemSpecs();	
-}
-
-void resize(int width, int height)
-{
-    if(width<=height)
-    {
-        glViewport(0,(height-width)/2,width,width);
-    }else{
-        glViewport((width-height)/2,0,height,height);
-    }
-}
-
-void setUpCallbacks()
-{
-	glutDisplayFunc(display);
-	glutReshapeFunc(resize);
-}
-
