@@ -1,8 +1,10 @@
 #include "Group.hpp"
-
+#include "NodeVisitor.hpp"
+#include <cstdio>
 Group::Group()
 {
-	childList = DList<Node>();
+	_type = Node::GROUP;
+	childList = std::list<std::shared_ptr<Node> >();
 }
 
 Group::~Group()
@@ -12,28 +14,32 @@ Group::~Group()
 
 void Group::destroy()
 {
-	childList.first();
-	while(!childList.isEmpty())
+	while(!childList.empty())
 	{
-		childList.remove();
+		childList.pop_back();
 	}
 }
 
-void Group::addChild(std::shared_ptr<Node> node )
+void Group::addChild(std::shared_ptr<Node> nodePtr )
 {
-	childList.insert(node);
+	childList.push_back(nodePtr);
 }
 
-/*
+int Group::getNrChildren()
+{
+	return childList.size();
+}
+
 void Group::update()
 {
-	childList.first();
-	while(!childList().isEnd())
+	for(NodeList::const_iterator ci = childList.begin(); ci != childList.end(); ci++ )
 	{
-		std::shared_ptr<Node> node_ptr = childList.inspect().lock();
+		Node* node_ptr = ci->get();
 		node_ptr->update();
-		childList.next();
 	}
 }
-*/	
-
+	
+void Group::accept(NodeVisitor& v)
+{	
+	v.apply(this);
+}

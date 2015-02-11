@@ -50,7 +50,7 @@ class Vec4
 		Vec4& operator-=( Vec4& hv );
 
 		// Compound scalar miultiplication	
-		Vec4& operator*=( float& f );
+		Vec4& operator*=( float f );
 		
 	private:
 		float v[4];

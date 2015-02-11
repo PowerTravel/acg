@@ -40,6 +40,16 @@ std::ostream& operator<<(std::ostream& os, const Vec3& v3)
 	return os;
 }
 
+// Cross Product
+Vec3 operator^( Vec3 v1, Vec3 v2 )
+{
+	float x,y,z;
+	x = v1[1]*v2[2] - v1[2]*v2[1];
+	y = v1[2]*v2[0] - v1[0]*v2[2];
+	z = v1[0]*v2[1] - v1[1]*v2[0];
+	return Vec3(x,y,z);
+}
+
 // Dot product
 float operator*( Vec3 v1, Vec3 v2 )
 {

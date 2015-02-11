@@ -6,6 +6,11 @@
 //#include <GL/freeglut_ext.h>
 #include "Shader.hpp"
 #include "Geometry.hpp"
+#include "Transform.hpp"
+#include "Scene.hpp"
+//#include "NodeVisitor.hpp"
+#include "RenderVisitor.hpp"
+#include "UpdateVisitor.hpp"
 
 #include <iostream>
 #include <cstdio>
@@ -30,7 +35,8 @@ GLuint VAO;
 GLuint VBO;
 GLuint EBO;
 GLuint program;
-Geometry g;
+
+RenderVisitor renderVis;	
 
 int main(int argc, char* argv[])
 {
@@ -38,28 +44,54 @@ int main(int argc, char* argv[])
 	setUpGlut(argc, argv);
 	setUpGlew();
 	// Load Shaders, Add so that you get back a struct with the program id and the shader ids
-//	program = initProgram("shaders/vshader.glsl", "shaders/fshader.glsl");
-//	glUseProgram(program);
+	std::shared_ptr<State> statePtr = std::shared_ptr<State>(new State);
+	statePtr->mShader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");	
+	statePtr->mShader.use();
 
-	std::shared_ptr<State>  statePtr = std::shared_ptr<State>(new State);
-	statePtr->mShader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
 	
-	g = Geometry("models/box.obj");	
-	g.setState(statePtr);
+
+//	std::shared_ptr<Group> root = (std::shared_ptr<Group>) Scene::getInstance().root;
+	std::shared_ptr<Transform> transPtr = std::shared_ptr<Transform>(new Transform);
+
+	std::shared_ptr<Geometry> geomPtr = std::shared_ptr<Geometry>(new Geometry("models/box.obj") );
+	transPtr->addChild(geomPtr);
+	Scene::getInstance().root->addChild(transPtr);
 
 
+
+	RenderVisitor r = RenderVisitor();	
+	r.traverse(Scene::getInstance().root.get());
+
+	
 	setUpCallbacks();
-	
-
-
 	glutMainLoop();
 
 	return 0;
 }
  
+void display()
+{
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//glBindVertexArray(VAO);
+	//glDrawArrays(GL_TRIANGLES, 0, 24);
+	//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	//glBindVertexArray(0);
+
+	//geomPtr->update();
+	//Scene::getInstance().root->update();
+	renderVis.traverse(Scene::getInstance().root.get());
+	//g.update();
+
+	glutSwapBuffers();
+	glutPostRedisplay();
+}
+
 void testBox()
 {
-	float vertices[] {	0.5f, 0.5f, 0.5f,	
+	float vertices[] {	
+						0.5f, 0.5f, 0.5f,	
 						0.5f, -0.5f, 0.5f,	
 						0.5f, -0.5f, -0.5f,	
 						0.5f, 0.5f, -0.5f,
@@ -68,11 +100,11 @@ void testBox()
 						-0.5f, -0.5f, -0.5f,	
 						-0.5f, -0.5f, 0.5f,	
 						-0.5f, 0.5f, 0.5f,
-
+						
 						0.5f, 0.5f, -0.5f,	
 						0.5f, -0.5f, -0.5f,	
-						-0.5f, -0.5f, 0.5f,	
-						-0.5f, 0.5f, 0.5f,	
+						-0.5f, -0.5f, -0.5f,	
+						-0.5f, 0.5f, -0.5f,
 						
 						-0.5f, 0.5f, 0.5f,	
 						-0.5f, -0.5f, 0.5f,	
@@ -88,17 +120,32 @@ void testBox()
 						0.5f, -0.5f, -0.5f,	
 						0.5f, -0.5f, 0.5f,	
 						-0.5f, -0.5f, 0.5f};
-	
+	int faces[] = {	3,0,1,
+					1,2,3,
+					7,4,5,
+					5,6,7,
+					11,8,9,
+					9,10,11,
+					15,12,13,
+					13,14,15,
+					19,16,17,
+					17,18,19,
+					23,20,21,
+					21,22,23};
 	
 	glGenVertexArrays(1,&VAO);
 	glGenBuffers(1,&VBO);
+	glGenBuffers(1, &EBO);
 	glBindVertexArray(VAO);
 	
-
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(faces), faces, GL_STATIC_DRAW);
+
 	glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
@@ -150,7 +197,6 @@ void testRectangle()
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
-
 }
 
 void testCube()
@@ -188,22 +234,6 @@ void testCube()
 
 	glBindVertexArray(0);
 
-}
-
-void display()
-{
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-//	glBindVertexArray(VAO);
-	//glDrawArrays(GL_TRIANGLES, 12, 24);
-//	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
-//	glBindVertexArray(0);
-
-	g.draw();
-
-	glutSwapBuffers();
-	glutPostRedisplay();
 }
 
 void setUpGlut(int argc, char* argv[])
@@ -269,7 +299,12 @@ void setUpGlew()
 
 void resize(int width, int height)
 {
-	glViewport(0,0,width,height);
+    if(width<=height)
+    {
+        glViewport(0,(height-width)/2,width,width);
+    }else{
+        glViewport((width-height)/2,0,height,height);
+    }
 }
 
 void setUpCallbacks()

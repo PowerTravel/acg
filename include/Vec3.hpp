@@ -12,6 +12,9 @@ class Vec3
 	// Dot Product
 	friend float operator*(Vec3 v1, Vec3 v2);
 
+	// Cross Product
+	friend Vec3 operator^(Vec3 v1, Vec3 v2);
+
 	// Vector Element arithmatic	
 	friend Vec3 operator+(Vec3& v1, Vec3& v2);
 	friend Vec3 operator-(Vec3& v1, Vec3& v2);

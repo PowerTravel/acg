@@ -8,6 +8,7 @@ bool testSubscript();
 bool testEquality();
 bool testAdd();
 bool testSub();
+bool testCross();
 bool testDot();
 bool testScalMult();
 bool testNorm();
@@ -39,15 +40,20 @@ int	main(int argc, const char* argv[])
 		cout << "Failed 5" << endl;
 		return 5;
 	}
-	if( !testScalMult() )
+	if( !testCross() )
 	{
 		cout << "Failed 6" << endl;
 		return 6;
 	}
-	if( !testNorm() )
+	if( !testScalMult() )
 	{
 		cout << "Failed 7" << endl;
 		return 7;
+	}
+	if( !testNorm() )
+	{
+		cout << "Failed 8" << endl;
+		return 8;
 	}
 	
 	cout << "Test went ok" << endl;
@@ -104,6 +110,20 @@ bool testSub()
 	Vec3 v3 = v1 - v2;
 	v1 -= v2;
 	if( (v1 != v3) || (v3 != ans) || (v1 == v2)  )
+	{
+		return false;
+	}
+	return true;
+}
+
+bool testCross()
+{
+	Vec3 v1 = Vec3(1,0,0);
+	Vec3 v2 = Vec3(0,1,0);
+	Vec3 ans = Vec3(0,0,1);
+
+	Vec3 cross = v1^v2;
+	if(cross != ans)
 	{
 		return false;
 	}

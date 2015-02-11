@@ -1,3 +1,6 @@
+quaterniontest:
+	g++ -std=c++11 quaterniontest.cpp ../src/Quaternion.cpp ../src/Vec3.cpp ../src/Vec4.cpp -I../include -o quaternion.out
+
 nodetest:
 	g++ -std=c++11 nodetest.cpp ../src/Node.cpp -I../include -o nodetest.out
 

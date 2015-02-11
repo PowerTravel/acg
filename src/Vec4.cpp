@@ -199,7 +199,7 @@ Vec4& Vec4::operator-=( Vec4& hv )
 
 
 // Compound scalar vector multiplication
-Vec4& Vec4::operator*=( float& f )
+Vec4& Vec4::operator*=( float f )
 {
 	*this = *this * f;
 	return *this;

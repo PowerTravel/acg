@@ -2,6 +2,7 @@
 #define TRANSOFRM_HPP
 
 #include "Group.hpp"
+class NodeVisitor;
 
 class Transform: public Group
 {
@@ -9,13 +10,11 @@ class Transform: public Group
 		Transform();
 		virtual ~Transform();
 
-		void setPosition(Vec3 pos);
-
 		void update();
 
+		void accept(NodeVisitor& visitor);
+
 	private:
-		Hmat m;
-		Vec4 pos;
 };
 
 #endif // TRANSFORM_HPP

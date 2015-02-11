@@ -1,8 +1,9 @@
 #include "Node.hpp"
-
+#include "NodeVisitor.hpp"
 Node::Node()
 {
-	state = std::shared_ptr<State>();
+	state = NULL;
+	_type = NODE;
 }
 
 Node::~Node()
@@ -25,9 +26,7 @@ std::shared_ptr<State> Node::getState()
 	return state;
 }
 
-/*
-void Node::accept(Visitor* v)
+Node::Type Node::getType()
 {
-	v->apply(this);
+	return _type;
 }
-*/

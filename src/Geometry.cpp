@@ -1,9 +1,9 @@
 #include "Geometry.hpp"
-
+#include "RenderVisitor.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-Geometry::Geometry()
+Geometry::Geometry() 
 {
 	nrVertices = 0;
 	nrFaces = 0;
@@ -33,19 +33,20 @@ Geometry::~Geometry()
 	{
 		glDeleteBuffers(0, &normalBuffer);	
 	}
-//	if(faceBuffer)
-//	{
-//		glDeleteBuffers(0, &faceBuffer);	
-//	}
+	if(faceBuffer)
+	{
+		glDeleteBuffers(0, &faceBuffer);	
+	}
 }
 
 bool  Geometry::loadFile(const char* filePath){
 
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filePath,
+							aiProcess_OptimizeMeshes |
 							aiProcess_Triangulate | 
-							aiProcess_JoinIdenticalVertices |
-							aiProcess_GenNormals);
+							aiProcess_JoinIdenticalVertices|
+							aiProcess_GenSmoothNormals);
 	if(!scene){
 		fprintf(stderr, "Failed to load model '%s' \n '%s'\n ", filePath, importer.GetErrorString());
 		return false;
@@ -80,19 +81,19 @@ void Geometry::createGeom( const aiMesh* mesh )
 			vertices[3*i+1] = mesh->mVertices[i].y;
 			vertices[3*i+2] = mesh->mVertices[i].z;
 		}
-
+		printf("\n");
 		glGenBuffers(1, &vertexBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, 3*nrVertices*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
 		glEnableVertexAttribArray(0);
-		/*
+	/*	
 		for(int i=0; i<nrVertices; i++)
 		{
-			printf("%1.2f, %1.2f, %1.2f \n", vertices[i], vertices[i+1], vertices[i+2]);
+			printf("%1.2f, %1.2f, %1.2f \n", vertices[3*i], vertices[3*i+1], vertices[3*i+2]);
 		}
-		*/
+	*/	
 		delete vertices;
 	}
 
@@ -115,7 +116,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 		/*
 		for(int i=0; i<nrVertices; i++)
 		{
-			printf("%1.2f, %1.2f \n", texCoords[i], texCoords[i+1]);
+			printf("%1.2f, %1.2f \n", texCoords[2*i], texCoords[2*i+1]);
 		}
 		*/
 		delete texCoords;
@@ -139,16 +140,16 @@ void Geometry::createGeom( const aiMesh* mesh )
 	/*	
 		for(int i=0; i<nrVertices; i++)
 		{
-			printf("%1.2f, %1.2f, %1.2f \n", normals[i], normals[i+1], normals[i+2]);
+			printf("%1.2f, %1.2f, %1.2f \n", normals[3*i], normals[3*i+1], normals[3*i+2]);
 		}
 	*/
 		delete normals;
 	}
 
-/*
+
 	// Copy over Faces and Normals
 	if( mesh->HasFaces()){
-		int* faces = new int[3*nrVertices];
+		int* faces = new int[3*nrFaces];
 
 		for(int i = 0; i<nrFaces; i++)
 		{
@@ -163,15 +164,15 @@ void Geometry::createGeom( const aiMesh* mesh )
 
 		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
 		glEnableVertexAttribArray(3);
-
+/*
 		for(int i=0; i<nrFaces; i++)
 		{
-			printf("%d, %d, %d \n", faces[i], faces[i+1], faces[i+2]);
+			printf("%d, %d, %d \n", faces[3*i], faces[3*i+1], faces[3*i+2]);
 		}
-	
+*/	
 		delete faces;
 	}	
-*/	
+	
 	glBindVertexArray(0);
 }
 
@@ -181,9 +182,17 @@ void Geometry::draw()
 		state->mShader.use();
 	}
 	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, nrVertices-1);
-//	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
+//	glDrawArrays(GL_TRIANGLES, 0, nrVertices);
+	glDrawElements(GL_TRIANGLES, 3*nrFaces, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
+void Geometry::update()
+{
 
+}
+
+void Geometry::accept(NodeVisitor& v)
+{
+	v.apply(this);
+}
