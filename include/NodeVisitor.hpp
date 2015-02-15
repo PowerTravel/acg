@@ -10,6 +10,7 @@ class Node;
 class Geometry;
 class Group;
 class Transform;
+class Camera;
 
 #ifndef NODE_LIST
 #define NODE_LIST
@@ -28,6 +29,7 @@ class NodeVisitor{
 		virtual void apply(Geometry* g);
 		virtual void apply(Group* grp);
 		virtual void apply(Transform* t);
+		virtual void apply(Camera* cam);
 
 	private:
 		NodeList nList; 

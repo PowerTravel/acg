@@ -12,24 +12,26 @@ NodeVisitor::~NodeVisitor(){}
 
 void NodeVisitor::traverse(Node* node)
 {
-	node->open();
-	nList.push_front(node);
+	//node->open();
+	//nList.push_front(node);
 	if(node->getType() ==  Node::GROUP  )
 	{
 		Group* grpPtr =(Group*) node;
 		NodeList childList = grpPtr->childList;
+		int i = 1;
+		node->accept(*this);
 		for(NodeList::const_iterator ci = childList.begin(); ci != childList.end(); ci++)
 		{
-//			printf("This is a Group, JUMP \n");
-			node->accept(*this);
+			//printf("Entering child no %d \n", i);	
 			traverse(*ci);
+			i++;
 		}
 	}else{
-	//	printf("This is a Leaf, STOP \n");
+	//	printf("Entering leaf \n");	
 		node->accept(*this);
 	}
-	nList.pop_front();
-	node->close();
+	//nList.pop_front();
+	//node->close();
 }
 
 
@@ -42,7 +44,11 @@ void NodeVisitor::apply(Group* grp)
 {
 	printf("Visiting Group from NodeVisitor\n");
 }
-void NodeVisitor::apply(Transform* trans)
+void NodeVisitor::apply(Transform* t)
 {
 	printf("Visiting Transform from NodeVisitor \n");
+}
+void NodeVisitor::apply(Camera* cam)
+{
+	printf("Visiting Camera from NodeVisitor \n");
 }

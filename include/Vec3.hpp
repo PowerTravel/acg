@@ -47,6 +47,7 @@ class Vec3
 
 		// L0, L1, L2 and INF norm
 		float norm(NormType type = L2);
+		void normalize();
 
 		// Compound Element arithmatic
 		Vec3& operator+=( Vec3& v3 );

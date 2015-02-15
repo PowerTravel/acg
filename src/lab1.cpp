@@ -8,7 +8,7 @@
 #include "Geometry.hpp"
 #include "Transform.hpp"
 #include "Scene.hpp"
-//#include "NodeVisitor.hpp"
+#include "Camera.hpp"
 #include "RenderVisitor.hpp"
 #include "UpdateVisitor.hpp"
 
@@ -17,12 +17,25 @@
 
 char V_SHADER[] = "shaders/vshader.glsl";
 char F_SHADER[] = "shaders/fshader.glsl";
+int SCREEN_WIDTH = 620;
+int SCREEN_HEIGHT = 480;
+int FPS = 60;
 
 void setUpGlut(int argc, char* argv[]);
 void GLEWprintSystemSpecs();
-void display();
 void setUpGlew();
-void setUpCallbacks();
+
+
+void updateAndDisplay(int i);
+void display();
+void resize(int width, int height);
+void idleFunk();
+void glutKeyDownCallback(unsigned char key, int x, int y);
+void glutKeyUpCallback(unsigned char key, int x, int y);
+void glutSpecialKeyUpCallback(int key, int x, int y);
+void glutSpecialKeyUpCallback(int key, int x, int y);
+
+void glutMainProgram();
 
 void reshape(int w, int h);
 
@@ -36,8 +49,9 @@ GLuint VBO;
 GLuint EBO;
 GLuint program;
 
-RenderVisitor renderVis;	
+Group g;
 
+RenderVisitor r;	 // Some weird bug that makes it so I get seg fault if I dont recreate RV each time
 int main(int argc, char* argv[])
 {
 	// Set up glut and glew
@@ -47,65 +61,149 @@ int main(int argc, char* argv[])
 	std::shared_ptr<State> statePtr = std::shared_ptr<State>(new State);
 	statePtr->mShader = Shader(V_SHADER, F_SHADER);	
 	statePtr->mShader.use();
-	statePtr->mShader.createUniform("T"); //  Sets the Transfomation Uniform
-	
-	
-	
+	statePtr->mShader.createUniform("MV"); //  Sets the Transfomation Uniform
+	//statePtr->mShader.createUniform("V"); //  Sets the View Uniform
+	//statePtr->mShader.createUniform("P"); //  Sets the Projection Uniform
 
-	float angle = 0.0;
-	Vec3 axis = Vec3(1,1,0);
-	Vec3 trans = Vec3(0.0f,0.0f,0.0f);
-	Vec3 scale = Vec3(1,1,1);
-	
-	std::shared_ptr<Transform> transPtr = std::shared_ptr<Transform>(new Transform(angle, axis, trans, scale));
 	std::shared_ptr<Geometry> geomPtr = std::shared_ptr<Geometry>(new Geometry("models/box.obj") );
-	transPtr->addChild(geomPtr);
-
 	geomPtr->setState(statePtr);
-	transPtr->setState(statePtr);
-	Scene::getInstance().root->setState(statePtr);
 
-	Scene::getInstance().root->addChild(transPtr);
+	Scene::getInstance().getRoot()->setState(statePtr);
+
+//	std::shared_ptr<Camera> camPtr = std::shared_ptr<Camera>(new Camera());
+//	camPtr->setState(statePtr);
+
+	std::shared_ptr<Camera> cam= std::shared_ptr<Camera>(new Camera());
+	cam->setState(statePtr);
+
+	std::shared_ptr<Transform> transPtr2 = std::shared_ptr<Transform>(new Transform());
+	transPtr2->setState(statePtr);
+	//transPtr2->rotate(0.00,Vec3(0,1.0,0));
+	//transPtr2->translate(Vec3(0.0f,0.0f,0.f));
+	//transPtr2->scale(Vec3(1,1,1));
 
 
-	RenderVisitor r = RenderVisitor();	
-	r.traverse(Scene::getInstance().root.get());
+	transPtr2->addChild(geomPtr);
 
-	
-	setUpCallbacks();
-	glutMainLoop();
+	cam->addChild(transPtr2);
+
+	Scene::getInstance().getRoot()->addChild(cam);
+	g = Group();
+	g.setState(statePtr);
+	g.addChild(cam);
+	r= RenderVisitor();
+
+	glutMainProgram();	
 
 	return 0;
 }
- 
+
+void updateAndDisplay(int i)
+{	
+//	Scene::getInstance().getRoot()->update();
+	g.update();
+	display();
+
+	glutTimerFunc(1000/FPS, updateAndDisplay,0);
+}
+
 void display()
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		
-	Scene::getInstance().root->update();
-	renderVis.traverse(Scene::getInstance().root.get());
+	std::cout<<	"-=NEW DRAW=-" << std::endl;
+	// Got a really weird bug. I get a seg fault if I dont do one of the following:
+	//	1: While using scene singleton redeclare AND reinstantitate RenderVisitor r each frame.
+	//  2: Dont use any calls to scene, even if they don't do anything.
+	
+	// Method 1: FUNKAR INTE AV LENGRE
+//	RenderVisitor r = RenderVisitor();
+//	r.traverse(Scene::getInstance().getRoot());
+	
+	// Method 2
+	r.traverse(&g);
 
 
 	glutSwapBuffers();
-	glutPostRedisplay();
+//	glutPostRedisplay();
+//	glutTimerFunc(1000/60, display,0);
 }
 
 void setUpGlut(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
 	
-	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 
 	glutInitContextVersion(3,3);
 	glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 
-	glutInitWindowSize(1280, 720);
-	glutInitWindowPosition(10,10);
-	glutCreateWindow("GLUT Viewer");
+	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	glutInitWindowPosition(50,50);
+	glutCreateWindow("Assignment 1");
 }
+
+void resize(int width, int height)
+{
+	glViewport(0,0,width,height);
+	display();
+}
+
+void idleFunk()
+{
+	
+}
+
+void glutKeyDownCallback(unsigned char key, int x, int y)
+{
+	if(key == 'q')
+	{
+		glutLeaveMainLoop();
+	}
+}
+void glutKeyUpCallback(unsigned char key, int x, int y)
+{
+
+}
+void glutSpecialKeyUpCallback(int key, int x, int y)
+{
+
+}
+void glutSpecialKeyDownCallback(int key, int x, int y)
+{
+
+}
+void glutMainProgram()
+{
+	//glutSetCursor(GLUT_CURSOR_NONE);
+	glutDisplayFunc(display);
+	glutReshapeFunc(resize);
+
+	glutIgnoreKeyRepeat(1);
+	glutKeyboardFunc(glutKeyDownCallback);
+	glutKeyboardUpFunc(glutKeyUpCallback);
+	glutSpecialFunc(glutSpecialKeyDownCallback);
+	glutSpecialUpFunc(glutSpecialKeyUpCallback);
+
+	glutIdleFunc(idleFunk);
+
+	updateAndDisplay(1);
+	glutMainLoop();
+}
+
+
+//void resize(int width, int height)
+//{
+//    if(width<=height)
+//    {
+//        glViewport(0,(height-width)/2,width,width);
+//    }else{
+//       glViewport((width-height)/2,0,height,height);
+//    }
+//}
+
 
 void GLEWprintSystemSpecs()
 {
@@ -135,11 +233,20 @@ void setUpGlew()
 {
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
-	if (GLEW_OK != err){
+	if (glewInit() != GLEW_OK){
 	  /* Problem: glewInit failed, something is seriously wrong. */
 	    fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+		exit(EXIT_FAILURE);
 	}
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+
+	glLineWidth(1.0);
+	glPointSize(1.0);
+	glClearColor(0.0,0.0,0.0,0.0);
+
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
 /*
 	if(	glewGetExtension("GL_ARB_fragment_shader") != GL_TRUE ||
 		glewGetExtension("GL_ARB_vertex_shader") != GL_TRUE ||
@@ -151,22 +258,6 @@ void setUpGlew()
 	}
 */
 	GLEWprintSystemSpecs();	
-}
-
-void resize(int width, int height)
-{
-    if(width<=height)
-    {
-        glViewport(0,(height-width)/2,width,width);
-    }else{
-        glViewport((width-height)/2,0,height,height);
-    }
-}
-
-void setUpCallbacks()
-{
-	glutDisplayFunc(display);
-	glutReshapeFunc(resize);
 }
 
 

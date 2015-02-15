@@ -38,7 +38,7 @@ void Group::update()
 		node_ptr->update();
 	}
 }
-	
+
 void Group::accept(NodeVisitor& v)
 {	
 	v.apply(this);

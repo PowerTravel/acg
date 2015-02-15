@@ -186,6 +186,14 @@ float Vec3::norm(NormType type)
 	return ans;
 }
 
+void Vec3::normalize()
+{
+	float invNorm =1 / this->norm();
+	v[0] *= invNorm;	
+	v[1] *= invNorm;
+	v[2] *= invNorm;
+}
+
 
 // Compound vector Adition
 Vec3& Vec3::operator+=( Vec3& v3 )

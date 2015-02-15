@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project 
-OBJ_FILES = lab1.o Shader.o Node.o Geometry.o Transform.o State.o Group.o  NodeVisitor.o RenderVisitor.o UpdateVisitor.o Quaternion.o Vec3.o Vec4.o Hmat.o
+OBJ_FILES = lab1.o Shader.o Node.o Geometry.o Transform.o State.o Group.o  NodeVisitor.o RenderVisitor.o UpdateVisitor.o Quaternion.o Vec3.o Vec4.o Hmat.o TransformMatrix.o Camera.o
 
 #TARGET specifies the name of our exectuable 
 TARGET = lab1.out
@@ -14,7 +14,7 @@ OBJS = $(patsubst %,$(OBJECT_DIR)/%,$(OBJ_FILES))
 
 
 #CC specifies which compiler we're using 
-CC = g++ 
+CC = g++ -g
 
 #COMPILER_FLAGS specifies the additional compilation options we're using 
 COMPILER_FLAGS = -std=c++11

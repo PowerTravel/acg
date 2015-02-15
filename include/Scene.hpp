@@ -12,9 +12,13 @@ class Scene{
 			return instance;
 		
 		}
-		std::shared_ptr<Group> root;
-	
+		Group* getRoot()
+		{
+			return root.get();
+		}
 	private:
+		std::shared_ptr<Group> root;
+		
 		Scene(){
 			root = std::shared_ptr<Group> (new Group);
 		};
@@ -22,7 +26,6 @@ class Scene{
 		{
 			root = NULL;
 		}
-
 		Scene(Scene const&) = delete;
 		void operator=(Scene const&) = delete;
 
