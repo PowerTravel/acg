@@ -15,8 +15,6 @@
 #include <iostream>
 #include <cstdio>
 
-char V_SHADER[] = "shaders/vshader.glsl";
-char F_SHADER[] = "shaders/fshader.glsl";
 int SCREEN_WIDTH = 620;
 int SCREEN_HEIGHT = 480;
 int FPS = 60;
@@ -49,49 +47,15 @@ GLuint VBO;
 GLuint EBO;
 GLuint program;
 
-Group g;
-
-RenderVisitor r;	 // Some weird bug that makes it so I get seg fault if I dont recreate RV each time
+UpdateVisitor u;
+RenderVisitor r;	 
 int main(int argc, char* argv[])
 {
 	// Set up glut and glew
 	setUpGlut(argc, argv);
 	setUpGlew();
-	// Load Shaders, Add so that you get back a struct with the program id and the shader ids
-	std::shared_ptr<State> statePtr = std::shared_ptr<State>(new State);
-	statePtr->mShader = Shader(V_SHADER, F_SHADER);	
-	statePtr->mShader.use();
-	statePtr->mShader.createUniform("MV"); //  Sets the Transfomation Uniform
-	//statePtr->mShader.createUniform("V"); //  Sets the View Uniform
-	//statePtr->mShader.createUniform("P"); //  Sets the Projection Uniform
 
-	std::shared_ptr<Geometry> geomPtr = std::shared_ptr<Geometry>(new Geometry("models/box.obj") );
-	geomPtr->setState(statePtr);
-
-	Scene::getInstance().getRoot()->setState(statePtr);
-
-//	std::shared_ptr<Camera> camPtr = std::shared_ptr<Camera>(new Camera());
-//	camPtr->setState(statePtr);
-
-	std::shared_ptr<Camera> cam= std::shared_ptr<Camera>(new Camera());
-	cam->setState(statePtr);
-
-	std::shared_ptr<Transform> transPtr2 = std::shared_ptr<Transform>(new Transform());
-	transPtr2->setState(statePtr);
-	//transPtr2->rotate(0.00,Vec3(0,1.0,0));
-	//transPtr2->translate(Vec3(0.0f,0.0f,0.f));
-	//transPtr2->scale(Vec3(1,1,1));
-
-
-	transPtr2->addChild(geomPtr);
-
-	cam->addChild(transPtr2);
-
-	Scene::getInstance().getRoot()->addChild(cam);
-	g = Group();
-	g.setState(statePtr);
-	g.addChild(cam);
-	r= RenderVisitor();
+	Scene::getInstance().buildScene();
 
 	glutMainProgram();	
 
@@ -100,8 +64,7 @@ int main(int argc, char* argv[])
 
 void updateAndDisplay(int i)
 {	
-//	Scene::getInstance().getRoot()->update();
-	g.update();
+	u.traverse(Scene::getInstance().getRoot());
 	display();
 
 	glutTimerFunc(1000/FPS, updateAndDisplay,0);
@@ -112,19 +75,10 @@ void display()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	std::cout<<	"-=NEW DRAW=-" << std::endl;
-	// Got a really weird bug. I get a seg fault if I dont do one of the following:
-	//	1: While using scene singleton redeclare AND reinstantitate RenderVisitor r each frame.
-	//  2: Dont use any calls to scene, even if they don't do anything.
+	//std::cout<<	"-=NEW DRAW=-  " <<Scene::getInstance().getRoot()->getNrChildren() << std::endl;
 	
-	// Method 1: FUNKAR INTE AV LENGRE
-//	RenderVisitor r = RenderVisitor();
-//	r.traverse(Scene::getInstance().getRoot());
+	r.traverse(Scene::getInstance().getRoot());
 	
-	// Method 2
-	r.traverse(&g);
-
-
 	glutSwapBuffers();
 //	glutPostRedisplay();
 //	glutTimerFunc(1000/60, display,0);

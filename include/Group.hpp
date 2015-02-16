@@ -11,6 +11,12 @@ class NodeVisitor;
 typedef std::list< std::shared_ptr<Node> > NodeList;
 #endif // NODE_LIST
 
+#ifndef GROUP_PTR
+#define GROUP_PTR
+class Group;
+typedef std::shared_ptr<Group> group_ptr;
+#endif // GROUP_PTR
+
 class Group: public Node{
 
 	public:
@@ -21,7 +27,7 @@ class Group: public Node{
 		void destroy();
 		void update();
 		
-		void accept(NodeVisitor& v);
+		void acceptVisitor(NodeVisitor& v);
 		
 
 		int getNrChildren();

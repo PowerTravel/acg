@@ -19,7 +19,7 @@ RenderVisitor::~RenderVisitor()
 
 void RenderVisitor::apply(Geometry* g)
 {
-	printf("Geometry \n");
+//	printf("Geometry \n");
 	State* state = g->getState().get();
 	Shader s = state->mShader;
 
@@ -29,14 +29,14 @@ void RenderVisitor::apply(Geometry* g)
 	g->draw();
 
 	decrease_mList();
-	printMatStruct();
+//	printMatStruct();
 }
 
 void RenderVisitor::printMatStruct()
 {
 	for(constListIt it = mList.begin(); it != mList.end(); it++)
 	{
-	//	std::cout<< it->count<< " ";
+		//std::cout<< it->count<< " ";
 		std::cout<< it->m << std::endl << std::endl;
 	}
 	std::cout << std::endl;
@@ -44,12 +44,12 @@ void RenderVisitor::printMatStruct()
 
 void RenderVisitor::apply(Group* grp)
 {
-	printf("Group\n");
+//	printf("Group\n");
 }
 
 void RenderVisitor::apply(Camera* cam)
 {
-	printf("Camera\n");
+//	printf("Camera\n");
 	Hmat P = cam->getProjectionMat();
 	Hmat V = cam->getViewMat();
 	Hmat PV = P*V;
@@ -58,10 +58,10 @@ void RenderVisitor::apply(Camera* cam)
 
 void RenderVisitor::apply(Transform* t)
 {	
-	fprintf(stderr,"Transform \n");
+//	fprintf(stderr,"Transform \n");
 	
 	modify_mList(t->childList.size(), t->getM());
-	printMatStruct();
+//	printMatStruct();
 }
 
 void RenderVisitor::modify_mList(int count, Hmat m)
@@ -77,7 +77,7 @@ void RenderVisitor::modify_mList(int count, Hmat m)
 		if(!mList.empty())
 		{
 			result.m = m*mList.front().m ;
-		//	result.m = mList.front().m*m ;
+//			result.m = mList.front().m*m ;
 		}
 		mList.push_front(result);
 	}

@@ -39,7 +39,7 @@ void Group::update()
 	}
 }
 
-void Group::accept(NodeVisitor& v)
+void Group::acceptVisitor(NodeVisitor& v)
 {	
 	v.apply(this);
 }

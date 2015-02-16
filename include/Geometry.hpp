@@ -8,6 +8,12 @@
 
 class RenderVisitor;
 
+#ifndef GEOMETRY_PTR
+#define GEOMETRY_PTR
+class Geometry;
+typedef std::shared_ptr<Geometry> geometry_ptr;
+#endif //GEOMETRY_PTR
+
 class Geometry : public Node{
 
 	public:
@@ -17,7 +23,7 @@ class Geometry : public Node{
 	
 		void update();
 
-		void accept(NodeVisitor& v);
+		void acceptVisitor(NodeVisitor& v);
 
 		void draw();
 	private:

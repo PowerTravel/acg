@@ -88,12 +88,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
 		glEnableVertexAttribArray(0);
-	/*	
-		for(int i=0; i<nrVertices; i++)
-		{
-			printf("%1.2f, %1.2f, %1.2f \n", vertices[3*i], vertices[3*i+1], vertices[3*i+2]);
-		}
-	*/	
+	
 		delete vertices;
 	}
 
@@ -113,12 +108,6 @@ void Geometry::createGeom( const aiMesh* mesh )
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
 		glEnableVertexAttribArray(1);
 
-		/*
-		for(int i=0; i<nrVertices; i++)
-		{
-			printf("%1.2f, %1.2f \n", texCoords[2*i], texCoords[2*i+1]);
-		}
-		*/
 		delete texCoords;
 	}
 
@@ -137,12 +126,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
 		glEnableVertexAttribArray(2);
-	/*	
-		for(int i=0; i<nrVertices; i++)
-		{
-			printf("%1.2f, %1.2f, %1.2f \n", normals[3*i], normals[3*i+1], normals[3*i+2]);
-		}
-	*/
+		
 		delete normals;
 	}
 
@@ -164,12 +148,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 
 		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
 		glEnableVertexAttribArray(3);
-/*
-		for(int i=0; i<nrFaces; i++)
-		{
-			printf("%d, %d, %d \n", faces[3*i], faces[3*i+1], faces[3*i+2]);
-		}
-*/	
+		
 		delete faces;
 	}	
 	
@@ -178,13 +157,45 @@ void Geometry::createGeom( const aiMesh* mesh )
 
 void Geometry::draw()
 {
-	if(state != NULL){
-		state->mShader.use();
+	if(_state != NULL){
+		_state->mShader.use();
 	}
 	glBindVertexArray(VAO);
 //	glDrawArrays(GL_TRIANGLES, 0, nrVertices);
 	glDrawElements(GL_TRIANGLES, 3*nrFaces, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+
+		float length = 10;
+		glDisable(GL_LIGHTING);
+		glLineWidth(4.0);
+
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(false);
+
+		glColor3f(1, 0, 0);
+		glBegin(GL_LINES);
+		glVertex3f(0, 0, 0);
+		glVertex3f(length, 0, 0);
+		glEnd();
+
+		glColor3f(0, 1, 0);
+		glBegin(GL_LINES);
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, length, 0);
+		glEnd();
+
+		glColor3f(0, 0, 1);
+		glBegin(GL_LINES);
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, 0, length);
+		glEnd();
+
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(true);
+
+
+		glEnable(GL_LIGHTING);
 }
 
 void Geometry::update()
@@ -192,7 +203,7 @@ void Geometry::update()
 
 }
 
-void Geometry::accept(NodeVisitor& v)
+void Geometry::acceptVisitor(NodeVisitor& v)
 {
 	v.apply(this);
 }

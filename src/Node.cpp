@@ -2,14 +2,14 @@
 #include "NodeVisitor.hpp"
 Node::Node()
 {
-	state = NULL;
+	_state = NULL;
 	_type = NODE;
-	_state = CLOSED;
 }
 
 Node::~Node()
 {
-	state = NULL;
+	_state = NULL;
+	_callback = NULL;
 }
 
 void Node::update()
@@ -17,30 +17,24 @@ void Node::update()
 
 }
 
-
-Node::VisitedState Node::isOpened()
+void Node::connectCallback(callback_ptr cb)
 {
-	return _state;
+	_callback = cb;
 }
 
-void Node::open()
+UpdateCallback* Node::getUpdateCallback()
 {
-	_state = OPEN;
-}
-
-void Node::close()
-{
-	_state = VISITED;
+	return _callback.get();
 }
 
 void Node::setState(std::shared_ptr<State> s)
 {
-	state = s;
+	_state = s;
 }
 
 std::shared_ptr<State> Node::getState()
 {
-	return state;
+	return _state;
 }
 
 Node::Type Node::getType()

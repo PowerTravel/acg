@@ -8,6 +8,12 @@ class NodeVisitor;
 class Hmat;
 class Vec3;
 
+#ifndef TRANSFORM_PTR
+#define TRANSFORM_PTR
+class Transform;
+typedef std::shared_ptr<Transform> transform_ptr;
+#endif // TRANSFORM_PTR
+
 class Transform: public Group
 {
 	public:
@@ -22,7 +28,7 @@ class Transform: public Group
 		void translate(Vec3 ds);
 
 		void update();
-		void accept(NodeVisitor& visitor);
+		void acceptVisitor(NodeVisitor& visitor);
 
 	private:
 		TransformMatrix _T;

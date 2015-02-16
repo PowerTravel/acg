@@ -12,6 +12,7 @@ class UpdateVisitor : public NodeVisitor{
 		void apply(Geometry* g);
 		void apply(Group* grp);
 		void apply(Transform* t);
+		void apply(Camera* cam);
 
 };
 
