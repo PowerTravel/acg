@@ -4,13 +4,14 @@
 //#include <GL/glut.h>
 #include <GL/freeglut.h>
 //#include <GL/freeglut_ext.h>
-#include "Shader.hpp"
-#include "Geometry.hpp"
-#include "Transform.hpp"
+//#include "Shader.hpp"
+//#include "Geometry.hpp"
+//#include "Transform.hpp"
 #include "Scene.hpp"
-#include "Camera.hpp"
+//#include "Camera.hpp"
 #include "RenderVisitor.hpp"
 #include "UpdateVisitor.hpp"
+#include "KeyState.hpp"
 
 #include <iostream>
 #include <cstdio>
@@ -56,6 +57,7 @@ int main(int argc, char* argv[])
 	setUpGlew();
 
 	Scene::getInstance().buildScene();
+	KeyState::getInstance().setGlutCallback();
 
 	glutMainProgram();	
 
@@ -136,10 +138,10 @@ void glutMainProgram()
 	glutReshapeFunc(resize);
 
 	glutIgnoreKeyRepeat(1);
-	glutKeyboardFunc(glutKeyDownCallback);
-	glutKeyboardUpFunc(glutKeyUpCallback);
-	glutSpecialFunc(glutSpecialKeyDownCallback);
-	glutSpecialUpFunc(glutSpecialKeyUpCallback);
+	//glutKeyboardFunc(glutKeyDownCallbackgt);
+//	glutKeyboardUpFunc(glutKeyUpCallback);
+//	glutSpecialFunc(glutSpecialKeyDownCallback);
+//	glutSpecialUpFunc(glutSpecialKeyUpCallback);
 
 	glutIdleFunc(idleFunk);
 

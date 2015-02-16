@@ -14,7 +14,6 @@ Node::~Node()
 
 void Node::update()
 {
-
 }
 
 void Node::connectCallback(callback_ptr cb)

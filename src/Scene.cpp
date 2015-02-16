@@ -5,6 +5,7 @@
 #include "Vec3.hpp"
 
 #include "TransformSpinCallback.hpp"
+#include "CameraMovementCallback.hpp"
 
 Scene::Scene()
 {
@@ -44,6 +45,7 @@ void Scene::buildScene()
 										Vec3(0.f, 0.f,-3.f),
 										Vec3(0.f, 0.f,0.f),
 										Vec3(0.f, 1.f, 0.f));
+	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
 
 	transform_ptr p1 = constructTransform(	statePtr, cam,
 											0.0, Vec3(0.f,0.f,-1.f),

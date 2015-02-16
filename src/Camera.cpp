@@ -93,6 +93,13 @@ void Camera::acceptVisitor(NodeVisitor& v)
 	v.apply(this);
 }
 
+void Camera::update()
+{
+	if( _callback!= NULL){
+		_callback->execute();
+	}
+}
+
 void Camera::lookAt(Vec3 at)
 {
 	//Vec3 vx = Vec3(P[0][0], P[0][1], P[0][2]);

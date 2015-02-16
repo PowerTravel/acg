@@ -18,6 +18,7 @@ class Camera : public Group
 		virtual ~Camera();
 
 		void acceptVisitor(NodeVisitor& v);
+		void update();
 
 		void lookAt(Vec3 v);
 		void lookAt(Vec3 eye, Vec3 at, Vec3 up);
@@ -26,6 +27,7 @@ class Camera : public Group
 
 		void setPerspectiveProjection(float fovy=45.f, float aspect=4.f/3.f, float near=-1.f, float far=-100.f);
 		void setOrthographicProjection(float left=-4.f, float right=4.f, float bottom=-2.f, float top=2.f, float near = -100.f, float far =100.f );
+		
 
 	private:
 		Hmat _P; // Projection
