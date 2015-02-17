@@ -32,11 +32,13 @@ void Scene::buildScene()
 	char V_SHADER[] = "shaders/vshader.glsl";
 	char F_SHADER[] = "shaders/fshader.glsl";
 
+	light_ptr  l1= light_ptr(new Light(Vec3(3,3,3), Vec4(0.2,0.2,0.2), Vec4(0.4,0.2,0.6), Vec4(0.1,0.5,0,1) ) );
+
 	// Load Shader
-	std::shared_ptr<State> statePtr = std::shared_ptr<State>(new State);
-	statePtr->mShader = Shader(V_SHADER, F_SHADER);	
-	statePtr->mShader.use();
-	statePtr->mShader.createUniform("MV");
+	state_ptr statePtr = state_ptr(new State);
+	statePtr->setShader( Shader(V_SHADER, F_SHADER));
+	statePtr->getShader().use();
+	statePtr->getShader().createUniform("MV");
 	root->setState(statePtr);
 
 

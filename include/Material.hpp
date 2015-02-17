@@ -1,0 +1,36 @@
+#ifndef MATERIAL_HPP
+#define MATERIAL_HPP
+#include <memory>
+#include "Vec4.hpp"
+
+
+class State;
+#ifndef MATERIAL_PTR
+#define MATERIAL_PTR
+class Material;
+typedef std::shared_ptr<Material> material_ptr;
+#endif // MATERIAL_PTR
+
+class Material{
+
+	public:
+		Material();
+		Material(float shininess, Vec4 specular, Vec4 diffuse, Vec4 ambient);
+		virtual ~Material();
+
+		void setShininess(float s);
+		void setSpecular(Vec4 spec);
+		void setDiffuse(Vec4 diff);
+		void setAmbient(Vec4 amb);
+
+		void apply(State* st);
+	private:
+		float _shininess;
+		Vec4 _specular;
+		Vec4 _diffuse;
+		Vec4 _ambient;
+
+		static Vec4 totLight;
+};
+
+#endif// MATERIAL_HPP

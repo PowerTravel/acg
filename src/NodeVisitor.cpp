@@ -6,12 +6,13 @@
 
 NodeVisitor::NodeVisitor()
 {
-
+	_sList = std::list<state_ptr>();
 }
 NodeVisitor::~NodeVisitor(){}
 
 void NodeVisitor::traverse(Node* node)
 {
+	_sList.push_front(node->getState());
 	if(node->getType() ==  Node::GROUP  )
 	{
 		Group* grpPtr =(Group*) node;
@@ -28,6 +29,7 @@ void NodeVisitor::traverse(Node* node)
 	//	printf("Entering leaf \n");	
 		node->acceptVisitor(*this);
 	}
+	_sList.pop_front();
 }
 
 

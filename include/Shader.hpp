@@ -7,11 +7,18 @@
 
 #include <unordered_map>
 #include <string>
+#include <memory>
 
 #ifndef UNI_TABLE
 #define UNI_TABLE
 typedef std::unordered_map<std::string, GLuint> UniTable;
 #endif //UNI_TABLE
+
+#ifndef SHADER_PTR
+#define SHADER_PTR
+class Shader;
+typedef std::shared_ptr<Shader> shader_ptr;
+#endif // SHADER_PTR
 
 class Shader{
 

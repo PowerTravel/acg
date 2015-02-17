@@ -5,8 +5,6 @@
 #include "Camera.hpp"
 #include <iostream>
 
-
-
 RenderVisitor::RenderVisitor()
 {
 	mList =std::list<Mc>();
@@ -19,9 +17,8 @@ RenderVisitor::~RenderVisitor()
 
 void RenderVisitor::apply(Geometry* g)
 {
-//	printf("Geometry \n");
 	State* state = g->getState().get();
-	Shader s = state->mShader;
+	Shader s = state->getShader();
 
 	float m[16];
 	mList.front().m.get(m);
@@ -29,7 +26,6 @@ void RenderVisitor::apply(Geometry* g)
 	g->draw();
 
 	decrease_mList();
-//	printMatStruct();
 }
 
 void RenderVisitor::printMatStruct()
@@ -49,7 +45,6 @@ void RenderVisitor::apply(Group* grp)
 
 void RenderVisitor::apply(Camera* cam)
 {
-//	printf("Camera\n");
 	Hmat V = cam->getViewMat();
 	Hmat P = cam->getProjectionMat();
 	Hmat PV = P*V;
@@ -58,10 +53,7 @@ void RenderVisitor::apply(Camera* cam)
 
 void RenderVisitor::apply(Transform* t)
 {	
-//	fprintf(stderr,"Transform \n");
-	
 	modify_mList(t->childList.size(), t->getM());
-//	printMatStruct();
 }
 
 void RenderVisitor::modify_mList(int count, Hmat m)
@@ -97,3 +89,8 @@ void RenderVisitor::decrease_mList()
 	mList.front().count --;
 }
 
+
+void RenderVisitor::updateState(State* st)
+{
+		
+}

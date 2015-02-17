@@ -183,7 +183,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 void Geometry::draw()
 {
 	if(_state != NULL){
-		_state->mShader.use();
+		_state->getShader().use();
 	}
 	glBindVertexArray(VAO);
 	//glDrawArrays(GL_TRIANGLES, 0, 3*nrVertices);
