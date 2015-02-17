@@ -73,7 +73,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 
 	// Copy over Vertices
 	if(mesh->HasPositions()){
-		std::cerr << "Has " << nrVertices << " Vertices" << std::endl;
+//		std::cerr << "Has " << nrVertices << " Vertices" << std::endl;
 		Vec3 cm = Vec3();
 		float* vertices = new float[3*nrVertices];
 
@@ -115,7 +115,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 	}
 
 	if(mesh->HasTextureCoords(0)){
-		std::cout << "Has Textures" << std::endl;
+		//std::cout << "Has Textures" << std::endl;
 		float* texCoords = new float[nrVertices * 2];
 		for(int i=0; i<nrVertices; i++)
 		{
@@ -134,7 +134,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 	}
 
 	if( mesh->HasNormals() ){
-		std::cout << "Has Normals" << std::endl;
+//		std::cout << "Has Normals" << std::endl;
 		float* normals = new float[3*nrVertices];
 
 		for(int i = 0; i<nrVertices; i++){
@@ -157,7 +157,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 
 	// Copy over Faces and Normals
 	if( mesh->HasFaces()){
-		std::cout << "Has "<<nrFaces<<" Faces" << std::endl;
+		//std::cout << "Has "<<nrFaces<<" Faces" << std::endl;
 		int* faces = new int[3*nrFaces];
 
 		for(int i = 0; i<nrFaces; i++)
