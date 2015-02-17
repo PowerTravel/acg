@@ -41,7 +41,7 @@ class Scene{
 
 		geometry_ptr constructGeometry(state_ptr s, group_ptr parent, const char* fileName);
 		camera_ptr constructCamera(state_ptr s, group_ptr parent, Vec3 eye, Vec3 lookAt, Vec3 up);
-		transform_ptr constructTransform(state_ptr s, group_ptr parenti, float angle, Vec3 orientation, Vec3 trans, Vec3 scale );
+		transform_ptr constructTransform(state_ptr s, group_ptr parenti, float angle, Vec3 axis, Vec3 trans, Vec3 scale );
 };
 
 #endif // SCENE_HPP

@@ -81,7 +81,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 			vertices[3*i+1] = mesh->mVertices[i].y;
 			vertices[3*i+2] = mesh->mVertices[i].z;
 		}
-		printf("\n");
+
 		glGenBuffers(1, &vertexBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, 3*nrVertices*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
@@ -98,7 +98,6 @@ void Geometry::createGeom( const aiMesh* mesh )
 		{
 			texCoords[i*2+0] = mesh->mTextureCoords[0][i].x;
 			texCoords[i*2+1] = mesh->mTextureCoords[0][i].y;
-
 		}
 	
 		glGenBuffers(1, &textureBuffer);
@@ -161,41 +160,9 @@ void Geometry::draw()
 		_state->mShader.use();
 	}
 	glBindVertexArray(VAO);
-//	glDrawArrays(GL_TRIANGLES, 0, nrVertices);
+	//glDrawArrays(GL_TRIANGLES, 0, 3*nrVertices);
 	glDrawElements(GL_TRIANGLES, 3*nrFaces, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-
-
-		float length = 10;
-		glDisable(GL_LIGHTING);
-		glLineWidth(4.0);
-
-		glDisable(GL_DEPTH_TEST);
-		glDepthMask(false);
-
-		glColor3f(1, 0, 0);
-		glBegin(GL_LINES);
-		glVertex3f(0, 0, 0);
-		glVertex3f(length, 0, 0);
-		glEnd();
-
-		glColor3f(0, 1, 0);
-		glBegin(GL_LINES);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, length, 0);
-		glEnd();
-
-		glColor3f(0, 0, 1);
-		glBegin(GL_LINES);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, length);
-		glEnd();
-
-		glEnable(GL_DEPTH_TEST);
-		glDepthMask(true);
-
-
-		glEnable(GL_LIGHTING);
 }
 
 void Geometry::update()

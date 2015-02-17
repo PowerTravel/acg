@@ -6,6 +6,10 @@ TransformMatrix::TransformMatrix()
 {
 	_m = Hmat();
 }
+TransformMatrix::TransformMatrix(Hmat hm)
+{
+	_m = hm;
+}
 
 TransformMatrix::~TransformMatrix()
 {
@@ -26,6 +30,21 @@ void TransformMatrix::rotate(float angle, Vec3 axis)
 	_m = R*_m;
 
 	translate(tfo);
+}
+
+void TransformMatrix::rotate(float angle, Vec3 axis, Vec3 p)
+{
+	// tto = translate TO origin,
+	// tfo = translate (back) FROM origin;
+	Vec3 tto = Vec3( -p[0], -p[1], -p[2] );
+	translate(tto);
+
+	Quaternion q = Quaternion(angle,axis);
+	Hmat R = q.asHmat();
+
+	_m = R*_m;
+
+	translate(p);
 }
 
 void TransformMatrix::scale(Vec3 scale)

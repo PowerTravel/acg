@@ -37,6 +37,7 @@ void Camera::perspective(float fovy, float aspect, float near, float far)
 	_P[3][3] = 0.f;	
 	_P[2][3] = (-2*far*near)/(far-near);
 	_P[3][2] = -1.f;
+	std::cout << _P << std::endl;
 }
 
 void Camera::orthographic(	float left, float right, float bottom,
@@ -76,7 +77,7 @@ Camera::~Camera()
 
 Hmat Camera::getProjectionMat()
 {
-//	std::cout << "T" << std::endl;
+//	std::cout << "P" << std::endl;
 //	std::cout << _P.T() << std::endl;
 	return _P.T();
 }
@@ -187,3 +188,8 @@ void update()
 	screen_height = new_height * scale;
 }
 */
+
+void Camera::rotateAround(float angle, Vec3 axis, Vec3 p)
+{
+	_V.rotate(angle,axis,p);
+}

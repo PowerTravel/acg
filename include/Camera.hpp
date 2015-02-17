@@ -22,6 +22,7 @@ class Camera : public Group
 
 		void lookAt(Vec3 v);
 		void lookAt(Vec3 eye, Vec3 at, Vec3 up);
+		void rotateAround(float angle, Vec3 axis, Vec3 p);
 		Hmat getProjectionMat();
 		Hmat getViewMat();
 

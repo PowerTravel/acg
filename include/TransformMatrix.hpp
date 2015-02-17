@@ -8,12 +8,15 @@ class TransformMatrix{
 
 	public:
 		TransformMatrix();
+		TransformMatrix(Hmat hm);
 		virtual ~TransformMatrix();
 
+		// Rotates around its center
 		void rotate(float angle, Vec3 axis);
+		// Rotates around point p
+		void rotate(float angle, Vec3 axis, Vec3 p);
 		void scale(Vec3 sacle);
 		void translate(Vec3 trans);
-
 		Hmat get();
 		void set(Hmat m);
 

@@ -42,7 +42,7 @@ void Scene::buildScene()
 
 	// construct Nodes` 
 	camera_ptr cam = constructCamera(	statePtr, root, 
-										Vec3(0.f, 0.f,-3.f),
+										Vec3(10.f, 0.f,0.f),
 										Vec3(0.f, 0.f,0.f),
 										Vec3(0.f, 1.f, 0.f));
 	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
@@ -61,6 +61,7 @@ void Scene::buildScene()
 											Vec3(1.f,0.f,0.f),
 											Vec3(1.f,1.f,1.f));
 	geometry_ptr g = constructGeometry(statePtr, p1, "models/box.obj");
+	//geometry_ptr g = constructGeometry(statePtr, p1, "models/5426_C3PO_Robot_Star_Wars.obj");
 	p2->addChild(g); // g is a child to two Transforms
 }
 
@@ -78,17 +79,17 @@ camera_ptr Scene::constructCamera(state_ptr s, group_ptr parent, Vec3 eye, Vec3 
 	c->setState(s);
 	parent->addChild(c);
 	
-	c->lookAt(Vec3(0.f,0.f,-10.f), Vec3(0.f,0.f,0.f), Vec3(0.f,1.f,0.f));
+	c->lookAt(Vec3(3.f,3.f,-3.f), Vec3(0.f,0.f,0.f), Vec3(0.f,1.f,0.f));
 	c->setPerspectiveProjection();
 	
 	return c;
 }
 
-transform_ptr Scene::constructTransform(state_ptr s, group_ptr parent, float angle, Vec3 orientation, Vec3 trans, Vec3 scale )
+transform_ptr Scene::constructTransform(state_ptr s, group_ptr parent, float angle, Vec3 axis, Vec3 trans, Vec3 scale )
 {
 	transform_ptr t= transform_ptr(new Transform());
 	t->setState(s);
-	t->rotate(angle,orientation);
+	t->rotate(angle,axis);
 	t->translate(trans);
 	t->scale(scale);
 
