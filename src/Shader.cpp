@@ -157,7 +157,7 @@ void Shader::createUniform(std::string name)
 #include <iostream>
 void Shader::setUniformMatrix(std::string name, float* data)
 {	
-	glUniformMatrix4fv(ut[name.c_str()], 1, GL_FALSE, data);
+	glUniformMatrix4fv(ut[name.c_str()], 1, GL_TRUE, data);
 }
 void Shader::setUniform1(std::string name, float* data)
 {

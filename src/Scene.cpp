@@ -42,7 +42,7 @@ void Scene::buildScene()
 
 	// construct Nodes` 
 	camera_ptr cam = constructCamera(	statePtr, root, 
-										Vec3(10.f, 0.f,0.f),
+										Vec3(0.f, 0.f,-4.f),
 										Vec3(0.f, 0.f,0.f),
 										Vec3(0.f, 1.f, 0.f));
 	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
@@ -54,15 +54,15 @@ void Scene::buildScene()
 
 	p1->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(p1)));
 
-	
-
 	transform_ptr p2 = constructTransform(	statePtr, cam,
 											0.0, Vec3(0.f,0.f,-1.f),
 											Vec3(1.f,0.f,0.f),
 											Vec3(1.f,1.f,1.f));
-	geometry_ptr g = constructGeometry(statePtr, p1, "models/box.obj");
-	//geometry_ptr g = constructGeometry(statePtr, p1, "models/5426_C3PO_Robot_Star_Wars.obj");
-	p2->addChild(g); // g is a child to two Transforms
+
+	geometry_ptr g1 = constructGeometry(statePtr, p1, "models/box.obj");
+	geometry_ptr g2 = constructGeometry(statePtr, p2, "models/sphere.obj");
+	//geometry_ptr g3 = constructGeometry(statePtr, p1, "models/dragon2.off");
+//	geometry_ptr g = constructGeometry(statePtr, p1, "models/5426_C3PO_Robot_Star_Wars.obj");
 }
 
 geometry_ptr Scene::constructGeometry(state_ptr s, group_ptr parent, const  char* fileName)
@@ -79,7 +79,7 @@ camera_ptr Scene::constructCamera(state_ptr s, group_ptr parent, Vec3 eye, Vec3 
 	c->setState(s);
 	parent->addChild(c);
 	
-	c->lookAt(Vec3(3.f,3.f,-3.f), Vec3(0.f,0.f,0.f), Vec3(0.f,1.f,0.f));
+	c->lookAt(eye, lookAt, up);
 	c->setPerspectiveProjection();
 	
 	return c;

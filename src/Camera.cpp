@@ -37,7 +37,6 @@ void Camera::perspective(float fovy, float aspect, float near, float far)
 	_P[3][3] = 0.f;	
 	_P[2][3] = (-2*far*near)/(far-near);
 	_P[3][2] = -1.f;
-	std::cout << _P << std::endl;
 }
 
 void Camera::orthographic(	float left, float right, float bottom,
@@ -79,6 +78,7 @@ Hmat Camera::getProjectionMat()
 {
 //	std::cout << "P" << std::endl;
 //	std::cout << _P.T() << std::endl;
+//	return Hmat();
 	return _P.T();
 }
 
@@ -86,7 +86,8 @@ Hmat Camera::getViewMat()
 {
 //	std::cout << "V" << std::endl;
 //	std::cout << _V.get().T() << std::endl;
-	return _V.get().T();
+//	return Hmat();
+	return _V.get();
 }
 
 void Camera::acceptVisitor(NodeVisitor& v)
@@ -171,7 +172,7 @@ void Camera::lookAt(Vec3 eye, Vec3 at, Vec3 up)
 					vz[0], vz[1], vz[2], tz,
 					0.0f ,0.0f, 0.0f, 1};
 	Hmat V = Hmat(m);
-	_V.set(V.T());
+	_V.set(V);
 }
 
 /*
@@ -189,7 +190,13 @@ void update()
 }
 */
 
-void Camera::rotateAround(float angle, Vec3 axis, Vec3 p)
+void Camera::translate(Vec3 t)
 {
-	_V.rotate(angle,axis,p);
+	_V.translate(t);
+}
+
+// Does not work.
+void Camera::rotateAroundOrigin(float angle, Vec3 axis)
+{
+	_V.rotate(angle,axis);
 }

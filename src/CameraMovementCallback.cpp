@@ -19,11 +19,6 @@ CameraMovementCallback::~CameraMovementCallback()
 void CameraMovementCallback::execute()
 {
 	getKeyState();
-	
-	if(_update)
-	{
-		updateCamera();
-	}
 }
 
 void CameraMovementCallback::getKeyState()
@@ -31,44 +26,36 @@ void CameraMovementCallback::getKeyState()
 
 	KeyState::State st = KeyState::getInstance().get();
 
-	//_move = Vec3();
-//	_update = false;
 	if( st & key_state_bit::KEY_W) 
 	{
-		//std::cerr << " up ";
-		//_move[1] = _speed;
-		_cam->rotateAround(_speed, Vec3(1,0,0), Vec3(0,0,0));
+		_cam->rotateAroundOrigin(_speed, Vec3(1,0,0));
 	}
 	if( st & key_state_bit::KEY_A)
 	{
-		//std::cerr << " left ";
-		//_move[0] = -_speed;
-		_cam->rotateAround(-_speed, Vec3(0,1,0), Vec3(0,0,0));
+		_cam->rotateAroundOrigin(-_speed, Vec3(0,1,0));
 	}
 	if( st & key_state_bit::KEY_S )
 	{
-		//std::cerr << " down ";	
-		//_move[1] = -_speed;
-		_cam->rotateAround(-_speed, Vec3(1,0,0), Vec3(0,0,0));
+		_cam->rotateAroundOrigin(-_speed, Vec3(1,0,0));
 	}
 	if( st & key_state_bit::KEY_D )
 	{
-//		std::cerr << " right ";	
-		//_move[0] = _speed;
-		_cam->rotateAround(_speed, Vec3(0,1,0), Vec3(0,0,0));
+		_cam->rotateAroundOrigin(_speed, Vec3(0,1,0));
 
 	}
-	if( st & (	key_state_bit::KEY_W |
-				key_state_bit::KEY_A |
-				key_state_bit::KEY_S |	
-				key_state_bit::KEY_D))
+	if( st & key_state_bit::KEY_Z )
 	{
-	//	_update = true;
-	//	std::cerr<< std::endl;
-	}
-}
+		_cam->translate(Vec3(0,0,-_speed));
 
-void CameraMovementCallback::updateCamera()
-{
-	//_cam->rotateAround(_speed, Vec3(0,1,0), Vec3(0,0,0));
+	}
+	if( st & key_state_bit::KEY_X )
+	{
+		_cam->translate(Vec3(0,0, _speed));
+
+	}
+	if( st & key_state_bit::KEY_R)
+	{
+		_cam->lookAt(Vec3(0,0,-3), Vec3(0,0,0), Vec3(0,1,0));
+
+	}
 }

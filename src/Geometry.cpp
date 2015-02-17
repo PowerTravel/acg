@@ -7,6 +7,7 @@ Geometry::Geometry()
 {
 	nrVertices = 0;
 	nrFaces = 0;
+	_cm = Vec3();
 	loaded = false;
 }
 
@@ -52,7 +53,7 @@ bool  Geometry::loadFile(const char* filePath){
 		return false;
 	}
 	
-	const aiMesh* mesh = scene-> mMeshes[0];
+	aiMesh* mesh = scene-> mMeshes[0];
 	if( !mesh )
 	{
 		fprintf(stderr, "failed to load mesh. \n");
@@ -66,22 +67,43 @@ void Geometry::createGeom( const aiMesh* mesh )
 {
 	nrVertices = mesh->mNumVertices;
 	nrFaces = mesh->mNumFaces;	
-	
+
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-
 	// Copy over Vertices
 	if(mesh->HasPositions()){
+		std::cerr << "Has " << nrVertices << " Vertices" << std::endl;
+		Vec3 cm = Vec3();
 		float* vertices = new float[3*nrVertices];
 
+		float maxLen = 0;
 		for(int i = 0; i<nrVertices; i++)
 		{
-			vertices[3*i+0] = mesh->mVertices[i].x;
-			vertices[3*i+1] = mesh->mVertices[i].y;
-			vertices[3*i+2] = mesh->mVertices[i].z;
+			Vec3 v = Vec3(	mesh->mVertices[i].x,
+							mesh->mVertices[i].y,
+							mesh->mVertices[i].z);
+			if(v.norm()>maxLen)
+			{
+				maxLen = v.norm();
+			}
+			cm = cm+v;
+			vertices[3*i+0] = v[0];
+			vertices[3*i+1] = v[1];
+			vertices[3*i+2] = v[2];
+		}
+		maxLen = 1/maxLen;
+		for(int i = 0; i<nrVertices; i++)
+		{
+			vertices[3*i+0] = vertices[3*i+0]*maxLen;
+			vertices[3*i+1] = vertices[3*i+1]*maxLen;
+			vertices[3*i+2] = vertices[3*i+2]*maxLen;
 		}
 
+
+		float c =(float) 1/nrVertices;
+		_cm = cm*c;
+		
 		glGenBuffers(1, &vertexBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, 3*nrVertices*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
@@ -93,13 +115,14 @@ void Geometry::createGeom( const aiMesh* mesh )
 	}
 
 	if(mesh->HasTextureCoords(0)){
+		std::cout << "Has Textures" << std::endl;
 		float* texCoords = new float[nrVertices * 2];
 		for(int i=0; i<nrVertices; i++)
 		{
 			texCoords[i*2+0] = mesh->mTextureCoords[0][i].x;
 			texCoords[i*2+1] = mesh->mTextureCoords[0][i].y;
 		}
-	
+
 		glGenBuffers(1, &textureBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, textureBuffer );
 		glBufferData(GL_ARRAY_BUFFER, 2*nrVertices*sizeof(GLfloat), texCoords, GL_STATIC_DRAW);
@@ -111,12 +134,14 @@ void Geometry::createGeom( const aiMesh* mesh )
 	}
 
 	if( mesh->HasNormals() ){
+		std::cout << "Has Normals" << std::endl;
 		float* normals = new float[3*nrVertices];
 
 		for(int i = 0; i<nrVertices; i++){
 			normals[3*i+0]=mesh->mNormals[i].x;
 			normals[3*i+1]=mesh->mNormals[i].y;
 			normals[3*i+2]=mesh->mNormals[i].z;
+
 		}
 
 		glGenBuffers(1, &normalBuffer);
@@ -132,6 +157,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 
 	// Copy over Faces and Normals
 	if( mesh->HasFaces()){
+		std::cout << "Has "<<nrFaces<<" Faces" << std::endl;
 		int* faces = new int[3*nrFaces];
 
 		for(int i = 0; i<nrFaces; i++)
@@ -174,3 +200,4 @@ void Geometry::acceptVisitor(NodeVisitor& v)
 {
 	v.apply(this);
 }
+

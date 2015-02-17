@@ -16,7 +16,7 @@ Transform::~Transform()
 
 Hmat Transform::getM()
 {
-	return _T.get().T(); 
+	return _T.get(); 
 }
 
 void Transform::setM(Hmat m)

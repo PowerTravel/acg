@@ -50,8 +50,8 @@ void RenderVisitor::apply(Group* grp)
 void RenderVisitor::apply(Camera* cam)
 {
 //	printf("Camera\n");
-	Hmat P = cam->getProjectionMat();
 	Hmat V = cam->getViewMat();
+	Hmat P = cam->getProjectionMat();
 	Hmat PV = P*V;
 	modify_mList(cam->childList.size(), PV);
 }
@@ -76,8 +76,7 @@ void RenderVisitor::modify_mList(int count, Hmat m)
 	
 		if(!mList.empty())
 		{
-			result.m = m*mList.front().m ;
-//			result.m = mList.front().m*m ;
+			result.m = mList.front().m*m ;
 		}
 		mList.push_front(result);
 	}

@@ -1,6 +1,7 @@
 #ifndef GEOMETRY_HPP
 #define GEOMETRY_HPP
 #include "Node.hpp"
+#include "Vec3.hpp"
 #include <assimp/scene.h>
 
 #include <GL/glew.h>
@@ -28,6 +29,8 @@ class Geometry : public Node{
 		void draw();
 	private:
 
+		Vec3 _cm;
+
 		bool loaded;
 
 		int nrVertices;
@@ -41,8 +44,6 @@ class Geometry : public Node{
 		
 		bool loadFile(const char* filePath);
 		void createGeom( const aiMesh* mesh );
-
-
 };
 
 #endif // GEOMETRY_HPP

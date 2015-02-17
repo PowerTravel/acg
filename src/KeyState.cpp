@@ -42,17 +42,9 @@ void KeyState::set(int st)
 void glut_key_callback(unsigned char c, int x, int y)
 {
 	int st = 0;
-	if( c == 'w' || c == 'W' )
-	{
-		st += (int) KeyState::KEY_W;	
-	}
 	if( c == 'a' || c == 'A' )
 	{
 		st  += (int) KeyState::KEY_A;	
-	}
-	if( c == 's' || c == 'S' )
-	{
-		st  += (int) KeyState::KEY_S;	
 	}
 	if( c == 'd' || c == 'D' )
 	{
@@ -61,6 +53,26 @@ void glut_key_callback(unsigned char c, int x, int y)
 	if( c == 'q' || c == 'Q' )
 	{
 		st  += (int) KeyState::KEY_Q;	
+	}
+	if( c == 'r' || c == 'R')
+	{
+		st  += (int) KeyState::KEY_R;
+	}
+	if( c == 's' || c == 'S' )
+	{
+		st  += (int) KeyState::KEY_S;	
+	}
+	if( c == 'w' || c == 'W' )
+	{
+		st += (int) KeyState::KEY_W;	
+	}
+	if( c == 'x' || c == 'X' )
+	{
+		st  += (int) KeyState::KEY_X;	
+	}
+	if( c == 'z' || c == 'Z' )
+	{
+		st  += (int) KeyState::KEY_Z;	
 	}
 	KeyState::getInstance().set( st );
 }

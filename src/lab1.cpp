@@ -66,6 +66,12 @@ int main(int argc, char* argv[])
 
 void updateAndDisplay(int i)
 {	
+	
+	if( KeyState::getInstance().get() & key_state_bit::KEY_Q)
+	{
+		glutLeaveMainLoop();
+	}
+
 	u.traverse(Scene::getInstance().getRoot());
 	display();
 
@@ -77,7 +83,7 @@ void display()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//std::cout<<	"-=NEW DRAW=-  " <<Scene::getInstance().getRoot()->getNrChildren() << std::endl;
+//	std::cout<<	"-=NEW DRAW=-  " <<Scene::getInstance().getRoot()->getNrChildren() << std::endl;
 	
 	r.traverse(Scene::getInstance().getRoot());
 	
@@ -112,13 +118,6 @@ void idleFunk()
 	
 }
 
-void glutKeyDownCallback(unsigned char key, int x, int y)
-{
-	if(key == 'q')
-	{
-		glutLeaveMainLoop();
-	}
-}
 void glutKeyUpCallback(unsigned char key, int x, int y)
 {
 
