@@ -15,6 +15,7 @@ class Camera : public Group
 
 	public:
 		Camera();
+		Camera(Vec3 eye, Vec3 at, Vec3 up);
 		virtual ~Camera();
 
 		void acceptVisitor(NodeVisitor& v);
@@ -38,10 +39,13 @@ class Camera : public Group
 		float _width;
 		float _height;
 		
+		Vec3 _eye, _at, _up;
 		
 		void perspective(float fovy, float aspect, float near, float far);
 		void orthographic( float left, float right, float bottom,
 				    float top,  float near,  float far);
+
+
 };
 
 #endif // CAMERA_HPP

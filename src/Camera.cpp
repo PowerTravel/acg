@@ -8,6 +8,17 @@ Camera::Camera()
 	_P = Hmat();
 }
 
+Camera::Camera(Vec3 eye, Vec3 at, Vec3 up)
+{
+	lookAt(eye,at,up);
+	_P = Hmat();
+}
+
+Camera::~Camera()
+{
+
+}
+
 void Camera::setPerspectiveProjection(float fovy, float aspect, float near, float far)
 {
 	perspective(fovy, aspect, near, far);
@@ -69,11 +80,6 @@ void Camera::orthographic(	float left, float right, float bottom,
 	_P = ortho * mOrth;
 }
 
-Camera::~Camera()
-{
-
-}
-
 Hmat Camera::getProjectionMat()
 {
 //	std::cout << "P" << std::endl;
@@ -105,47 +111,17 @@ void Camera::update()
 void Camera::lookAt(Vec3 at)
 {
 	//Vec3 vx = Vec3(P[0][0], P[0][1], P[0][2]);
-	Vec3 vy = Vec3(_P[1][0], _P[1][1], _P[1][2]);
+	Hmat M = _V.get();
+	Vec3 vy = Vec3(M[1][0], M[1][1], M[1][2]);
+	//std::cout << vy <<std::endl;
 	//Vec3 vz = Vec3(P[2][0], P[2][1], P[2][2]);
-	Vec3 pos = Vec3(_P[0][3], _P[1][3], _P[2][3]);
-
+	Vec3 pos = Vec3(M[0][3], M[1][3], M[2][3]);
+//	std::cout << pos <<std::endl;
 	lookAt(pos, at, vy);
 }
 
 void Camera::lookAt(Vec3 eye, Vec3 at, Vec3 up)
 {
-/*
-	Vec3 camRef = eye - at;
-	camRef.normalize();
-
-	Vec3 camV = up^camRef;
-	camV.normalize();
-
-	Vec3 camUp = camRef^camV;
-	camUp.normalize();
-	
-	// The translation matrix
-	// It is negative since we want to translate the camera from camPos down to the origin.
-//	Vector4::getTransMat(-camPos[0],-camPos[1],-camPos[2],T);
-//	Vector4::mult(M,T,V);
-
-	// This is our inverted=(transposed) RotationMatrix.
-	// Same as with T, we want to rotate the camera (back) to be 
-	// oriented with the world.
-	
-	Hmat M = Hmat();
-	M[0][0] = camV[0];
-	M[0][1] = camV[1];
-	M[0][2] = camV[2];
-	M[1][0] = camUp[0];
-	M[1][1] = camUp[1];
-	M[1][2] = camUp[2];
-	M[2][0] = camRef[0];
-	M[2][1] = camRef[1];
-	M[2][2] = camRef[2];
-	_V.set(M);
-	*/
-
 	Vec3 vz = at-eye;
 	vz.normalize();
 	Vec3 vx = up^vz;
@@ -161,12 +137,6 @@ void Camera::lookAt(Vec3 eye, Vec3 at, Vec3 up)
 	ty = - eye[0]*vy[0] - eye[1]*vy[1] - eye[2]*vy[2]; 
 	tz = - eye[0]*vz[0] - eye[1]*vz[1] - eye[2]*vz[2];
 
-	//std::cout << "eye: " <<eye << std::endl;
-	//std::cout << "vz: "<<vz << std::endl;
-	Vec3 trans = Vec3(tx1,ty2,tz3);
-	//std::cout << "trans: "<<trans<<std::endl;
-	
-
 	float m[] = {	vx[0], vx[1], vx[2], tx, 
 					vy[0], vy[1], vy[2], ty, 
 					vz[0], vz[1], vz[2], tz,
@@ -178,15 +148,7 @@ void Camera::lookAt(Vec3 eye, Vec3 at, Vec3 up)
 /*
 void update()
 {
-	_width;
-	_height;
-    GLint portSize[4];
-  	glGetIntegerv(GL_VIEWPORT, portSize);
-	float new_width = (float) portSize[2]-portSize[0];
-	float scale =screen_width/w2;
-	float new_height = (float) portSize[3]-portSize[1];
-	
-	screen_height = new_height * scale;
+
 }
 */
 
@@ -195,8 +157,8 @@ void Camera::translate(Vec3 t)
 	_V.translate(t);
 }
 
-// Does not work.
+// Does not work correctly. It rotates the objects in the scene but not the camera.
 void Camera::rotateAroundOrigin(float angle, Vec3 axis)
-{
+{	
 	_V.rotate(angle,axis);
 }

@@ -1,30 +1,53 @@
 #version  330 core
 
 layout (location = 0) in vec3 vPosition;
-uniform mat4 M;
-uniform mat4 V;
-uniform mat4 P;
+layout (location = 2) in vec3 vNormals;
+uniform mat4 M, V, P;
+uniform vec4 ambientProduct,diffuseProduct,specularProduct; 
+uniform vec3 lightPosition;
+uniform float attenuation, shininess;
 
 out vec4 color;
 
 void main()
 {
 
-	mat4 PVM = P*V*M;
-//	mat4 PVM = M;
+	mat4 VM = V*M;
+	vec4 vp = vec4(vPosition,1);
+	vec4 vn = vec4(vNormals, 0.0);
 
-	// To  be sent as uniforms later:
-	//vec3 position = vec3(4,4,4);
-	//vec4 ambient = vec4(0.1,0.02,0.1,1);
-	//vec4 diffuse = vec4(0.4,0.3,0.5,1);
-	//vec4 specular = vec4(0.6,0.8,0.3);
+	vec4 lp = vec4(lightPosition,1);
+	vec3 pos = (VM * vp).xyz;
 	
-	//Vec4 vertPos = vec4(vPosition, 1.0f );
-	//vec3 pos = (ModelView * vPosition).xyz;
+	float d = length( (V*lp).xyz - pos);
 
+	vec3 L = normalize( (V*lp).xyz - pos);
+	vec3 E = normalize(-pos);
+	vec3 H = normalize(L+E);
+	vec3 N = normalize(VM*vn).xyz;
+
+	vec4 ambient = ambientProduct;
+
+	float Kd = max(dot(L,N), 0.0);
+	vec4 diffuse = Kd*diffuseProduct;
 	
+	if(dot(L,N) < 0.0)
+	{
+		diffuse = vec4(0.0,0.0,0.0,1.0);
+	}
 
+	float Ks = pow(max( dot(N,H), 0.0 ),shininess);
+	vec4 specular = Ks * specularProduct;
 
-	color = vec4(0.4, 0.8, 0.3, 1);
-	gl_Position = PVM * vec4(vPosition, 1.0f );
+	if( dot(L,N) < 0.0 )
+	{
+		specular = vec4(0.0, 0.0, 0.0, 1.0);
+	}
+
+	float att = 1/( 1+ 0.01*pow(d,2) );
+
+	color = ambient + att*(diffuse + specular);
+	color.a = 1;
+
+	gl_Position = P*VM * vec4(vPosition, 1.0f );
 }

@@ -52,6 +52,10 @@ void Light::setAmbient(Vec4 amb)
 {
 	_ambient = amb;
 }
+Vec4 Light::getAmbient()
+{
+	return _ambient;
+}
 
 Vec4 Light::shineOn(Material m)
 {	

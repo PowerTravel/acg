@@ -240,9 +240,10 @@ void State::apply()
 		}
 		
 		// SMOOTH VS FLAT SHADING NOT IMPLEMENTED
+		glShadeModel(GL_SMOOTH);
 	
 		// Enable or disable backface culling
-		glCullFace(GL_BACK);
+		glCullFace(GL_FRONT);
 		if(_cullFace)
 		{
 			glEnable(GL_CULL_FACE);
@@ -259,16 +260,21 @@ void State::apply()
 
 		// Set ONE light
 		Light l = Light();
-		Vec4 color = _material.illuminate(l);  
-
-//		_shader.createUniform("colorProduct");
-//		_shader.createUniform("lightPosition");
-//		_shader.createUniform("attenuation");
-//		_shader.createUniform("shininess");
+		Vec4 ambProd = _material.getAmbient(&l);  
+		Vec4 diffProd = _material.getDiffuse(&l);  
+		Vec4 specProd = _material.getSpecular(&l);  
 
 		float data4[4];
-		color.get(data4);
-		_shader->setUniform4("colorProduct", data4);
+		
+		specProd.get(data4);
+		_shader->setUniform4("specularProduct", data4);
+		
+		diffProd.get(data4);
+		_shader->setUniform4("diffuseProduct", data4);
+		
+		ambProd.get(data4);
+		_shader->setUniform4("ambientProduct", data4);
+
 		float data3[3];
 		l.getPosition().get(data3);
 		_shader->setUniform3("lightPosition", data3);

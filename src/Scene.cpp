@@ -43,7 +43,9 @@ void Scene::buildScene()
 	statePtr->getShader()->createUniform("M");
 	statePtr->getShader()->createUniform("V");
 	statePtr->getShader()->createUniform("P");
-	statePtr->getShader()->createUniform("colorProduct");
+	statePtr->getShader()->createUniform("ambientProduct");
+	statePtr->getShader()->createUniform("diffuseProduct");
+	statePtr->getShader()->createUniform("specularProduct");
 	statePtr->getShader()->createUniform("lightPosition");
 	statePtr->getShader()->createUniform("attenuation");
 	statePtr->getShader()->createUniform("shininess");
@@ -69,10 +71,10 @@ void Scene::buildScene()
 											Vec3(1.f,0.f,0.f),
 											Vec3(1.f,1.f,1.f));
 
+
 	geometry_ptr g1 = constructGeometry(NULL, p1, "models/box.obj");
 	geometry_ptr g2 = constructGeometry(NULL, p2, "models/sphere.obj");
-	//geometry_ptr g3 = constructGeometry(statePtr, p1, "models/dragon2.off");
-//	geometry_ptr g = constructGeometry(statePtr, p1, "models/5426_C3PO_Robot_Star_Wars.obj");
+	//geometry_ptr g2 = constructGeometry(NULL, p2, "models/5426_C3PO_Robot_Star_Wars.obj");
 }
 
 geometry_ptr Scene::constructGeometry(state_ptr s, group_ptr parent, const  char* fileName)

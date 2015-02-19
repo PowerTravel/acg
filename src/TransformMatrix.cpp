@@ -35,7 +35,7 @@ void TransformMatrix::rotate(float angle, Vec3 axis)
 void TransformMatrix::rotate(float angle, Vec3 axis, Vec3 p)
 {
 	// tto = translate TO origin,
-	// tfo = translate (back) FROM origin;
+	// tfo = translate (back) FROM origin to world coordinates;
 	Vec3 tto = Vec3( -p[0], -p[1], -p[2] );
 	translate(tto);
 
@@ -77,4 +77,10 @@ Hmat TransformMatrix::get()
 void TransformMatrix::set(Hmat m)
 {
 	_m =m;
+}
+		
+		
+Vec3 TransformMatrix::getPosition()
+{
+	return Vec3(_m[0][3],_m[1][3],_m[2][3]);
 }

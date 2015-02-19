@@ -154,12 +154,10 @@ void Shader::createUniform(std::string name)
 	GLuint location = glGetUniformLocation(program, name.c_str() );
 	std::pair< std::string, GLuint > pair(name,location);
 	ut.insert(pair);
-	//std::cout << program << "   VAL:  "<<  location << "  name: "<< name << std::endl;
 }
 void Shader::setUniformMatrix(std::string name, float* data)
 {	
 	glUniformMatrix4fv(ut[name.c_str()], 1, GL_TRUE, data);
-	std::cout << program << "  VAL:  "<< ut[name.c_str()] << "  name: "<< name << std::endl;
 }
 void Shader::setUniform1(std::string name, float* data)
 {

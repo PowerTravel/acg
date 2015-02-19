@@ -29,13 +29,15 @@ class Material{
 		float getShininess();
 		void setSpecular(Vec4 spec);
 		Vec4 getSpecular();
+		Vec4 getSpecular(Light* l);
 		void setDiffuse(Vec4 diff);
 		Vec4 getDiffuse();
+		Vec4 getDiffuse(Light* l);
 		void setAmbient(Vec4 amb);
 		Vec4 getAmbient();
+		Vec4 getAmbient(Light* l);
 
 		void apply(State* st);
-		Vec4 illuminate(Light l);
 	private:
 		float _shininess;
 		Vec4 _specular;

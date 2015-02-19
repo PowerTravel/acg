@@ -25,7 +25,9 @@ void CameraMovementCallback::getKeyState()
 {	
 
 	KeyState::State st = KeyState::getInstance().get();
-
+	Hmat M = _cam->getViewMat();
+	Vec3 pos = Vec3(M[0][3], M[1][3],M[2][3]);
+	//std::cout << M << std::endl << std::endl;
 	if( st & key_state_bit::KEY_W) 
 	{
 		_cam->rotateAroundOrigin(_speed, Vec3(1,0,0));

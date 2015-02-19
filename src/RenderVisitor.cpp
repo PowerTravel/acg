@@ -9,9 +9,6 @@
 
 RenderVisitor::RenderVisitor()
 {
-	//modelMat = Hmat();
-//	_V = Hmat();
-//	_P = Hmat();
 	mList =std::list<Mc>();
 	sList = std::list<Sc>();
 	_isModelviewSet = false;
@@ -24,44 +21,27 @@ RenderVisitor::~RenderVisitor()
 
 void RenderVisitor::apply(Geometry* g)
 {
-	//printf("Geometry\n");
-
 	push_sList(0, g->getState());
-
-	if(sList.front().s == NULL)
-	{
-		std::cout << "DRAW  " <<mList.size() << std::endl;
-		std::cout << "DRAW  " <<sList.size() << std::endl;
-	}
-	//modelMat =mList.front().m;
+	
 	mList.front().m.get(_M);
-	//std::cout <<mList.front().m << std::endl;
-	//loek = mList.front().m;	
-	//std::cout << _V << std::endl<<std::endl;
-	//std::cout << _P << std::endl<<std::endl;
 	state_ptr state = sList.front().s;
 	if( state->isShaderSet() )
 	{
 		state->apply();
 		shader_ptr shader = state->getShader();
-
-//		float m[16], v[16], p[16];
-//		_V.get(v);
-//		_P.get(p);
-	//	_M.get(m);
-//		MM.get(m);
-
-
-	//	std::cout << MM << std::endl;
+		
 		shader->setUniformMatrix(std::string("M"), _M);
-		shader->setUniformMatrix(std::string("V"), _V);
-		shader->setUniformMatrix(std::string("P"), _P);
+		if(_isModelviewSet)
+		{
+			shader->setUniformMatrix(std::string("V"), _V);
+			shader->setUniformMatrix(std::string("P"), _P);
+		}else{
+			std::cerr<<"No CameraMatrix active. Probably not rendering properly."<<std::endl;
+		}
 		g->draw();
 	}else{
 		std::cerr<<"No shader present. Not rendering geometry."<<std::endl;
 	}
-//	std::cout << "SIZE  " <<mList.size() << std::endl;
-//	printMatStruct();
 	
 	decrease_sList();
 	decrease_mList();
