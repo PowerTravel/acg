@@ -47,12 +47,13 @@ class Shader{
 		GLchar* source;
 		GLuint id;
 	};
+
 		GLuint program;	
+		// UniformTable
+		UniTable ut;
 
 		char* readShaderSource(const char* shaderFile);
 	
-		// UniformTable
-		UniTable ut;
 };
 
 #endif // SHADER_HPP

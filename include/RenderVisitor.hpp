@@ -26,14 +26,35 @@ class RenderVisitor : public NodeVisitor{
 			int count;
 
 		};
+		struct Sc{
+			state_ptr s; 
+			int count;
+
+		};
 		typedef std::list<Mc>::iterator listIt;	
 		typedef std::list<Mc>::const_iterator constListIt;	
-		std::list<Mc> mList; // Model List
-	
+		std::list<Mc> mList; // Model List	
+		std::list<Sc> sList; // State List
+
+		float _M[16]; // Model Mat
+		float _V[16];
+		float _P[16];
+		bool _isModelviewSet;
+		// DET ÄR NÅGOT SKUMT MED MODELMAT. Om jag deklarerar
+		// deklarerar Hmat MODELVIEW; här och i apply(geometry)
+		// anropar MODELVIEW = mList.front().m så får jag segfault
+		// Om jag deklarerar en lokal Hmat i apply(geometry) så
+		// får jag segfault när jag stänger av programmet.
+//		Hmat _V; // View Mat
+//		Hmat _P; // Projection Mat
+
 		void decrease_mList();
-		void push_mList(int count, Hmat m);
 		void modify_mList(int count, Hmat m);
-		void updateState(State* st);
+
+		void decrease_sList();
+		void push_sList(int count, state_ptr s);
+		void makeStateCurrent(State* s);
+		state_ptr syncStates(state_ptr lastState ,state_ptr newState);
 };
 
 #endif // RENDER_VISITOR_HPP

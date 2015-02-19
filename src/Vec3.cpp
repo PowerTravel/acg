@@ -218,3 +218,9 @@ Vec3& Vec3::operator*=( float& f )
 }
 
 
+void Vec3::get(float* r)
+{
+	r[0] = v[0];
+	r[1] = v[1];
+	r[2] = v[2];
+}

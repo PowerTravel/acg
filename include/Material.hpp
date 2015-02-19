@@ -3,7 +3,7 @@
 #include <memory>
 #include "Vec4.hpp"
 
-
+class Light;
 class State;
 #ifndef MATERIAL_PTR
 #define MATERIAL_PTR
@@ -14,16 +14,28 @@ typedef std::shared_ptr<Material> material_ptr;
 class Material{
 
 	public:
+		enum MaterialPreset{
+			RUBBER_RED	
+		};
+
 		Material();
+		Material(MaterialPreset);
 		Material(float shininess, Vec4 specular, Vec4 diffuse, Vec4 ambient);
 		virtual ~Material();
 
+		void setMaterial(MaterialPreset);
+
 		void setShininess(float s);
+		float getShininess();
 		void setSpecular(Vec4 spec);
+		Vec4 getSpecular();
 		void setDiffuse(Vec4 diff);
+		Vec4 getDiffuse();
 		void setAmbient(Vec4 amb);
+		Vec4 getAmbient();
 
 		void apply(State* st);
+		Vec4 illuminate(Light l);
 	private:
 		float _shininess;
 		Vec4 _specular;

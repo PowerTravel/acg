@@ -22,38 +22,58 @@ class State{
 		State();
 		virtual ~State();
 
-		enum Status{
-			NO_STATUS,
-			YES,
-			NO
+		enum PolygonMode{
+			POINT,
+			LINE,
+			FILL
 		};
 
 		enum ShadeType{
-			NO_SHADING,
 			FLAT,
 			PHONG,
 			BLINN_PHONG
 		}; 
 
+
+		void setPolygonMode(PolygonMode m);
+		PolygonMode getPolygonMode();
+		bool isPolygonModeSet();
+		void removePolygonMode();
+
+		void setShadeType(ShadeType type);
+		ShadeType getShadeType();
+		bool isShadeTypeSet();
+		void removeShadeType();
+
 		void setCullFace(bool c);
-		Status cullFace();
-
+		bool getCullFace();
+		bool isCullFaceSet();
+		void removeCullFace();
+		
 		void setColorMaterial(bool c);
-		Status colorMaterial(); 
-
-		void setShader(Shader s);
-		Shader getShader();
-		void removeShader();
-		bool hasShader();
+		bool getColorMaterial(); 
+		bool isColorMaterialSet();
+		void removeColorMaterial();
 
 		void setMaterial(Material m);
 		Material getMaterial();
+		bool isMaterialSet();
 		void removeMaterial();
-		bool hasMaterial();
 
-		void pushLight(light_ptr lptr);
+		void setShader(shader_ptr s);
+		shader_ptr getShader();
+		bool isShaderSet();
+		void removeShader();
+
+
+		// Additive elements
+		void pushLight(Light l);
+		void pushLight(Light l, bool status);
 		int getNrLights();
-		light_ptr getLight(int n);
+		Light getLight(int n);
+		void enableLight(int n);
+		void disableLight(int n);
+		bool isLightEnabled(int n);
 		void popLight(int n);
 
 		void pushTexture(GLuint t);
@@ -61,22 +81,39 @@ class State{
 		GLuint getTexture(int n);
 		void popTexture(int n);
 
-		void setShadeType(ShadeType type);
-		ShadeType shadeType();
+
+		// NOT IMPLEMENTED YET
+		void apply();
+
 
 	private:
-		// Aspects that overrides
-		Shader _shader;
-		bool _shaderSet;
-		Material _material;
-		bool _materialSet;
 
-		ShadeType _shadingType;
-		Status _cullFace;	//see GL_CULL_FACE
-		Status _colorMaterial;
+		struct Lights{
+			Light light;
+			bool enabled;
+		};
+
+		// Aspects that overrides
+		PolygonMode _polyMode;
+		bool _isPolyModeSet;
+
+		ShadeType _shadeType;
+		bool _isShadeTypeSet;
+
+		bool _cullFace;
+		bool _isCullFaceSet;
+
+		bool _colorMaterial;
+		bool _isColorMaterialSet;
+
+		Material _material;
+		bool _isMaterialSet;
+
+		shader_ptr _shader;
+		bool _isShaderSet;
 
 		// Aspects that accumulates
-		std::list< light_ptr > _lights;
+		std::list< Lights > _lights;
 		std::list< GLuint > _textures;
 };
 

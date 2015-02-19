@@ -8,7 +8,6 @@ Node::Node()
 
 Node::~Node()
 {
-	_state = NULL;
 	_callback = NULL;
 }
 
@@ -26,12 +25,12 @@ UpdateCallback* Node::getUpdateCallback()
 	return _callback.get();
 }
 
-void Node::setState(std::shared_ptr<State> s)
+void Node::setState(state_ptr s)
 {
 	_state = s;
 }
 
-std::shared_ptr<State> Node::getState()
+state_ptr Node::getState()
 {
 	return _state;
 }

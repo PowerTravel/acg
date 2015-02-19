@@ -55,7 +55,8 @@ class Vec3
 
 		// Compound scalar miultiplication	
 		Vec3& operator*=( float& f );
-		
+	
+		void get(float* r);
 	private:
 		float v[3];
 };

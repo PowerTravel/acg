@@ -1,12 +1,22 @@
 #include "State.hpp"
 State::State()
 {
-	_shaderSet = false;
-	_materialSet= false;
-	_cullFace = NO_STATUS;
-	_colorMaterial = NO_STATUS;
-	_shadingType = NO_SHADING;
-	_lights = std::list< light_ptr >();
+	// If a state is not explicity set they wont
+	// override another state if added.
+	_isPolyModeSet = false;
+	_isShadeTypeSet = false;
+	_isCullFaceSet = false;
+	_isColorMaterialSet = false;
+	_isMaterialSet = false;
+	_isShaderSet = false;
+	//Sets default values
+	_polyMode = FILL;
+	_shadeType = FLAT;
+	_cullFace = true;
+	_colorMaterial = false;
+	_material = Material();
+	_shader = NULL;
+	_lights = std::list< Lights >();
 	_textures = std::list< GLuint >();
 }
 
@@ -16,54 +26,89 @@ State::~State()
 }
 
 
+void State::setPolygonMode(PolygonMode m)
+{
+	_polyMode = m;
+	_isPolyModeSet = true;
+}
+State::PolygonMode State::getPolygonMode()
+{
+	return _polyMode;
+}
+bool State::isPolygonModeSet()
+{
+	return _isPolyModeSet;
+}
+void State::removePolygonMode()
+{
+	_polyMode = FILL;
+	_isPolyModeSet = false;
+}
+
+
+void State::setShadeType(ShadeType s)
+{
+	_shadeType = s;
+	_isShadeTypeSet = true;
+}
+State::ShadeType State::getShadeType()
+{
+	return _shadeType;
+}
+bool State::isShadeTypeSet()
+{
+	return _isShadeTypeSet;
+}
+void State::removeShadeType()
+{
+	_shadeType = FLAT;
+	_isShadeTypeSet = false;
+}
+
+
 void State::setCullFace(bool c)
 {
-	if(c == true){
-		_cullFace = YES;
-	}else{
-		_cullFace = NO;
-	}
+	_cullFace = c;
+	_isCullFaceSet = true;
 }
-State::Status State::cullFace()
+bool State::getCullFace()
 {
 	return _cullFace;
 }
-
-void State::setColorMaterial(bool c)
+bool State::isCullFaceSet()
 {
-	if(c == true){
-		_colorMaterial = YES;
-	}else{
-		_colorMaterial = NO;
-	}
+	return _isCullFaceSet;
 }
-State::Status State::colorMaterial()
+void State::removeCullFace()
+{
+	_cullFace = true;
+	_isCullFaceSet = false;
+}
+
+void State::setColorMaterial(bool s)
+{
+	_colorMaterial = s;
+	_isColorMaterialSet = true;
+}
+bool State::getColorMaterial()
 {
 	return _colorMaterial;
 }
+bool State::isColorMaterialSet()
+{
+	return _isColorMaterialSet;
+}
+void State::removeColorMaterial()
+{
+	_colorMaterial = false;
+	_isColorMaterialSet = false;
+}
 
-void State::setShader(Shader s)
-{
-	_shader = s;
-	_shaderSet = true;
-}
-Shader State::getShader()
-{
-	return _shader;
-}
-void State::removeShader()
-{
-	_shaderSet = false;
-}
-bool State::hasShader()
-{
-	return _shaderSet;
-}
 
 void State::setMaterial(Material m)
 {	
 	_material = m;
-	_materialSet = true;
+	_isMaterialSet = true;
 }
 Material State::getMaterial()
 {
@@ -71,35 +116,82 @@ Material State::getMaterial()
 }
 void State::removeMaterial()
 {
-	_materialSet = false;
+	_material = Material();
+	_isMaterialSet = false;
+}
+bool State::isMaterialSet()
+{
+	return _isMaterialSet;
 }
 
-bool State::hasMaterial()
+
+void State::setShader(shader_ptr s)
 {
-	return _materialSet;
+	_shader = s;
+	_isShaderSet = true;
+}
+shader_ptr State::getShader()
+{
+	return _shader;
+}
+bool State::isShaderSet()
+{
+	return _isShaderSet;
+}
+void State::removeShader()
+{
+	_shader = NULL;
+	_isShaderSet = false;
 }
 
-void State::pushLight(light_ptr lptr)
+
+void State::pushLight(Light l)
 {
-	_lights.push_back(lptr);	
+	Lights ls;
+	ls.light = l;
+	ls.enabled = true;
+	_lights.push_back(ls);	
 }
+void State::pushLight(Light l, bool status)
+{
+	Lights ls;
+	ls.light = l;
+	ls.enabled = status;
+	_lights.push_back(ls);	
+}	
+
 int State::getNrLights()
 {
 	return _lights.size();
 }
-light_ptr State::getLight(int n)
+Light State::getLight(int n)
 {	
-	std::list<light_ptr>::iterator it = _lights.begin();
-	if(n < _lights.size()){
-		std::advance(it,n);
-		return *it;
-	}else{
-		return NULL;
-	}
+	std::list<Lights>::iterator it = _lights.begin();
+	std::advance(it,n);
+	return it->light;
+}
+void State::enableLight(int n)
+{
+	std::list<Lights>::iterator it = _lights.begin();
+	std::advance(it,n);
+	it->enabled = true;
+}
+void State::disableLight(int n)
+{
+	std::list<Lights>::iterator it = _lights.begin();
+	std::advance(it,n);
+	it->enabled = false;
+}
+bool State::isLightEnabled(int n)
+{
+	std::list<Lights>::iterator it = _lights.begin();
+	std::advance(it,n);
+	return it->enabled;
+
 }
 void State::popLight(int n)
 {
-	std::list<light_ptr>::iterator it = _lights.begin();
+	std::list<Lights>::iterator it = _lights.begin();
 	if(n < _lights.size()){
 		std::advance(it,n);
 		_lights.erase(it);
@@ -134,12 +226,57 @@ void State::popTexture(int n)
 	}
 }
 
-void State::setShadeType(ShadeType type)
+void State::apply()
 {
-	_shadingType = type;
+	if( isShaderSet() )
+	{
+		// Set polygon Mode
+		if( _polyMode == POINT ){
+			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+		}else if( _polyMode == LINE){
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}else if(_polyMode == FILL){
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+		
+		// SMOOTH VS FLAT SHADING NOT IMPLEMENTED
+	
+		// Enable or disable backface culling
+		glCullFace(GL_BACK);
+		if(_cullFace)
+		{
+			glEnable(GL_CULL_FACE);
+		}else{
+			glDisable(GL_CULL_FACE);
+		}
+	
+		// tell if we should use Vertex color or a material
+		/// NOT IMPLEMENTED
+		
+	
+		// enable material aka, upload it to the shader
+		
+
+		// Set ONE light
+		Light l = Light();
+		Vec4 color = _material.illuminate(l);  
+
+//		_shader.createUniform("colorProduct");
+//		_shader.createUniform("lightPosition");
+//		_shader.createUniform("attenuation");
+//		_shader.createUniform("shininess");
+
+		float data4[4];
+		color.get(data4);
+		_shader->setUniform4("colorProduct", data4);
+		float data3[3];
+		l.getPosition().get(data3);
+		_shader->setUniform3("lightPosition", data3);
+		float attenuation = l.getAttenuation();
+		_shader->setUniform1("attenuation", &attenuation);
+		float shininess = _material.getShininess();
+		_shader->setUniform1("shininess", &shininess);
+	}
+	
 }
 
-State::ShadeType State::shadeType()
-{
- 	return _shadingType;
-}

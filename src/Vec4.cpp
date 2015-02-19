@@ -206,9 +206,18 @@ Vec4& Vec4::operator*=( float f )
 }
 
 
+Vec3 Vec4::asVec3()
+{
+	return Vec3(v[0],v[1],v[2]);
+}
 
-
-
+void Vec4::get(float* r)
+{
+	r[0] = v[0];
+	r[1] = v[1];
+	r[2] = v[2];
+	r[3] = v[3];
+}
 
 
 

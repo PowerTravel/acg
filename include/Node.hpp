@@ -1,22 +1,11 @@
-#ifndef NODE_HPP
+		#ifndef NODE_HPP
 #define NODE_HPP
 
 #include <memory>
 #include "State.hpp"
 #include "UpdateCallback.hpp"
 
-
 class NodeVisitor;
-
-//#ifndef STATE_PTR
-//#define STATE_PTR
-//typedef std::shared_ptr<State> state_ptr;
-//#endif // STATE_PTR
-
-//#ifndef CALLBACK_PTR
-//#define CALLBACK_PTR
-//typedef std::shared_ptr<UpdateCallback> callback_ptr;
-//#endif // CALLBACK_PTR
 
 #ifndef NODE_PTR
 #define NODE_PTR

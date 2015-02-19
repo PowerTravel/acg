@@ -32,37 +32,45 @@ void Scene::buildScene()
 	char V_SHADER[] = "shaders/vshader.glsl";
 	char F_SHADER[] = "shaders/fshader.glsl";
 
-	light_ptr  l1= light_ptr(new Light(Vec3(3,3,3), Vec4(0.2,0.2,0.2), Vec4(0.4,0.2,0.6), Vec4(0.1,0.5,0,1) ) );
+	light_ptr  l1= light_ptr(new Light(Vec3(3,3,3), Vec4(0.2,0.2,0.2), Vec4(0.4,0.2,0.6), Vec4(0.1,0.5,0,1), 0.2 ) );
 
 	// Load Shader
 	state_ptr statePtr = state_ptr(new State);
-	statePtr->setShader( Shader(V_SHADER, F_SHADER));
-	statePtr->getShader().use();
-	statePtr->getShader().createUniform("MV");
+	//State s = State();
+	statePtr->setShader( shader_ptr(new Shader(V_SHADER, F_SHADER)) );
+
+	statePtr->getShader()->use();
+	statePtr->getShader()->createUniform("M");
+	statePtr->getShader()->createUniform("V");
+	statePtr->getShader()->createUniform("P");
+	statePtr->getShader()->createUniform("colorProduct");
+	statePtr->getShader()->createUniform("lightPosition");
+	statePtr->getShader()->createUniform("attenuation");
+	statePtr->getShader()->createUniform("shininess");
 	root->setState(statePtr);
 
 
 	// construct Nodes` 
-	camera_ptr cam = constructCamera(	statePtr, root, 
+	camera_ptr cam = constructCamera(	NULL , root, 
 										Vec3(0.f, 0.f,-4.f),
 										Vec3(0.f, 0.f,0.f),
 										Vec3(0.f, 1.f, 0.f));
 	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
 
-	transform_ptr p1 = constructTransform(	statePtr, cam,
+	transform_ptr p1 = constructTransform(	NULL, cam,
 											0.0, Vec3(0.f,0.f,-1.f),
 											Vec3(-1.f,0.f,0.f),
 											Vec3(1.f,1.f,1.f));
 
 	p1->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(p1)));
 
-	transform_ptr p2 = constructTransform(	statePtr, cam,
+	transform_ptr p2 = constructTransform(	NULL, cam,
 											0.0, Vec3(0.f,0.f,-1.f),
 											Vec3(1.f,0.f,0.f),
 											Vec3(1.f,1.f,1.f));
 
-	geometry_ptr g1 = constructGeometry(statePtr, p1, "models/box.obj");
-	geometry_ptr g2 = constructGeometry(statePtr, p2, "models/sphere.obj");
+	geometry_ptr g1 = constructGeometry(NULL, p1, "models/box.obj");
+	geometry_ptr g2 = constructGeometry(NULL, p2, "models/sphere.obj");
 	//geometry_ptr g3 = constructGeometry(statePtr, p1, "models/dragon2.off");
 //	geometry_ptr g = constructGeometry(statePtr, p1, "models/5426_C3PO_Robot_Star_Wars.obj");
 }
@@ -70,7 +78,9 @@ void Scene::buildScene()
 geometry_ptr Scene::constructGeometry(state_ptr s, group_ptr parent, const  char* fileName)
 {
 	geometry_ptr g = geometry_ptr(new Geometry(fileName));
-	g->setState(s);
+	if(s != NULL){
+		g->setState(s);
+	}
 	parent->addChild(g);
 	return g;
 }
@@ -78,7 +88,9 @@ geometry_ptr Scene::constructGeometry(state_ptr s, group_ptr parent, const  char
 camera_ptr Scene::constructCamera(state_ptr s, group_ptr parent, Vec3 eye, Vec3 lookAt, Vec3 up)
 {
 	camera_ptr c= camera_ptr(new Camera());
-	c->setState(s);
+	if(s != NULL){
+		c->setState(s);
+	}
 	parent->addChild(c);
 	
 	c->lookAt(eye, lookAt, up);
@@ -90,7 +102,9 @@ camera_ptr Scene::constructCamera(state_ptr s, group_ptr parent, Vec3 eye, Vec3 
 transform_ptr Scene::constructTransform(state_ptr s, group_ptr parent, float angle, Vec3 axis, Vec3 trans, Vec3 scale )
 {
 	transform_ptr t= transform_ptr(new Transform());
-	t->setState(s);
+	if(s != NULL){
+		t->setState(s);
+	}
 	t->rotate(angle,axis);
 	t->translate(trans);
 	t->scale(scale);

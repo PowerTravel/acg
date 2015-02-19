@@ -2,6 +2,7 @@
 #define VEC4_HPP
 #include <iostream>
 
+#include <Vec3.hpp>
 // Homogeneous vector
 class Vec4
 {
@@ -51,7 +52,10 @@ class Vec4
 
 		// Compound scalar miultiplication	
 		Vec4& operator*=( float f );
-		
+
+		Vec3 asVec3();
+		void get(float* r);
+
 	private:
 		float v[4];
 };
