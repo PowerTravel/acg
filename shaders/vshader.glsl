@@ -44,7 +44,8 @@ void main()
 		specular = vec4(0.0, 0.0, 0.0, 1.0);
 	}
 
-	float att = 1/( 1+ 0.01*pow(d,2) );
+//	float att = 1/( 1+ attenuation*pow(d,2) );
+	float att = 1; 
 
 	color = ambient + att*(diffuse + specular);
 	color.a = 1;

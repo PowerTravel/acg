@@ -21,6 +21,7 @@ class CameraMovementCallback : public UpdateCallback
 		Vec3 _p;
 		Vec3 _move;
 		float _speed;
+		float _angularVelocity;
 		bool _update;
 		
 };

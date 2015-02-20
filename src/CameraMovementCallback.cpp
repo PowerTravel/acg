@@ -7,6 +7,7 @@ CameraMovementCallback::CameraMovementCallback(camera_ptr cam)
 	_cam = cam;
 	_p = Vec3();
 	_move = Vec3();
+	_angularVelocity = 0.01;
 	_speed = 0.05;
 	_update = false;
 }
@@ -30,19 +31,19 @@ void CameraMovementCallback::getKeyState()
 	//std::cout << M << std::endl << std::endl;
 	if( st & key_state_bit::KEY_W) 
 	{
-		_cam->rotateAroundOrigin(_speed, Vec3(1,0,0));
+		_cam->rotateAroundOrigin(_angularVelocity, Vec3(1,0,0));
 	}
 	if( st & key_state_bit::KEY_A)
 	{
-		_cam->rotateAroundOrigin(-_speed, Vec3(0,1,0));
+		_cam->rotateAroundOrigin(-_angularVelocity, Vec3(0,1,0));
 	}
 	if( st & key_state_bit::KEY_S )
 	{
-		_cam->rotateAroundOrigin(-_speed, Vec3(1,0,0));
+		_cam->rotateAroundOrigin(-_angularVelocity, Vec3(1,0,0));
 	}
 	if( st & key_state_bit::KEY_D )
 	{
-		_cam->rotateAroundOrigin(_speed, Vec3(0,1,0));
+		_cam->rotateAroundOrigin(_angularVelocity, Vec3(0,1,0));
 
 	}
 	if( st & key_state_bit::KEY_Z )

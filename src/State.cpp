@@ -240,7 +240,7 @@ void State::apply()
 		}
 		
 		// SMOOTH VS FLAT SHADING NOT IMPLEMENTED
-		glShadeModel(GL_SMOOTH);
+		glShadeModel(GL_FLAT);
 	
 		// Enable or disable backface culling
 		glCullFace(GL_FRONT);

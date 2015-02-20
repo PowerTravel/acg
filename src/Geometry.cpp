@@ -11,13 +11,13 @@ Geometry::Geometry()
 	loaded = false;
 }
 
-Geometry::Geometry(const char* filePath)
+Geometry::Geometry(const aiMesh* mesh)
 {
-
 	nrVertices = 0;
 	nrFaces = 0;
-
-	loaded = loadFile(filePath);
+	
+	createGeom(  mesh );
+	loaded = true;	
 }
 
 Geometry::~Geometry()
@@ -40,7 +40,7 @@ Geometry::~Geometry()
 	}
 }
 
-bool  Geometry::loadFile(const char* filePath){
+geometry_vec Geometry::loadFile(const char* filePath){
 
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(filePath,
@@ -50,17 +50,20 @@ bool  Geometry::loadFile(const char* filePath){
 							aiProcess_GenSmoothNormals);
 	if(!scene){
 		fprintf(stderr, "Failed to load model '%s' \n '%s'\n ", filePath, importer.GetErrorString());
-		return false;
+		return geometry_vec();
 	}
-	
-	aiMesh* mesh = scene-> mMeshes[0];
-	if( !mesh )
-	{
-		fprintf(stderr, "failed to load mesh. \n");
-		return false;
+	geometry_vec geomVec = geometry_vec(scene->mNumMeshes);
+	for(int i=0; i<scene->mNumMeshes; i++){
+
+		aiMesh* mesh = scene-> mMeshes[i];
+		if( !mesh )
+		{
+			fprintf(stderr, "failed to load mesh. \n");
+		}else{
+			geomVec[i] =geometry_ptr(new Geometry(mesh) );
+		}
 	}
-	createGeom(mesh);
-	return true;
+	return geomVec;
 }
 
 void Geometry::createGeom( const aiMesh* mesh )
@@ -74,43 +77,20 @@ void Geometry::createGeom( const aiMesh* mesh )
 	// Copy over Vertices
 	if(mesh->HasPositions()){
 //		std::cerr << "Has " << nrVertices << " Vertices" << std::endl;
-		Vec3 cm = Vec3();
 		float* vertices = new float[3*nrVertices];
 
-		float maxLen = 0;
 		for(int i = 0; i<nrVertices; i++)
 		{
 			Vec3 v = Vec3(	mesh->mVertices[i].x,
 							mesh->mVertices[i].y,
 							mesh->mVertices[i].z);
-			if(v.norm()>maxLen)
-			{
-				maxLen = v.norm();
-			}
-			cm = cm+v;
 			vertices[3*i+0] = v[0];
 			vertices[3*i+1] = v[1];
 			vertices[3*i+2] = v[2];
 		}
-		maxLen = 1/maxLen;
-		for(int i = 0; i<nrVertices; i++)
-		{
-			vertices[3*i+0] = vertices[3*i+0]*maxLen;
-			vertices[3*i+1] = vertices[3*i+1]*maxLen;
-			vertices[3*i+2] = vertices[3*i+2]*maxLen;
-		}
 
+		loadVertices(nrVertices, vertices);
 
-		float c =(float) 1/nrVertices;
-		_cm = cm*c;
-		
-		glGenBuffers(1, &vertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, 3*nrVertices*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
-		glEnableVertexAttribArray(0);
-	
 		delete vertices;
 	}
 
@@ -123,12 +103,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 			texCoords[i*2+1] = mesh->mTextureCoords[0][i].y;
 		}
 
-		glGenBuffers(1, &textureBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, textureBuffer );
-		glBufferData(GL_ARRAY_BUFFER, 2*nrVertices*sizeof(GLfloat), texCoords, GL_STATIC_DRAW);
-	
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
-		glEnableVertexAttribArray(1);
+		loadTextureCoordinates(nrVertices, texCoords);
 
 		delete texCoords;
 	}
@@ -143,13 +118,8 @@ void Geometry::createGeom( const aiMesh* mesh )
 			normals[3*i+2]=mesh->mNormals[i].z;
 
 		}
-
-		glGenBuffers(1, &normalBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-		glBufferData(GL_ARRAY_BUFFER,3*nrVertices*sizeof(GLfloat), normals, GL_STATIC_DRAW);
-
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
-		glEnableVertexAttribArray(2);
+		
+		loadNormals(nrVertices, normals);
 		
 		delete normals;
 	}
@@ -166,20 +136,53 @@ void Geometry::createGeom( const aiMesh* mesh )
 			faces[3*i+1] = mesh->mFaces[i].mIndices[1];
 			faces[3*i+2] = mesh->mFaces[i].mIndices[2];
 		}
-
-		glGenBuffers(1, &faceBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3*nrFaces*sizeof(float), faces, GL_STATIC_DRAW);
-
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
-		glEnableVertexAttribArray(3);
 		
+		loadFaces(nrFaces, faces);
+
 		delete faces;
 	}	
 	
 	glBindVertexArray(0);
 }
 
+void Geometry::loadVertices(int nrVertices, float* vertices)
+{
+		glGenBuffers(1, &vertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, 3*nrVertices*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(VERTEX, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
+		glEnableVertexAttribArray(VERTEX);
+}
+void Geometry::loadTextureCoordinates(int nrTexCoords, float* coords)
+{
+		glGenBuffers(1, &textureBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, textureBuffer );
+		glBufferData(GL_ARRAY_BUFFER, 2*nrTexCoords*sizeof(GLfloat), coords, GL_STATIC_DRAW);
+	
+		glVertexAttribPointer(TEXTURECOORDINATE, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
+		glEnableVertexAttribArray(TEXTURECOORDINATE);
+
+
+}
+void Geometry::loadNormals(int nrNormals, float* normals)
+{
+		glGenBuffers(1, &normalBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+		glBufferData(GL_ARRAY_BUFFER, 3*nrNormals*sizeof(GLfloat), normals, GL_STATIC_DRAW);
+
+		glVertexAttribPointer(NORMAL, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
+		glEnableVertexAttribArray(NORMAL);
+
+}
+void Geometry::loadFaces(int nrFaces, int* faces)
+{
+	glGenBuffers(1, &faceBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3*nrFaces*sizeof(int), faces, GL_STATIC_DRAW);
+	glVertexAttribPointer(FACE, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
+	glEnableVertexAttribArray(FACE);
+}
 void Geometry::draw()
 {
 	//if(_state != NULL){
