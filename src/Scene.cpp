@@ -53,8 +53,8 @@ void Scene::buildScene()
 
 
 	state_ptr state2 = state_ptr(new State);
-	//state2->setPolygonMode(State::POINT);
-	//state2->setCullFace(false);
+	state2->setPolygonMode(State::LINE);
+	state2->setCullFace(false);
 
 	// construct Nodes` 
 	camera_ptr cam = constructCamera(	NULL , root, 
@@ -78,7 +78,7 @@ void Scene::buildScene()
 
 	geometry_vec g1 = constructGeometry(NULL, p1, "models/box.obj");
 	geometry_vec g2 = constructGeometry(state2, p2, "models/sphere.obj");
-	geometry_vec g3 = constructGeometry(NULL, p2, "models/5426_C3PO_Robot_Star_Wars.obj");
+	//geometry_vec g3 = constructGeometry(NULL, p2, "models/5426_C3PO_Robot_Star_Wars.obj");
 	//geometry_vec g4 = constructGeometry(state2, p2, "models/Paris/paris.obj");
 }
 
