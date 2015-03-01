@@ -52,6 +52,7 @@ geometry_vec Geometry::loadFile(const char* filePath){
 		fprintf(stderr, "Failed to load model '%s' \n '%s'\n ", filePath, importer.GetErrorString());
 		return geometry_vec();
 	}
+	//geom_mat_vec geomMatVec = geom_mat_vec(scene->mNumMeshes);
 	geometry_vec geomVec = geometry_vec(scene->mNumMeshes);
 	for(int i=0; i<scene->mNumMeshes; i++){
 
@@ -60,9 +61,10 @@ geometry_vec Geometry::loadFile(const char* filePath){
 		{
 			fprintf(stderr, "failed to load mesh. \n");
 		}else{
-			geomVec[i] =geometry_ptr(new Geometry(mesh) );
+			geomVec[i] = geometry_ptr(new Geometry(mesh));
 		}
 	}
+
 	return geomVec;
 }
 
@@ -117,6 +119,7 @@ void Geometry::createGeom( const aiMesh* mesh )
 			normals[3*i+1]=mesh->mNormals[i].y;
 			normals[3*i+2]=mesh->mNormals[i].z;
 
+			//printf("%d %d %d\n" normals[3*i+0],normals[3*i+1],normals[3*i+2]);
 		}
 		
 		loadNormals(nrVertices, normals);
@@ -135,13 +138,19 @@ void Geometry::createGeom( const aiMesh* mesh )
 			faces[3*i+0] = mesh->mFaces[i].mIndices[0];
 			faces[3*i+1] = mesh->mFaces[i].mIndices[1];
 			faces[3*i+2] = mesh->mFaces[i].mIndices[2];
+
 		}
 		
 		loadFaces(nrFaces, faces);
 
 		delete faces;
-	}	
-	
+	}
+/*
+	if( mesh->HasMaterials())
+	{
+		std::cout << "We have material \n"<< std::endl;
+	}
+*/
 	glBindVertexArray(0);
 }
 

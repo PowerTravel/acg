@@ -260,6 +260,7 @@ void State::apply()
 
 		// Set ONE light
 		Light l = Light();
+		l.setPosition(Vec3(50,50,50));
 		Vec4 ambProd = _material.getAmbient(&l);  
 		Vec4 diffProd = _material.getDiffuse(&l);  
 		Vec4 specProd = _material.getSpecular(&l);  

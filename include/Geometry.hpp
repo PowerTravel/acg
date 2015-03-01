@@ -20,6 +20,7 @@ typedef std::shared_ptr<Geometry> geometry_ptr;
 class Geometry;
 typedef std::vector< std::shared_ptr<Geometry> > geometry_vec;
 #endif //GEOMETRY_VEC
+
 class Geometry : public Node{
 
 	public:

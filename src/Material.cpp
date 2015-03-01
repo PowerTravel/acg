@@ -6,6 +6,12 @@ Material::Material()
 	setMaterial(RUBBER_RED);
 }
 
+Material::Material(const aiMesh* mesh)
+{
+	
+}
+
+
 Material::Material(MaterialPreset m)
 {
 	setMaterial(m);

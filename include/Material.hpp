@@ -3,6 +3,8 @@
 #include <memory>
 #include "Vec4.hpp"
 
+#include <assimp/scene.h>
+
 class Light;
 class State;
 #ifndef MATERIAL_PTR
@@ -20,6 +22,7 @@ class Material{
 
 		Material();
 		Material(MaterialPreset);
+		Material(const aiMesh* mesh);
 		Material(float shininess, Vec4 specular, Vec4 diffuse, Vec4 ambient);
 		virtual ~Material();
 

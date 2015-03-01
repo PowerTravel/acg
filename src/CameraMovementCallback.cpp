@@ -8,7 +8,7 @@ CameraMovementCallback::CameraMovementCallback(camera_ptr cam)
 	_p = Vec3();
 	_move = Vec3();
 	_angularVelocity = 0.01;
-	_speed = 0.05;
+	_speed = 0.5;
 	_update = false;
 }
 

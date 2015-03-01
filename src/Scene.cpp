@@ -53,33 +53,40 @@ void Scene::buildScene()
 
 
 	state_ptr state2 = state_ptr(new State);
-	state2->setPolygonMode(State::LINE);
+	state2->setPolygonMode(State::FILL);
 	state2->setCullFace(false);
+	
 
 	// construct Nodes` 
 	camera_ptr cam = constructCamera(	NULL , root, 
-										Vec3(0.f, 0.f,-4.f),
+										Vec3(10.f, 10.f,-4.f),
 										Vec3(0.f, 0.f,0.f),
 										Vec3(0.f, 1.f, 0.f));
 	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
 
-	transform_ptr p1 = constructTransform(	NULL, cam,
+	transform_ptr box = constructTransform(	NULL, cam,
 											0.0, Vec3(0.f,0.f,-1.f),
-											Vec3(-1.f,0.f,0.f),
+											Vec3(-1.f,1.f,0.f),
 											Vec3(1.f,1.f,1.f));
 
-	p1->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(p1)));
+	box->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(box)));
 
-	transform_ptr p2 = constructTransform(	NULL, cam,
+	transform_ptr sphere = constructTransform(	NULL, cam,
 											3.14, Vec3(1.f,0.f,0.f),
-											Vec3(1.f,0.f,0.f),
+											Vec3(1.f,1.f,0.f),
 											Vec3(1.f,1.f,1.f));
 
+	transform_ptr ground = constructTransform(	NULL, cam, 0.0, 
+												Vec3(0.0,1.0,0.0),
+												Vec3(0.0,-0.5,0.0),
+												Vec3(100,1,100));
 
-	geometry_vec g1 = constructGeometry(NULL, p1, "models/box.obj");
-	geometry_vec g2 = constructGeometry(state2, p2, "models/sphere.obj");
+
+	geometry_vec g1 = constructGeometry(NULL, box, "models/box.obj");
+	geometry_vec g2 = constructGeometry(state2, sphere, "models/sphere.obj");
+	//geometry_vec g3 = constructGeometry(NULL, ground, "models/box.obj");
 	//geometry_vec g3 = constructGeometry(NULL, p2, "models/5426_C3PO_Robot_Star_Wars.obj");
-	//geometry_vec g4 = constructGeometry(state2, p2, "models/Paris/paris.obj");
+	//geometry_vec g4 = constructGeometry(NULL, cam, "../vrlib/models/Paris/paris.obj");
 }
 
 geometry_vec Scene::constructGeometry(state_ptr s, group_ptr parent, const  char* fileName)
@@ -96,9 +103,7 @@ geometry_vec Scene::constructGeometry(state_ptr s, group_ptr parent, const  char
 camera_ptr Scene::constructCamera(state_ptr s, group_ptr parent, Vec3 eye, Vec3 lookAt, Vec3 up)
 {
 	camera_ptr c= camera_ptr(new Camera());
-	if(s != NULL){
-		c->setState(s);
-	}
+	c->setState(s);
 	parent->addChild(c);
 	
 	c->lookAt(eye, lookAt, up);
