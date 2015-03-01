@@ -57,7 +57,10 @@ int main(int argc, char* argv[])
 	setUpGlew();
 
 	Scene::getInstance().buildScene();
+	
+	
 	KeyState::getInstance().setGlutCallback();
+	
 
 	glutMainProgram();	
 

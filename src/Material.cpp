@@ -1,3 +1,4 @@
+#include <cstdio>
 #include "Material.hpp"
 #include "State.hpp"
 #include "Light.hpp"
@@ -6,12 +7,10 @@ Material::Material()
 	setMaterial(RUBBER_RED);
 }
 
-Material::Material(const aiMesh* mesh)
+Material::Material(const aiMaterial* mat)
 {
-	
+	setMaterial(mat);
 }
-
-
 Material::Material(MaterialPreset m)
 {
 	setMaterial(m);
@@ -38,6 +37,26 @@ Material::Material(float shininess, Vec4 specular, Vec4 diffuse, Vec4 ambient)
 Material::~Material()
 {
 
+}
+
+void Material::setMaterial(const aiMaterial* mat)
+{
+	aiColor4D spec(0.f,0.f,0.f,0.f);
+	aiColor4D diff(0.f,0.f,0.f,0.f);
+	aiColor4D amb(0.f,0.f,0.f,0.f);
+	if(	AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_SPECULAR, spec) 	&&
+		AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_AMBIENT, amb) 	&&
+		AI_SUCCESS == mat->Get(AI_MATKEY_COLOR_DIFFUSE, diff)   &&
+		AI_SUCCESS == mat->Get(AI_MATKEY_SHININESS, _shininess) ){
+	
+		_specular = Vec4(spec.r, spec.g, spec.b, spec.a);
+		_ambient= Vec4(amb.r, amb.g, amb.b, amb.a);
+		_diffuse = Vec4(diff.r, diff.g, diff.b, diff.a);
+	
+	}else{	
+		fprintf(stderr, "Failed to load a material\n");
+		setMaterial(RUBBER_RED);
+	}
 }
 
 void Material::setShininess(float s)

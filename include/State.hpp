@@ -82,10 +82,11 @@ class State{
 		void popTexture(int n);
 
 
-		// NOT IMPLEMENTED YET
+		// NOT FULLY IMPLEMENTED YET. Cant handle materials or multiple lights
 		void apply();
 
-
+		void merge(State* s); 
+	
 	private:
 
 		struct Lights{

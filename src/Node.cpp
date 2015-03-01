@@ -2,12 +2,13 @@
 #include "NodeVisitor.hpp"
 Node::Node()
 {
-	_state = NULL;
+	_state = std::shared_ptr< State >(new State());
 	_type = NODE;
 }
 
 Node::~Node()
 {
+	_state = NULL;
 	_callback = NULL;
 }
 
@@ -25,14 +26,16 @@ UpdateCallback* Node::getUpdateCallback()
 	return _callback.get();
 }
 
-void Node::setState(state_ptr s)
+void Node::setState(State* s)
 {
-	_state = s;
+	if(s != NULL){
+		_state->merge(s);
+	}
 }
 
-state_ptr Node::getState()
+State* Node::getState()
 {
-	return _state;
+	return _state.get();
 }
 
 Node::Type Node::getType()

@@ -62,6 +62,13 @@ geometry_vec Geometry::loadFile(const char* filePath){
 			fprintf(stderr, "failed to load mesh. \n");
 		}else{
 			geomVec[i] = geometry_ptr(new Geometry(mesh));
+
+			if(mesh->mMaterialIndex != 0){
+				aiMaterial* mat =scene->mMaterials[mesh->mMaterialIndex];
+				State materialState = State();
+				materialState.setMaterial(Material(mat));
+				geomVec[i] -> setState( &materialState );
+			}
 		}
 	}
 

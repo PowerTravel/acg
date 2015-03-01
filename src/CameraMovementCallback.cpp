@@ -8,7 +8,7 @@ CameraMovementCallback::CameraMovementCallback(camera_ptr cam)
 	_p = Vec3();
 	_move = Vec3();
 	_angularVelocity = 0.01;
-	_speed = 0.5;
+	_speed = 0.1;
 	_update = false;
 }
 
@@ -58,7 +58,7 @@ void CameraMovementCallback::getKeyState()
 	}
 	if( st & key_state_bit::KEY_R)
 	{
-		_cam->lookAt(Vec3(0,0,-3), Vec3(0,0,0), Vec3(0,1,0));
+		_cam->lookAt(Vec3(0,0,4), Vec3(0,0,0), Vec3(0,1,0));
 
 	}
 }

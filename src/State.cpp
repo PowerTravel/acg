@@ -25,6 +25,49 @@ State::~State()
 
 }
 
+void State::merge(State* s)
+{
+	if(s->isPolygonModeSet())
+	{
+		setPolygonMode( s->getPolygonMode() );
+	}
+	if( s->isShadeTypeSet() )
+	{
+		setShadeType( s->getShadeType() );
+	}
+	if( s->isCullFaceSet() )
+	{
+		setCullFace( s->getCullFace() );
+	}
+	if( s->isColorMaterialSet() )
+	{
+		setColorMaterial(s->getColorMaterial());
+	}
+	if( s->isMaterialSet() )
+	{
+		setMaterial( s->getMaterial() );
+	}
+	if(s->isShaderSet())
+	{
+		setShader(s->getShader());
+	}
+
+	int n = s->getNrLights();
+	int i = 0;
+	while(i<n)
+	{
+		pushLight(s->getLight(i), s->isLightEnabled(i) );
+		i++;
+	}
+
+	n = s->getNrTextures();
+	i = 0;
+	while(i<n)
+	{
+		pushTexture(s->getTexture(i));
+		i++;
+	}
+}
 
 void State::setPolygonMode(PolygonMode m)
 {
@@ -260,7 +303,7 @@ void State::apply()
 
 		// Set ONE light
 		Light l = Light();
-		l.setPosition(Vec3(50,50,50));
+		l.setPosition(Vec3(4,4,4));
 		Vec4 ambProd = _material.getAmbient(&l);  
 		Vec4 diffProd = _material.getDiffuse(&l);  
 		Vec4 specProd = _material.getSpecular(&l);  

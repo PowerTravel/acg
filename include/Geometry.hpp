@@ -49,6 +49,7 @@ class Geometry : public Node{
 		void loadFaces(int nrFaces, int* faces); 
 		void loadNormals(int nrNormals, float* normals);
 		//static bool loadFile(const char* filePath);
+
 	private:
 
 		Vec3 _cm;
@@ -65,7 +66,6 @@ class Geometry : public Node{
 		GLuint faceBuffer;
 		
 		void createGeom( const aiMesh* mesh );
-		//bool loadFile(const char* filePath);
 };
 
 #endif // GEOMETRY_HPP

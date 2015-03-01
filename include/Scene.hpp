@@ -3,6 +3,13 @@
 
 #include "Group.hpp"
 #include <vector>
+
+#ifndef STATE_PTR
+#define STATE_PTR
+class State;
+typedef std::shared_ptr<State> state_ptr;
+#endif // STATE_PTR
+
 #ifndef GEOMETRY_VEC
 #define GEOMETRY_VEC
 class Geometry;
@@ -39,9 +46,12 @@ class Scene{
 		Scene(Scene const&) = delete;
 		void operator=(Scene const&) = delete;
 
-		geometry_vec constructGeometry(state_ptr s, group_ptr parent, const char* fileName);
-		camera_ptr constructCamera(state_ptr s, group_ptr parent, Vec3 eye, Vec3 lookAt, Vec3 up);
-		transform_ptr constructTransform(state_ptr s, group_ptr parenti, float angle, Vec3 axis, Vec3 trans, Vec3 scale );
+		// Creates the state that carries the shader and initiates the shader variables
+		state_ptr setUpShaderState();
+
+		geometry_vec constructGeometry(State* s, group_ptr parent, const char* fileName);
+		camera_ptr constructCamera(State* s, group_ptr parent, Vec3 eye, Vec3 lookAt, Vec3 up);
+		transform_ptr constructTransform(State* s, group_ptr parenti, float angle, Vec3 axis, Vec3 trans, Vec3 scale );
 };
 
 #endif // SCENE_HPP

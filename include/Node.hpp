@@ -30,8 +30,8 @@ class Node{
 		UpdateCallback* getUpdateCallback();
 
 		Type getType();
-		void setState(state_ptr s);
-		state_ptr getState();	
+		void setState(State* s);
+		State* getState();	
 
 
 	protected:

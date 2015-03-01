@@ -52,9 +52,9 @@ class RenderVisitor : public NodeVisitor{
 		void modify_mList(int count, Hmat m);
 
 		void decrease_sList();
-		void push_sList(int count, state_ptr s);
+		void push_sList(int count, State* s);
 		void makeStateCurrent(State* s);
-		state_ptr syncStates(state_ptr lastState ,state_ptr newState);
+		state_ptr syncStates(State* lastState, State* newState);
 };
 
 #endif // RENDER_VISITOR_HPP

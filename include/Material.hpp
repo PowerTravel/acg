@@ -22,11 +22,12 @@ class Material{
 
 		Material();
 		Material(MaterialPreset);
-		Material(const aiMesh* mesh);
+		Material(const aiMaterial* mat);
 		Material(float shininess, Vec4 specular, Vec4 diffuse, Vec4 ambient);
 		virtual ~Material();
 
 		void setMaterial(MaterialPreset);
+		void setMaterial(const aiMaterial* mat);
 
 		void setShininess(float s);
 		float getShininess();
@@ -47,7 +48,8 @@ class Material{
 		Vec4 _diffuse;
 		Vec4 _ambient;
 
-		static Vec4 totLight;
+	//	static Vec4 totLight;
+	
 };
 
 #endif// MATERIAL_HPP

@@ -135,7 +135,7 @@ void RenderVisitor::decrease_sList()
 }
 
 // Use for groups
-void RenderVisitor::push_sList(int count, state_ptr s)
+void RenderVisitor::push_sList(int count, State* s)
 {
 	// If the node is a leaf
 	Sc result;
@@ -147,22 +147,24 @@ void RenderVisitor::push_sList(int count, state_ptr s)
 		{
 			// Make sure to make a NEW copy when syncing
 			// we dont want to modify existing states.
-			result.s = syncStates(oldState, s);
+			result.s = syncStates(oldState.get(), s);
 		}else if(s == NULL && oldState != NULL ){
 			result.s = oldState;
 		}
-		else if(s != NULL && oldState != NULL ){
-			result.s = s;
+		else if(s != NULL && oldState == NULL ){
+			result.s = state_ptr(new State());
+			result.s->merge(s);
 		}else{
 			result.s = NULL;
 		}
 	}else{
-		result.s = s;
+		result.s = state_ptr(new State());
+		result.s->merge(s);
 	}
 	sList.push_front(result);
 }
 
-state_ptr RenderVisitor::syncStates(state_ptr lastState ,state_ptr newState)
+state_ptr RenderVisitor::syncStates(State* lastState ,State* newState)
 {
 	state_ptr result = state_ptr(new State());
 
