@@ -33,11 +33,14 @@ class Shader{
 		void createUniform(std::string name);
 		
 		void setUniformMatrix(std::string name, float* data);
-		void setUniform1(std::string name, float* data);
+		void setUniform1(std::string name, float data);
 		void setUniform2(std::string name, float* data);
 		void setUniform3(std::string name, float* data);
 		void setUniform4(std::string name, float* data);
 
+		void setUniform1i(std::string name, unsigned int unit);
+
+		GLuint getUniform(std::string name);
 
 	private:
 

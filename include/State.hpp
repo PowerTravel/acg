@@ -7,7 +7,7 @@
 #include "Shader.hpp"
 #include "Material.hpp"
 #include "Light.hpp"
-
+#include "Texture.hpp"
 
 #ifndef STATE_PTR
 #define STATE_PTR
@@ -76,9 +76,9 @@ class State{
 		bool isLightEnabled(int n);
 		void popLight(int n);
 
-		void pushTexture(GLuint t);
+		void pushTexture(Texture t);
 		int getNrTextures();
-		GLuint getTexture(int n);
+		Texture getTexture(int n);
 		void popTexture(int n);
 
 
@@ -115,7 +115,7 @@ class State{
 
 		// Aspects that accumulates
 		std::list< Lights > _lights;
-		std::list< GLuint > _textures;
+		std::list< Texture > _textures;
 };
 
 #endif // STATE_HPP

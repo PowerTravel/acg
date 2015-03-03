@@ -47,7 +47,7 @@ class Scene{
 		void operator=(Scene const&) = delete;
 
 		// Creates the state that carries the shader and initiates the shader variables
-		state_ptr setUpShaderState();
+		void setUpShaderState(State* s);
 
 		geometry_vec constructGeometry(State* s, group_ptr parent, const char* fileName);
 		camera_ptr constructCamera(State* s, group_ptr parent, Vec3 eye, Vec3 lookAt, Vec3 up);

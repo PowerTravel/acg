@@ -1,5 +1,8 @@
 #OBJS specifies which files to compile as part of the project 
-OBJ_FILES = lab1.o Shader.o Node.o Geometry.o Transform.o State.o Group.o  NodeVisitor.o RenderVisitor.o UpdateVisitor.o Quaternion.o Vec3.o Vec4.o Hmat.o TransformMatrix.o Camera.o Scene.o UpdateCallback.o TransformSpinCallback.o CameraMovementCallback.o KeyState.o Light.o Material.o
+LOCAL_OBJ_FILES = lab1.o Shader.o Node.o Geometry.o Transform.o State.o Group.o  NodeVisitor.o RenderVisitor.o UpdateVisitor.o Quaternion.o Vec3.o Vec4.o Hmat.o TransformMatrix.o Camera.o Scene.o UpdateCallback.o TransformSpinCallback.o CameraMovementCallback.o KeyState.o Light.o Material.o Texture.o 
+
+REMOTE_OBJ_FILES = Image.o JPGReader.o PNGReader.o FileSystem.o 
+OBJ_FILES = $(LOCAL_OBJ_FILES) $(REMOTE_OBJ_FILES)
 
 #TARGET specifies the name of our exectuable 
 TARGET = lab1.out
@@ -20,7 +23,7 @@ CC = g++ -g
 COMPILER_FLAGS = -std=c++11
 
 #LINKER_FLAGS specifies the libraries we're linking against 
-LINKER_FLAGS = -lGL -lGLU -lGLEW -lglut -lassimp
+LINKER_FLAGS = -lGL -lGLU -lGLEW -lglut -lassimp -ljpeg -lpng
 
 
 DEPS := $(OBJS:.o=.d)

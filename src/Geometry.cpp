@@ -1,5 +1,6 @@
 #include "Geometry.hpp"
 #include "RenderVisitor.hpp"
+#include "Texture.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
@@ -52,7 +53,6 @@ geometry_vec Geometry::loadFile(const char* filePath){
 		fprintf(stderr, "Failed to load model '%s' \n '%s'\n ", filePath, importer.GetErrorString());
 		return geometry_vec();
 	}
-	//geom_mat_vec geomMatVec = geom_mat_vec(scene->mNumMeshes);
 	geometry_vec geomVec = geometry_vec(scene->mNumMeshes);
 	for(int i=0; i<scene->mNumMeshes; i++){
 
@@ -67,6 +67,19 @@ geometry_vec Geometry::loadFile(const char* filePath){
 				aiMaterial* mat =scene->mMaterials[mesh->mMaterialIndex];
 				State materialState = State();
 				materialState.setMaterial(Material(mat));
+					
+				for(int j=0; j<mat->GetTextureCount(aiTextureType_DIFFUSE); j++)
+				{
+					aiString path;
+					if(mat->GetTexture(aiTextureType_DIFFUSE, j, &path) == AI_SUCCESS){
+						// The image is assumed to be in the same directory as the .obj
+						std::string fullPath = filePath;
+						std::string fileName = path.C_Str();
+						fullPath = fullPath.replace(fullPath.rfind("/")+1, std::string::npos, path.C_Str() );
+						materialState.pushTexture(Texture(GL_TEXTURE_2D, fullPath));
+					}
+				}
+
 				geomVec[i] -> setState( &materialState );
 			}
 		}
@@ -152,43 +165,36 @@ void Geometry::createGeom( const aiMesh* mesh )
 
 		delete faces;
 	}
-/*
-	if( mesh->HasMaterials())
-	{
-		std::cout << "We have material \n"<< std::endl;
-	}
-*/
+	
 	glBindVertexArray(0);
 }
 
 void Geometry::loadVertices(int nrVertices, float* vertices)
 {
-		glGenBuffers(1, &vertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, 3*nrVertices*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, 3*nrVertices*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
 
-		glVertexAttribPointer(VERTEX, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
-		glEnableVertexAttribArray(VERTEX);
+	glVertexAttribPointer(VERTEX, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
+	glEnableVertexAttribArray(VERTEX);
 }
 void Geometry::loadTextureCoordinates(int nrTexCoords, float* coords)
 {
-		glGenBuffers(1, &textureBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, textureBuffer );
-		glBufferData(GL_ARRAY_BUFFER, 2*nrTexCoords*sizeof(GLfloat), coords, GL_STATIC_DRAW);
+	glGenBuffers(1, &textureBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer );
+	glBufferData(GL_ARRAY_BUFFER, 2*nrTexCoords*sizeof(GLfloat), coords, GL_STATIC_DRAW);
 	
-		glVertexAttribPointer(TEXTURECOORDINATE, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
-		glEnableVertexAttribArray(TEXTURECOORDINATE);
-
-
+	glVertexAttribPointer(TEXTURECOORDINATE, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
+	glEnableVertexAttribArray(TEXTURECOORDINATE);
 }
 void Geometry::loadNormals(int nrNormals, float* normals)
 {
-		glGenBuffers(1, &normalBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-		glBufferData(GL_ARRAY_BUFFER, 3*nrNormals*sizeof(GLfloat), normals, GL_STATIC_DRAW);
+	glGenBuffers(1, &normalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, 3*nrNormals*sizeof(GLfloat), normals, GL_STATIC_DRAW);
 
-		glVertexAttribPointer(NORMAL, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
-		glEnableVertexAttribArray(NORMAL);
+	glVertexAttribPointer(NORMAL, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
+	glEnableVertexAttribArray(NORMAL);
 
 }
 void Geometry::loadFaces(int nrFaces, int* faces)
@@ -201,11 +207,7 @@ void Geometry::loadFaces(int nrFaces, int* faces)
 }
 void Geometry::draw()
 {
-	//if(_state != NULL){
-	//	_state->getShader().use();
-	//}
 	glBindVertexArray(VAO);
-	//glDrawArrays(GL_TRIANGLES, 0, 3*nrVertices);
 	glDrawElements(GL_TRIANGLES, 3*nrFaces, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }

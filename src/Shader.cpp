@@ -159,9 +159,9 @@ void Shader::setUniformMatrix(std::string name, float* data)
 {	
 	glUniformMatrix4fv(ut[name.c_str()], 1, GL_TRUE, data);
 }
-void Shader::setUniform1(std::string name, float* data)
+void Shader::setUniform1(std::string name, float data)
 {
-	glUniform1fv(ut[name.c_str()], 1, data);
+	glUniform1fv(ut[name.c_str()], 1, &data);
 }
 void Shader::setUniform2(std::string name, float* data)
 {
@@ -174,4 +174,14 @@ void Shader::setUniform3(std::string name, float* data)
 void Shader::setUniform4(std::string name, float* data)
 {
 	glUniform4fv(ut[name.c_str()], 1, data);
+}
+void Shader::setUniform1i(std::string name, unsigned int unit)
+{
+	glUniform1i(ut[name.c_str()], unit);
+}
+
+
+GLuint Shader::getUniform(std::string name)
+{
+	return ut[name.c_str()];
 }

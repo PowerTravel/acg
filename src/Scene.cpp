@@ -32,13 +32,11 @@ void Scene::buildScene()
 	char V_SHADER[] = "shaders/vshader.glsl";
 	char F_SHADER[] = "shaders/fshader.glsl";
 
-	light_ptr  l1= light_ptr(new Light(Vec3(0,0,0), Vec4(0.2,0.2,0.2), Vec4(0.4,0.2,0.6), Vec4(0.1,0.5,0,1), 0.2 ) );
-
 	// Load Shader
-
-	state_ptr shaderStatePtr = setUpShaderState();
-	root->setState( shaderStatePtr.get() );
-	
+	State s;
+	setUpShaderState( &s );
+	root->setState( &s );	
+	root->getState()->pushLight(Light(Vec3(4,4,4), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0.2 ));
 
 	camera_ptr cam = constructCamera(	NULL , root, 
 										Vec3(0.f, 0.f,4.f),
@@ -67,34 +65,34 @@ void Scene::buildScene()
 	lineState.setPolygonMode(State::LINE);
 	lineState.setCullFace(false);
 	
-
 	geometry_vec g1 = constructGeometry(NULL, orbit, "models/box.obj");
 	geometry_vec g2 = constructGeometry(&lineState, sphere, "models/sphere.obj");
 	geometry_vec g3 = constructGeometry(NULL, still, "models/Capsule/capsule.obj");
-//	geometry_vec g3 = constructGeometry(NULL, still, "models/5426_C3PO_Robot_Star_Wars.obj");
+	g3[0]->getState()->setMaterial(Material(Material::RUBBER_RED));
+	//geometry_vec g5 = constructGeometry(NULL, still, "../vrlib/models/Paris/paris.obj");
+//	geometry_vec g4 = constructGeometry(NULL, still, "models/5426_C3PO_Robot_Star_Wars.obj");
 }
 
-state_ptr Scene::setUpShaderState()
+void Scene::setUpShaderState(State* s)
 {
 	char V_SHADER[] = "shaders/vshader.glsl";
 	char F_SHADER[] = "shaders/fshader.glsl";
 
-	state_ptr statePtr = state_ptr(new State);
-	
-	statePtr->setShader( shader_ptr(new Shader(V_SHADER, F_SHADER)) );
+	s->setShader( shader_ptr(new Shader(V_SHADER, F_SHADER)) );
 
-	statePtr->getShader()->use();
-	statePtr->getShader()->createUniform("M");
-	statePtr->getShader()->createUniform("V");
-	statePtr->getShader()->createUniform("P");
-	statePtr->getShader()->createUniform("ambientProduct");
-	statePtr->getShader()->createUniform("diffuseProduct");
-	statePtr->getShader()->createUniform("specularProduct");
-	statePtr->getShader()->createUniform("lightPosition");
-	statePtr->getShader()->createUniform("attenuation");
-	statePtr->getShader()->createUniform("shininess");
-
-	return statePtr;
+	s->getShader()->use();
+	s->getShader()->createUniform("vPos");
+	s->getShader()->createUniform("M");
+	s->getShader()->createUniform("V");
+	s->getShader()->createUniform("P");
+	s->getShader()->createUniform("ambientProduct");
+	s->getShader()->createUniform("diffuseProduct");
+	s->getShader()->createUniform("specularProduct");
+	s->getShader()->createUniform("lightPosition");
+	s->getShader()->createUniform("attenuation");
+	s->getShader()->createUniform("shininess");
+	s->getShader()->createUniform("gSampler");
+	s->getShader()->createUniform("usingTexture");
 }
 
 geometry_vec Scene::constructGeometry(State* s, group_ptr parent, const  char* fileName)

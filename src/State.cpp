@@ -17,7 +17,7 @@ State::State()
 	_material = Material();
 	_shader = NULL;
 	_lights = std::list< Lights >();
-	_textures = std::list< GLuint >();
+	_textures = std::list< Texture >();
 }
 
 State::~State()
@@ -241,7 +241,7 @@ void State::popLight(int n)
 	}
 }
 
-void State::pushTexture(GLuint t)
+void State::pushTexture(Texture t)
 {
 	_textures.push_back(t);
 }
@@ -249,20 +249,21 @@ int State::getNrTextures()
 {
 	return _textures.size();
 }
-GLuint State::getTexture(int n)
+Texture State::getTexture(int n)
 {
-	std::list<GLuint>::iterator it = _textures.begin();
+	std::list<Texture>::iterator it = _textures.begin();
 	if(n < _textures.size()){
 		std::advance(it,n);
 		return *it;
 	}else{
-		return 0;
+		std::cerr<<"Index out of bounds when accesing a texture in state." << std::endl;
+		return Texture();
 	}
 	
 }
 void State::popTexture(int n)
 {
-	std::list<GLuint>::iterator it = _textures.begin();
+	std::list<Texture>::iterator it = _textures.begin();
 	if(n < _textures.size()){
 		std::advance(it,n);
 		_textures.erase(it);
@@ -296,37 +297,50 @@ void State::apply()
 	
 		// tell if we should use Vertex color or a material
 		/// NOT IMPLEMENTED
-		
-	
-		// enable material aka, upload it to the shader
-		
 
-		// Set ONE light
-		Light l = Light();
-		l.setPosition(Vec3(4,4,4));
-		Vec4 ambProd = _material.getAmbient(&l);  
-		Vec4 diffProd = _material.getDiffuse(&l);  
-		Vec4 specProd = _material.getSpecular(&l);  
+		// Handle light	
+		float lpos[3] = {0,0,0};
+		float diff[4] = {0,0,0,0};
+		float spec[4] = {0,0,0,0};
+		float amb[4] = {0,0,0,0};
+		float att = 0;
+		float shin = 0;
+		if(_lights.size()>0)
+		{
+			//std::cout << _lights.size() << std::endl;
+			Light l = _lights.front().light;
+			Vec4 ambProd = _material.getAmbient(&l);  
+			Vec4 diffProd = _material.getDiffuse(&l);
+			Vec4 specProd = _material.getSpecular(&l);  
 
-		float data4[4];
 		
-		specProd.get(data4);
-		_shader->setUniform4("specularProduct", data4);
+			specProd.get(spec);
 		
-		diffProd.get(data4);
-		_shader->setUniform4("diffuseProduct", data4);
+			diffProd.get(diff);
 		
-		ambProd.get(data4);
-		_shader->setUniform4("ambientProduct", data4);
+			ambProd.get(amb);
 
-		float data3[3];
-		l.getPosition().get(data3);
-		_shader->setUniform3("lightPosition", data3);
-		float attenuation = l.getAttenuation();
-		_shader->setUniform1("attenuation", &attenuation);
-		float shininess = _material.getShininess();
-		_shader->setUniform1("shininess", &shininess);
+			l.getPosition().get(lpos);
+			att = l.getAttenuation();
+			shin = _material.getShininess();
+		}
+		_shader->setUniform4("specularProduct", spec);
+		_shader->setUniform4("diffuseProduct", diff);
+		_shader->setUniform4("ambientProduct", amb);
+		_shader->setUniform3("lightPosition", lpos);
+		_shader->setUniform1("attenuation", att);
+		_shader->setUniform1("shininess", shin);
 	}
 	
+	// Apply Texture
+	if( !_textures.empty() ){
+		_shader->setUniform1("usingTexture", 1.f);
+		for(std::list<Texture>::iterator it = _textures.begin(); it != _textures.end(); it++){
+			it->bind(GL_TEXTURE0);
+			_shader->setUniform1i("gSampler", 0);
+		}
+	}else{
+		Texture::clear();
+		_shader->setUniform1("usingTexture", 0.f);
+	}
 }
-
