@@ -12,23 +12,21 @@ Texture::Texture(GLenum textureTarget, std::string& filename)
 {
 	_textureTarget = textureTarget;
 	vr::Image* img = NULL;
+	_loaded = false;
 	if(filename.find(".jpg")!=std::string::npos)
 	{
 		vr::JPGReader reader = vr::JPGReader();
 		img = reader.readImage( filename );
-		_loaded = true;
 
 	}else if( filename.find(".png")!=std::string::npos){
 
 		vr::PNGReader reader = vr::PNGReader();
 		img = reader.readImage( filename );	
-		_loaded = true;
 	}else{
-		_loaded = false;
 		std::cerr << filename << " is not a supported filetype"<< std::endl; 
 	}
-	
-	if(_loaded = true){
+
+	if(img != NULL ){
 
 		glGenTextures(1, &_id);
 		glBindTexture(_textureTarget, _id);	
@@ -48,6 +46,8 @@ Texture::Texture(GLenum textureTarget, std::string& filename)
   		gluBuild2DMipmaps( GL_TEXTURE_2D, 3, image->width(), image->height(), GL_RGB, GL_UNSIGNED_BYTE, image->data());
 		*/
   		glBindTexture(GL_TEXTURE_2D, 0);
+
+		_loaded = true;
 	}
 }
 Texture::~Texture()
@@ -66,4 +66,9 @@ void Texture::bind(GLenum textureUnit)
 		glActiveTexture(textureUnit);
 		glBindTexture(_textureTarget, _id);
 	}
+}
+
+bool Texture::loaded()
+{
+	return _loaded;
 }

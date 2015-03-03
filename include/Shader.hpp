@@ -31,6 +31,7 @@ class Shader{
 		
 		// UniformLoaders
 		void createUniform(std::string name);
+		void createAttribute(std::string name);
 		
 		void setUniformMatrix(std::string name, float* data);
 		void setUniform1(std::string name, float data);

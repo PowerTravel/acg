@@ -36,7 +36,7 @@ void Scene::buildScene()
 	State s;
 	setUpShaderState( &s );
 	root->setState( &s );	
-	root->getState()->pushLight(Light(Vec3(4,4,4), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0.2 ));
+	root->getState()->pushLight(Light(Vec3(0,2,4), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0.2 ));
 
 	camera_ptr cam = constructCamera(	NULL , root, 
 										Vec3(0.f, 0.f,4.f),
@@ -50,26 +50,34 @@ void Scene::buildScene()
 											Vec3(1.f,1.f,1.f));
 	sphere->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(sphere)));
 
-	transform_ptr orbit = constructTransform(	NULL, sphere,
-											0.0, Vec3(0.f,0.f,-1.f),
+	transform_ptr box = constructTransform(	NULL, sphere,
+											3.1415/2, Vec3(0.f,0.f,1.f),
 											Vec3(2.f,0.f,0.f),
 											Vec3(1.f,1.f,1.f));
-	orbit->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(orbit, 0.05, Vec3(0,-1,0) )));
+	box->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(box, 0.05, Vec3(0,-1,0) )));
 
-	transform_ptr still = constructTransform(	NULL, cam,
-											3.1415/2, Vec3(1.f,0.f,0.f),
+	transform_ptr capsule1 = constructTransform(	NULL, cam,
+											0, Vec3(0.f,1.f,0.f),
+											Vec3(0.f,0.f,0.f),
+											Vec3(1.f,1.f,1.f));
+	capsule1->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(capsule1, 0.01, Vec3(0,0,1) )));
+
+	transform_ptr capsule2 = constructTransform(	NULL, capsule1,
+											3.1415/2, Vec3(0.f,1.f,0.f),
 											Vec3(0.f,2.f,0.f),
 											Vec3(1.f,1.f,1.f));
+	capsule2->rotate(3.1415/2, Vec3(0.f,0.f,1.f));
 
 	State lineState = State();
 	lineState.setPolygonMode(State::LINE);
 	lineState.setCullFace(false);
 	
-	geometry_vec g1 = constructGeometry(NULL, orbit, "models/box.obj");
+	geometry_vec g1 = constructGeometry(NULL, box, "models/box.obj");
+	g1[0]->getState()->setMaterial(Material(Material::RUBBER_RED));
 	geometry_vec g2 = constructGeometry(&lineState, sphere, "models/sphere.obj");
-	geometry_vec g3 = constructGeometry(NULL, still, "models/Capsule/capsule.obj");
+	geometry_vec g3 = constructGeometry(NULL, capsule2, "models/Capsule/capsule.obj");
 	g3[0]->getState()->setMaterial(Material(Material::RUBBER_RED));
-	//geometry_vec g5 = constructGeometry(NULL, still, "../vrlib/models/Paris/paris.obj");
+//	geometry_vec g5 = constructGeometry(NULL, still, "../vrlib/models/Paris/paris.obj");
 //	geometry_vec g4 = constructGeometry(NULL, still, "models/5426_C3PO_Robot_Star_Wars.obj");
 }
 
@@ -81,7 +89,9 @@ void Scene::setUpShaderState(State* s)
 	s->setShader( shader_ptr(new Shader(V_SHADER, F_SHADER)) );
 
 	s->getShader()->use();
-	s->getShader()->createUniform("vPos");
+	//s->getShader()->createAttribute("vertex");
+	//s->getShader()->createAttribute("normal");
+	//s->getShader()->createAttribute("texCoord");
 	s->getShader()->createUniform("M");
 	s->getShader()->createUniform("V");
 	s->getShader()->createUniform("P");

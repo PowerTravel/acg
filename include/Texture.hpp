@@ -14,6 +14,7 @@ class Texture{
 
 		static void clear(GLenum target = GL_TEXTURE_2D);
 		void bind(GLenum textureUnit);
+		bool loaded();
 
 	private:
 		GLuint _id;

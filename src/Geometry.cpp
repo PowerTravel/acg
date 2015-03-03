@@ -17,7 +17,7 @@ Geometry::Geometry(const aiMesh* mesh)
 	nrVertices = 0;
 	nrFaces = 0;
 	
-	createGeom(  mesh );
+	createGeom(mesh);
 	loaded = true;	
 }
 
@@ -76,7 +76,12 @@ geometry_vec Geometry::loadFile(const char* filePath){
 						std::string fullPath = filePath;
 						std::string fileName = path.C_Str();
 						fullPath = fullPath.replace(fullPath.rfind("/")+1, std::string::npos, path.C_Str() );
-						materialState.pushTexture(Texture(GL_TEXTURE_2D, fullPath));
+						
+						Texture t = Texture(GL_TEXTURE_2D, fullPath);
+						if(t.loaded())
+						{
+							materialState.pushTexture(t);
+						}
 					}
 				}
 
@@ -84,7 +89,6 @@ geometry_vec Geometry::loadFile(const char* filePath){
 			}
 		}
 	}
-
 	return geomVec;
 }
 
@@ -169,6 +173,47 @@ void Geometry::createGeom( const aiMesh* mesh )
 	glBindVertexArray(0);
 }
 
+
+void Geometry::loadVertices(int nrVertices, float* vertices)
+{
+	glGenBuffers(1, &vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, 3*nrVertices*sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(VERTEX, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
+	glEnableVertexAttribArray(VERTEX);
+}
+void Geometry::loadTextureCoordinates(int nrTexCoords, float* coords)
+{
+	glGenBuffers(1, &textureBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer );
+	glBufferData(GL_ARRAY_BUFFER, 2*nrTexCoords*sizeof(GLfloat), coords, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(TEXTURECOORDINATE, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)NULL);
+	glEnableVertexAttribArray(TEXTURECOORDINATE);
+}
+void Geometry::loadNormals(int nrNormals, float* normals)
+{
+	glGenBuffers(1, &normalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, 3*nrNormals*sizeof(GLfloat), normals, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(NORMAL, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
+	glEnableVertexAttribArray(NORMAL);
+
+}
+void Geometry::loadFaces(int nrFaces, int* faces)
+{
+	glGenBuffers(1, &faceBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3*nrFaces*sizeof(int), faces, GL_STATIC_DRAW);
+	glVertexAttribPointer(FACE, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
+	glEnableVertexAttribArray(FACE);
+}
+
+
+
+/*
 void Geometry::loadVertices(int nrVertices, float* vertices)
 {
 	glGenBuffers(1, &vertexBuffer);
@@ -205,6 +250,8 @@ void Geometry::loadFaces(int nrFaces, int* faces)
 	glVertexAttribPointer(FACE, 3, GL_FLOAT, GL_FALSE, 0,(GLvoid*) NULL);
 	glEnableVertexAttribArray(FACE);
 }
+
+*/
 void Geometry::draw()
 {
 	glBindVertexArray(VAO);

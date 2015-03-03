@@ -294,7 +294,7 @@ void State::apply()
 		}else{
 			glDisable(GL_CULL_FACE);
 		}
-	
+		
 		// tell if we should use Vertex color or a material
 		/// NOT IMPLEMENTED
 

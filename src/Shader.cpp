@@ -149,6 +149,13 @@ void Shader::use()
 
 
 #include <iostream>
+void Shader::createAttribute(std::string name)
+{
+	GLuint location = glGetAttribLocation(program, name.c_str());
+	std::pair< std::string, GLuint > pair(name,location);
+	ut.insert(pair);
+
+}
 void Shader::createUniform(std::string name)
 {
 	GLuint location = glGetUniformLocation(program, name.c_str() );
