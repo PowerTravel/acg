@@ -20,12 +20,12 @@ void UpdateVisitor::apply(Group* grp)
 
 void UpdateVisitor::apply(Transform* t)
 {
-	//printf("Visiting Transform from UpdateVisitor\n");
+//	printf("Visiting Transform from UpdateVisitor\n");
 	t->update();
 }
 
 void UpdateVisitor::apply(Camera* cam)
 {
 	cam->update();
-	//printf("Visiting Camera from UpdateVisitor\n");
+//	printf("Visiting Camera from UpdateVisitor\n");
 }

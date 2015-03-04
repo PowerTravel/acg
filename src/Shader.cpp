@@ -162,29 +162,41 @@ void Shader::createUniform(std::string name)
 	std::pair< std::string, GLuint > pair(name,location);
 	ut.insert(pair);
 }
-void Shader::setUniformMatrix(std::string name, float* data)
+void Shader::setUniformMatrix(std::string name, int count,  float* data)
 {	
-	glUniformMatrix4fv(ut[name.c_str()], 1, GL_TRUE, data);
+	glUniformMatrix4fv(ut[name.c_str()], count, GL_TRUE, data);
 }
-void Shader::setUniform1(std::string name, float data)
+void Shader::setUniform1f(std::string name, int count, float* data)
 {
-	glUniform1fv(ut[name.c_str()], 1, &data);
+	glUniform1fv(ut[name.c_str()], count, data);
 }
-void Shader::setUniform2(std::string name, float* data)
+void Shader::setUniform2f(std::string name, int count, float* data)
 {
-	glUniform2fv(ut[name.c_str()], 1, data);
+	glUniform2fv(ut[name.c_str()], count, data);
 }
-void Shader::setUniform3(std::string name, float* data)
+void Shader::setUniform3f(std::string name,int count, float* data)
 {
-	glUniform3fv(ut[name.c_str()], 1, data);
+	glUniform3fv(ut[name.c_str()], count, data);
 }
-void Shader::setUniform4(std::string name, float* data)
+void Shader::setUniform4f(std::string name,int count, float* data)
 {
-	glUniform4fv(ut[name.c_str()], 1, data);
+	glUniform4fv(ut[name.c_str()], count, data);
 }
-void Shader::setUniform1i(std::string name, unsigned int unit)
+void Shader::setUniform1i(std::string name,int count, int* data)
 {
-	glUniform1i(ut[name.c_str()], unit);
+	glUniform1iv(ut[name.c_str()], count, data);
+}
+void Shader::setUniform2i(std::string name,int count, int* data)
+{
+	glUniform2iv(ut[name.c_str()], count,data);
+}
+void Shader::setUniform3i(std::string name,int count, int* data)
+{
+	glUniform3iv(ut[name.c_str()], count,data);
+}
+void Shader::setUniform4i(std::string name,int count, int* data)
+{
+	glUniform4iv(ut[name.c_str()], count,data);
 }
 
 

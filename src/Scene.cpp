@@ -36,7 +36,8 @@ void Scene::buildScene()
 	State s;
 	setUpShaderState( &s );
 	root->setState( &s );	
-	root->getState()->pushLight(Light(Vec3(0,2,4), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0.2 ));
+	//root->getState()->pushLight(Light(Vec3(0,100,0), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0.2 ));
+	root->getState()->pushLight(Light(Vec3(100,0,0), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0.2 ));
 
 	camera_ptr cam = constructCamera(	NULL , root, 
 										Vec3(0.f, 0.f,4.f),
@@ -103,6 +104,7 @@ void Scene::setUpShaderState(State* s)
 	s->getShader()->createUniform("shininess");
 	s->getShader()->createUniform("gSampler");
 	s->getShader()->createUniform("usingTexture");
+	s->getShader()->createUniform("nrLights");
 }
 
 geometry_vec Scene::constructGeometry(State* s, group_ptr parent, const  char* fileName)

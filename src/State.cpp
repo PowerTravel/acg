@@ -298,49 +298,110 @@ void State::apply()
 		// tell if we should use Vertex color or a material
 		/// NOT IMPLEMENTED
 
-		// Handle light	
-		float lpos[3] = {0,0,0};
-		float diff[4] = {0,0,0,0};
-		float spec[4] = {0,0,0,0};
-		float amb[4] = {0,0,0,0};
-		float att = 0;
-		float shin = 0;
-		if(_lights.size()>0)
+		// Handle light
+
+		int nrLights = _lights.size();
+		float* lpos = new float[nrLights*3];
+		float* diff = new float[nrLights*4];
+		float* spec = new float[nrLights*4];
+		float* amb = new float[nrLights*4];
+		float* att = new float[nrLights];
+		int* enabled = new int[nrLights];
+		
+		
+		int i = 0;
+		std::cout << _lights.size() << std::endl;
+	
+
+		for(std::list<Lights>::iterator it = _lights.begin(); it!=_lights.end(); it++)
 		{
-			//std::cout << _lights.size() << std::endl;
-			Light l = _lights.front().light;
-			Vec4 ambProd = _material.getAmbient(&l);  
+ 			Lights ls = *it;
+			Light l = ls.light;
+			std::cout << l.getPosition()<< std::endl;
+			Vec4 ambProd = _material.getAmbient(&l);
 			Vec4 diffProd = _material.getDiffuse(&l);
 			Vec4 specProd = _material.getSpecular(&l);  
-
-		
-			specProd.get(spec);
-		
-			diffProd.get(diff);
-		
-			ambProd.get(amb);
-
-			l.getPosition().get(lpos);
-			att = l.getAttenuation();
-			shin = _material.getShininess();
+			std::cout << specProd << std::endl;
+			std::cout << ambProd << std::endl;
+			std::cout << diffProd << std::endl;
 		}
-		_shader->setUniform4("specularProduct", spec);
-		_shader->setUniform4("diffuseProduct", diff);
-		_shader->setUniform4("ambientProduct", amb);
-		_shader->setUniform3("lightPosition", lpos);
-		_shader->setUniform1("attenuation", att);
-		_shader->setUniform1("shininess", shin);
-	}
+
+		for(std::list<Lights>::iterator it = _lights.begin(); it!=_lights.end(); it++)
+		{
+ 			Lights ls = *it;
+
+			if(ls.enabled)
+			{
+				float tmp4[4] ={0};
+				float tmp3[3] ={0};
+				//std::cout << _lights.size() << std::endl;
+				Light l = ls.light;
+				Vec4 ambProd = _material.getAmbient(&l);
+				Vec4 diffProd = _material.getDiffuse(&l);
+				Vec4 specProd = _material.getSpecular(&l);  
+
+				specProd.get(tmp4);
+				spec[4*i+0] = tmp4[0];
+				spec[4*i+1] = tmp4[1];
+				spec[4*i+2] = tmp4[2];
+				spec[4*i+3] = tmp4[3];
+			
+				diffProd.get(tmp4);
+				diff[4*i+0] = tmp4[0];
+				diff[4*i+1] = tmp4[1];
+				diff[4*i+2] = tmp4[2];
+				diff[4*i+3] = tmp4[3];
 	
+				ambProd.get(tmp4);
+				amb[4*i+0] = tmp4[0];
+				amb[4*i+1] = tmp4[1];
+				amb[4*i+2] = tmp4[2];
+				amb[4*i+3] = tmp4[3];
+
+				l.getPosition().get(tmp3);
+				lpos[3*i+0] = tmp3[0];
+				lpos[3*i+1] = tmp3[1];
+				lpos[3*i+2] = tmp3[2];
+		//		std::cout << lpos[0] << " " << lpos[1] << " " << lpos[2] << std::endl;
+				
+				att[i] = l.getAttenuation();
+
+				enabled[i] = 1; 
+			}else{
+				enabled[i] = 0;
+			}
+			i++;
+		}
+		float shin = _material.getShininess();
+		std::cout << shin <<std::endl;
+
+		_shader->setUniform4f("specularProduct",nrLights, spec);
+		_shader->setUniform4f("diffuseProduct",nrLights, diff);
+		_shader->setUniform4f("ambientProduct",nrLights, amb);
+		_shader->setUniform3f("lightPosition",nrLights, lpos);
+		_shader->setUniform1f("snininess", nrLights, &shin);
+		_shader->setUniform1i("nrLights", 1, &nrLights);
+		_shader->setUniform1f("attenuation", nrLights, att);
+ 	
+		delete[] lpos; 
+		delete[] diff;
+		delete[] spec;
+		delete[] amb;
+		delete[] att;
+		delete[] enabled;
+	}
 	// Apply Texture
 	if( !_textures.empty() ){
-		_shader->setUniform1("usingTexture", 1.f);
+		int use = 1;
+		_shader->setUniform1i("usingTexture",1, &use);
 		for(std::list<Texture>::iterator it = _textures.begin(); it != _textures.end(); it++){
 			it->bind(GL_TEXTURE0);
-			_shader->setUniform1i("gSampler", 0);
+			int tex = 0;
+			_shader->setUniform1i("gSampler",1, &tex);
 		}
 	}else{
 		Texture::clear();
-		_shader->setUniform1("usingTexture", 0.f);
+		int use = 0;
+		_shader->setUniform1i("usingTexture",1, &use);
 	}
 }

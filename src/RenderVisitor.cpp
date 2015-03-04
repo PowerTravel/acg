@@ -21,6 +21,7 @@ RenderVisitor::~RenderVisitor()
 
 void RenderVisitor::apply(Geometry* g)
 {
+//	printf("Visiting Geometry from Render\n");
 	mList.front().m.get(_M);
 	state_ptr state = syncStates(sList.front().s.get(),g->getState() );
 
@@ -29,11 +30,11 @@ void RenderVisitor::apply(Geometry* g)
 		state->apply();
 		shader_ptr shader = state->getShader();
 		
-		shader->setUniformMatrix(std::string("M"), _M);
+		shader->setUniformMatrix("M",1, _M);
 		if(_isModelviewSet)
 		{
-			shader->setUniformMatrix(std::string("V"), _V);
-			shader->setUniformMatrix(std::string("P"), _P);
+			shader->setUniformMatrix("V", 1, _V);
+			shader->setUniformMatrix("P", 1, _P);
 		}else{
 			std::cerr<<"No CameraMatrix active. Probably not rendering properly."<<std::endl;
 		}
@@ -57,12 +58,14 @@ void RenderVisitor::printMatStruct()
 
 void RenderVisitor::apply(Group* grp)
 {
+//	printf("Visiting Group from Render\n");
 	modify_mList(grp->childList.size(), Hmat());
 	modify_sList(grp->childList.size(), grp->getState());
 }
 
 void RenderVisitor::apply(Camera* cam)
 {
+//	printf("Visiting Camera from Render\n");
 	cam->getViewMat().get(_V);
 	cam->getProjectionMat().get(_P);
 	_isModelviewSet = true;
@@ -73,6 +76,7 @@ void RenderVisitor::apply(Camera* cam)
 
 void RenderVisitor::apply(Transform* t)
 {	
+//	printf("Visiting Transform from Render\n");
 	modify_mList(t->childList.size(), t->getM());
 	modify_sList(t->childList.size(), t->getState());
 }

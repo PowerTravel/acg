@@ -33,13 +33,17 @@ class Shader{
 		void createUniform(std::string name);
 		void createAttribute(std::string name);
 		
-		void setUniformMatrix(std::string name, float* data);
-		void setUniform1(std::string name, float data);
-		void setUniform2(std::string name, float* data);
-		void setUniform3(std::string name, float* data);
-		void setUniform4(std::string name, float* data);
+		void setUniformMatrix(std::string name, int count, float* data);
+		void setUniform1f(std::string name, int count, float* data);
+		void setUniform2f(std::string name, int count, float* data);
+		void setUniform3f(std::string name, int count, float* data);
+		void setUniform4f(std::string name, int count, float* data);
+		
+		void setUniform1i(std::string name, int count, int* data);
+		void setUniform2i(std::string name, int count, int* data);
+		void setUniform3i(std::string name, int count, int* data);
+		void setUniform4i(std::string name, int count, int* data);
 
-		void setUniform1i(std::string name, unsigned int unit);
 
 		GLuint getUniform(std::string name);
 
