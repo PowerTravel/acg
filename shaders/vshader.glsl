@@ -6,10 +6,9 @@ uniform mat4 M, V, P;
 varying vec2 texCoord0; 
 uniform int nrLights;
 
-uniform vec3 lightPosition[2];
-varying vec3 L[2],E[2],H[2],N[2];
-varying float R[2];
-varying vec3 lip[2];
+uniform vec3 lightPosition[3];
+varying vec3 L[3],E[3],H[3],N[3];
+varying float R[3];
 
 void main()
 {
@@ -22,12 +21,11 @@ void main()
 	for(int i = 0; i<nrLights; i++)
 	{
 		vec4 lp = vec4(lightPosition[i],1);
-		R[i] = length( (V[i]*lp).xyz - pos);
-		L[i] = normalize( (V[i]*lp).xyz - pos);
+		R[i] = length( (V*lp).xyz - pos);
+		L[i] = normalize( (V*lp).xyz - pos);
 		E[i] = normalize(-pos);
 		H[i] = normalize(L[i]+E[i]);
 		N[i] = normalize(VM*vn).xyz;
 	}
-	lip = lightPosition;
-	gl_Position = P*VM * vec4(vPosition, 1.0f );
+	gl_Position = P*vec4(pos,1);
 }

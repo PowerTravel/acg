@@ -295,8 +295,7 @@ void State::apply()
 			glDisable(GL_CULL_FACE);
 		}
 		
-		// tell if we should use Vertex color or a material
-		/// NOT IMPLEMENTED
+		
 
 		// Handle light
 
@@ -308,24 +307,7 @@ void State::apply()
 		float* att = new float[nrLights];
 		int* enabled = new int[nrLights];
 		
-		
 		int i = 0;
-		std::cout << _lights.size() << std::endl;
-	
-
-		for(std::list<Lights>::iterator it = _lights.begin(); it!=_lights.end(); it++)
-		{
- 			Lights ls = *it;
-			Light l = ls.light;
-			std::cout << l.getPosition()<< std::endl;
-			Vec4 ambProd = _material.getAmbient(&l);
-			Vec4 diffProd = _material.getDiffuse(&l);
-			Vec4 specProd = _material.getSpecular(&l);  
-			std::cout << specProd << std::endl;
-			std::cout << ambProd << std::endl;
-			std::cout << diffProd << std::endl;
-		}
-
 		for(std::list<Lights>::iterator it = _lights.begin(); it!=_lights.end(); it++)
 		{
  			Lights ls = *it;
@@ -362,7 +344,6 @@ void State::apply()
 				lpos[3*i+0] = tmp3[0];
 				lpos[3*i+1] = tmp3[1];
 				lpos[3*i+2] = tmp3[2];
-		//		std::cout << lpos[0] << " " << lpos[1] << " " << lpos[2] << std::endl;
 				
 				att[i] = l.getAttenuation();
 
@@ -373,13 +354,12 @@ void State::apply()
 			i++;
 		}
 		float shin = _material.getShininess();
-		std::cout << shin <<std::endl;
 
 		_shader->setUniform4f("specularProduct",nrLights, spec);
 		_shader->setUniform4f("diffuseProduct",nrLights, diff);
 		_shader->setUniform4f("ambientProduct",nrLights, amb);
 		_shader->setUniform3f("lightPosition",nrLights, lpos);
-		_shader->setUniform1f("snininess", nrLights, &shin);
+		_shader->setUniform1f("shininess", 1, &shin);
 		_shader->setUniform1i("nrLights", 1, &nrLights);
 		_shader->setUniform1f("attenuation", nrLights, att);
  	
@@ -391,7 +371,7 @@ void State::apply()
 		delete[] enabled;
 	}
 	// Apply Texture
-	if( !_textures.empty() ){
+	if( !_textures.empty() && _colorMaterial == false ){
 		int use = 1;
 		_shader->setUniform1i("usingTexture",1, &use);
 		for(std::list<Texture>::iterator it = _textures.begin(); it != _textures.end(); it++){

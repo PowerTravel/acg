@@ -36,8 +36,8 @@ void Scene::buildScene()
 	State s;
 	setUpShaderState( &s );
 	root->setState( &s );	
-	//root->getState()->pushLight(Light(Vec3(0,100,0), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0.2 ));
-	root->getState()->pushLight(Light(Vec3(100,0,0), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0.2 ));
+	root->getState()->pushLight(Light(Vec3(0,100,100), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.000 ));
+	root->getState()->pushLight(Light(Vec3(100,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.000 ));
 
 	camera_ptr cam = constructCamera(	NULL , root, 
 										Vec3(0.f, 0.f,4.f),
@@ -57,6 +57,12 @@ void Scene::buildScene()
 											Vec3(1.f,1.f,1.f));
 	box->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(box, 0.05, Vec3(0,-1,0) )));
 
+	transform_ptr box2 = constructTransform(	NULL, sphere,
+											3.1415/2, Vec3(0.f,0.f,1.f),
+											Vec3(-2.f,0.f,0.f),
+											Vec3(1.f,1.f,1.f));
+	box2->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(box2, 0.05, Vec3(0,-1,0) )));
+	
 	transform_ptr capsule1 = constructTransform(	NULL, cam,
 											0, Vec3(0.f,1.f,0.f),
 											Vec3(0.f,0.f,0.f),
@@ -69,17 +75,26 @@ void Scene::buildScene()
 											Vec3(1.f,1.f,1.f));
 	capsule2->rotate(3.1415/2, Vec3(0.f,0.f,1.f));
 
+	transform_ptr tree = constructTransform(	NULL, cam,
+											3.1415/2, Vec3(-1.f,0.f,0.f),
+											Vec3(0.f,0.f,0.f),
+											Vec3(2.f,2.f,2.f));
+
+
 	State lineState = State();
 	lineState.setPolygonMode(State::LINE);
 	lineState.setCullFace(false);
 	
+	State noTex = State();
+	noTex.setColorMaterial(true);
+
 	geometry_vec g1 = constructGeometry(NULL, box, "models/box.obj");
+	box2->addChild(g1[0]);	
+	box2->setState(&noTex);
 	g1[0]->getState()->setMaterial(Material(Material::RUBBER_RED));
 	geometry_vec g2 = constructGeometry(&lineState, sphere, "models/sphere.obj");
 	geometry_vec g3 = constructGeometry(NULL, capsule2, "models/Capsule/capsule.obj");
-	g3[0]->getState()->setMaterial(Material(Material::RUBBER_RED));
-//	geometry_vec g5 = constructGeometry(NULL, still, "../vrlib/models/Paris/paris.obj");
-//	geometry_vec g4 = constructGeometry(NULL, still, "models/5426_C3PO_Robot_Star_Wars.obj");
+
 }
 
 void Scene::setUpShaderState(State* s)

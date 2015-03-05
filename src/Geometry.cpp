@@ -110,10 +110,16 @@ void Geometry::createGeom( const aiMesh* mesh )
 			Vec3 v = Vec3(	mesh->mVertices[i].x,
 							mesh->mVertices[i].y,
 							mesh->mVertices[i].z);
+			_cm = _cm+v;
 			vertices[3*i+0] = v[0];
 			vertices[3*i+1] = v[1];
 			vertices[3*i+2] = v[2];
 		}
+		_cm[0] = _cm[0]/nrVertices;	
+		_cm[1] = _cm[1]/nrVertices;	
+		_cm[2] = _cm[2]/nrVertices;	
+
+			
 
 		loadVertices(nrVertices, vertices);
 
