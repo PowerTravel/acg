@@ -21,12 +21,18 @@ RenderVisitor::~RenderVisitor()
 
 void RenderVisitor::apply(Geometry* g)
 {
-//	printf("Visiting Geometry from Render\n");
 	mList.front().m.get(_M);
+	
 	state_ptr state = syncStates(sList.front().s.get(),g->getState() );
 
 	if( state->isShaderSet() )
 	{
+
+		if(sList.front().s->isMaterialSet())
+		{
+			state->setMaterial(sList.front().s->getMaterial());
+		}
+
 		state->apply();
 		shader_ptr shader = state->getShader();
 		

@@ -2,6 +2,7 @@
 #include "Material.hpp"
 Light::Light()
 {
+	_on = true;
 	_position = Vec3(4,4,4);
 	_ambient = Vec4(0.7,0.7,0.7,1);
 	_diffuse = Vec4(0.7,0.7,0.7,1);
@@ -38,7 +39,11 @@ void Light::setSpecular(Vec4 spec)
 }
 Vec4 Light::getSpecular()
 {
-	return _ambient;
+	if(_on){
+		return _ambient;
+	}else{
+		return Vec4();
+	}
 }
 void Light::setDiffuse(Vec4 diff)
 {
@@ -46,7 +51,11 @@ void Light::setDiffuse(Vec4 diff)
 }
 Vec4 Light::getDiffuse()
 {
-	return _diffuse;
+	if(_on){
+		return _diffuse;
+	}else{
+		return Vec4();
+	}
 }
 void Light::setAmbient(Vec4 amb)
 {
@@ -54,9 +63,25 @@ void Light::setAmbient(Vec4 amb)
 }
 Vec4 Light::getAmbient()
 {
-	return _ambient;
+	if(_on){
+		return _ambient;
+	}else{
+		return Vec4();
+	}
 }
-
+void Light::on()
+{
+	_on = true;
+}
+void Light::off()
+{
+	_on = false;
+}
+bool Light::isOn()
+{
+	return _on;
+}
+/*
 Vec4 Light::shineOn(Material m)
 {	
 	Vec4 mc4 = m.getSpecular();
@@ -79,6 +104,7 @@ Vec4 Light::shineOn(Material m)
 
 	return Vec4(specular,diffuse,ambient,alpha);
 }
+*/
 void Light::setAttenuation(float at)
 {
 	_attenuation = at;

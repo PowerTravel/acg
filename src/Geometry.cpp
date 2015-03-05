@@ -67,7 +67,6 @@ geometry_vec Geometry::loadFile(const char* filePath){
 				aiMaterial* mat =scene->mMaterials[mesh->mMaterialIndex];
 				State materialState = State();
 				materialState.setMaterial(Material(mat));
-					
 				for(int j=0; j<mat->GetTextureCount(aiTextureType_DIFFUSE); j++)
 				{
 					aiString path;
@@ -84,8 +83,7 @@ geometry_vec Geometry::loadFile(const char* filePath){
 						}
 					}
 				}
-
-				geomVec[i] -> setState( &materialState );
+				geomVec[i] -> setState( &materialState);
 			}
 		}
 	}
@@ -267,7 +265,9 @@ void Geometry::draw()
 
 void Geometry::update()
 {
-
+	if( _callback!= NULL){
+		_callback->execute();
+	}
 }
 
 void Geometry::acceptVisitor(NodeVisitor& v)

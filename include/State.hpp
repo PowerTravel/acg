@@ -59,6 +59,8 @@ class State{
 		Material getMaterial();
 		bool isMaterialSet();
 		void removeMaterial();
+		bool isMaterialOn();
+		void toggleMaterial();
 
 		void setShader(shader_ptr s);
 		shader_ptr getShader();
@@ -81,8 +83,6 @@ class State{
 		Texture getTexture(int n);
 		void popTexture(int n);
 
-
-		// NOT FULLY IMPLEMENTED YET. Cant handle materials or multiple lights
 		void apply();
 
 		void merge(State* s); 
@@ -109,6 +109,7 @@ class State{
 
 		Material _material;
 		bool _isMaterialSet;
+//		bool _isMaterialOn;
 
 		shader_ptr _shader;
 		bool _isShaderSet;

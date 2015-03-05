@@ -24,7 +24,8 @@ void main()
 		float Kd = max(dot(L[i],N[i]), 0.0);
 		if(usingTexture != 0.f)
 		{
-			diffuse = Kd*texture2D(gSampler,texCoord0.st);
+			float alpha=1;
+			diffuse = Kd*(alpha*texture2D(gSampler,texCoord0.st)+(1-alpha)*diffuseProduct[i]);
 		}else{
 			diffuse = Kd*diffuseProduct[i];
 		}

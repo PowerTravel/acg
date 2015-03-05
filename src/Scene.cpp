@@ -27,112 +27,35 @@ Group* Scene::getRoot()
 	return ptr;
 }
 
-void Scene::buildScene()
+void Scene::buildScene(Scene::BS bs)
 {
-	char V_SHADER[] = "shaders/vshader.glsl";
-	char F_SHADER[] = "shaders/fshader.glsl";
-
-	// Load Shader
-	State s;
-	setUpShaderState( &s );
-	root->setState( &s );	
-	root->getState()->pushLight(Light(Vec3(0,100,100), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.000 ));
-	root->getState()->pushLight(Light(Vec3(100,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.000 ));
-
-	camera_ptr cam = constructCamera(	NULL , root, 
-										Vec3(0.f, 0.f,4.f),
-										Vec3(0.f, 0.f,0.f),
-										Vec3(0.f, 1.f, 0.f));
-	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
-
-	transform_ptr sphere = constructTransform(	NULL, cam,
-											0.0, Vec3(0.f,0.f,-1.f),
-											Vec3(0.f,0.f,0.f),
-											Vec3(1.f,1.f,1.f));
-	sphere->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(sphere)));
-
-	transform_ptr box = constructTransform(	NULL, sphere,
-											3.1415/2, Vec3(0.f,0.f,1.f),
-											Vec3(2.f,0.f,0.f),
-											Vec3(1.f,1.f,1.f));
-	box->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(box, 0.05, Vec3(0,-1,0) )));
-
-	transform_ptr box2 = constructTransform(	NULL, sphere,
-											3.1415/2, Vec3(0.f,0.f,1.f),
-											Vec3(-2.f,0.f,0.f),
-											Vec3(1.f,1.f,1.f));
-	box2->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(box2, 0.05, Vec3(0,-1,0) )));
-	
-	transform_ptr capsule1 = constructTransform(	NULL, cam,
-											0, Vec3(0.f,1.f,0.f),
-											Vec3(0.f,0.f,0.f),
-											Vec3(1.f,1.f,1.f));
-	capsule1->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(capsule1, 0.01, Vec3(0,0,1) )));
-
-	transform_ptr capsule2 = constructTransform(	NULL, capsule1,
-											3.1415/2, Vec3(0.f,1.f,0.f),
-											Vec3(0.f,2.f,0.f),
-											Vec3(1.f,1.f,1.f));
-	capsule2->rotate(3.1415/2, Vec3(0.f,0.f,1.f));
-
-	transform_ptr tree = constructTransform(	NULL, cam,
-											3.1415/2, Vec3(-1.f,0.f,0.f),
-											Vec3(0.f,0.f,0.f),
-											Vec3(2.f,2.f,2.f));
-
-
-	State lineState = State();
-	lineState.setPolygonMode(State::LINE);
-	lineState.setCullFace(false);
-	
-	State noTex = State();
-	noTex.setColorMaterial(true);
-
-	geometry_vec g1 = constructGeometry(NULL, box, "models/box.obj");
-	box2->addChild(g1[0]);	
-	box2->setState(&noTex);
-	g1[0]->getState()->setMaterial(Material(Material::RUBBER_RED));
-	geometry_vec g2 = constructGeometry(&lineState, sphere, "models/sphere.obj");
-	geometry_vec g3 = constructGeometry(NULL, capsule2, "models/Capsule/capsule.obj");
-
-}
-
-void Scene::setUpShaderState(State* s)
-{
-	char V_SHADER[] = "shaders/vshader.glsl";
-	char F_SHADER[] = "shaders/fshader.glsl";
-
-	s->setShader( shader_ptr(new Shader(V_SHADER, F_SHADER)) );
-
-	s->getShader()->use();
-	//s->getShader()->createAttribute("vertex");
-	//s->getShader()->createAttribute("normal");
-	//s->getShader()->createAttribute("texCoord");
-	s->getShader()->createUniform("M");
-	s->getShader()->createUniform("V");
-	s->getShader()->createUniform("P");
-	s->getShader()->createUniform("ambientProduct");
-	s->getShader()->createUniform("diffuseProduct");
-	s->getShader()->createUniform("specularProduct");
-	s->getShader()->createUniform("lightPosition");
-	s->getShader()->createUniform("attenuation");
-	s->getShader()->createUniform("shininess");
-	s->getShader()->createUniform("gSampler");
-	s->getShader()->createUniform("usingTexture");
-	s->getShader()->createUniform("nrLights");
-}
-
-geometry_vec Scene::constructGeometry(State* s, group_ptr parent, const  char* fileName)
-{
-	geometry_vec g_vec=  Geometry::loadFile(fileName);
-	for(int i = 0; i< g_vec.size(); i++)
+	if(bs == LAB1)
 	{
-		parent->addChild(g_vec[i]);
-		if(s!=NULL){
-			g_vec[i]->setState(s);
-		}
+		buildLab1();
+	}else if(bs == LAB2){
+		buildLab2();
+	}else if(bs == LAB3){
+		buildLab3();
 	}
-	return g_vec;
+}
+
+
+
+
+void Scene::linkGeometry(std::string name, group_ptr grp)
+{
+	geometry_vec g = gt[name.c_str()];
+	for(int i = 0; i<g.size(); i++)
+	{
+		grp->addChild(g[i]);
+	}
+}
+
+void Scene::loadGeometry(std::string name, std::string path)
+{
+	geometry_vec g1=  Geometry::loadFile(path.c_str());
+	std::pair< std::string, geometry_vec > pair(name, g1);
+	gt.insert(pair);
 }
 
 camera_ptr Scene::constructCamera(State* s, group_ptr parent, Vec3 eye, Vec3 lookAt, Vec3 up)
@@ -162,3 +85,126 @@ transform_ptr Scene::constructTransform(State* s, group_ptr parent, float angle,
 	parent->addChild(t);
 	return t;
 }
+
+
+void Scene::buildLab1()
+{
+
+	gt = geometry_table();
+	loadGeometry("cube", "models/box.obj");
+	loadGeometry("sphere", "models/sphere.obj");
+	loadGeometry("face", "models/Capsule/capsule.obj");
+//	loadGeometry("paris", "../vrlib/models/Paris/paris.obj");
+
+	// Load the shader and add it to the root node
+	State s;
+	setUpLab1ShaderState( &s );
+	root->setState( &s );	
+	
+	
+	// Create lights and add them to the root node
+	root->getState()->pushLight(Light(Vec3(10,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.002 ));
+	root->getState()->pushLight(Light(Vec3(0,10,10), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.002 ));
+
+	// Construc the camera and attach it to root
+	camera_ptr cam = constructCamera(	NULL , root, 
+										Vec3(0.f, 0.f,4.f),
+										Vec3(0.f, 0.f,0.f),
+										Vec3(0.f, 1.f, 0.f));
+	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
+
+	constructSphere(cam);
+	constructCubes(cam);
+	constructFace(cam);
+}
+
+void Scene::setUpLab1ShaderState(State* s)
+{
+	char V_SHADER[] = "shaders/lab1_vshader.glsl";
+	char F_SHADER[] = "shaders/lab1_fshader.glsl";
+
+	s->setShader( shader_ptr(new Shader(V_SHADER, F_SHADER)) );
+
+	s->getShader()->use();
+	//s->getShader()->createAttribute("vertex");
+	//s->getShader()->createAttribute("normal");
+	//s->getShader()->createAttribute("texCoord");
+	s->getShader()->createUniform("M");
+	s->getShader()->createUniform("V");
+	s->getShader()->createUniform("P");
+	s->getShader()->createUniform("ambientProduct");
+	s->getShader()->createUniform("diffuseProduct");
+	s->getShader()->createUniform("specularProduct");
+	s->getShader()->createUniform("lightPosition");
+	s->getShader()->createUniform("attenuation");
+	s->getShader()->createUniform("shininess");
+	s->getShader()->createUniform("gSampler");
+	s->getShader()->createUniform("usingTexture");
+	s->getShader()->createUniform("nrLights");
+}
+
+void Scene::constructSphere(group_ptr parent)
+{
+	// Create a state that sets displaymode to lines.
+	State lineState = State();
+	lineState.setPolygonMode(State::LINE);
+	lineState.setCullFace(false);
+
+
+	transform_ptr sphere = constructTransform(	&lineState, parent,
+											0.0, Vec3(0.f,0.f,-1.f),
+											Vec3(0.f,0.f,0.f),
+											Vec3(1.f,1.f,1.f));
+	sphere->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(sphere,0.005,Vec3(0,1,0))));
+
+	linkGeometry("sphere", sphere);
+}
+
+void Scene::constructCubes(group_ptr parent)
+{
+	transform_ptr rot = constructTransform(	NULL, parent,
+											0.0, Vec3(0.f,0.f,-1.f),
+											Vec3(0.f,0.f,0.f),
+											Vec3(1.f,1.f,1.f));
+	rot->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(rot, 0.01, Vec3(0,1,0) )));
+
+	transform_ptr cube1 = constructTransform(	NULL, rot,
+											3.1415/2, Vec3(0.f,0.f,1.f),
+											Vec3(2.f,0.f,0.f),
+											Vec3(1.f,1.f,1.f));
+	cube1->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(cube1, 0.05, Vec3(0,-1,0) )));
+	linkGeometry("cube", cube1);	
+
+
+	State noTex = State();
+	noTex.setColorMaterial(true);
+	noTex.setMaterial(Material::RUBBER_RED);
+
+	transform_ptr cube2 = constructTransform(	&noTex, rot,
+											3.1415/2, Vec3(0.f,0.f,1.f),
+											Vec3(-2.f,0.f,0.f),
+											Vec3(1.f,1.f,1.f));
+	cube2->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(cube2, 0.05, Vec3(0,-1,0) )));
+	linkGeometry("cube", cube2);	
+}
+
+void Scene::constructFace(group_ptr parent)
+{
+
+	transform_ptr rotation = constructTransform(	NULL, parent,
+											0, Vec3(0.f,1.f,0.f),
+											Vec3(0.f,0.f,0.f),
+											Vec3(1.f,1.f,1.f));
+	rotation->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(rotation, 0.01, Vec3(0,0,1) )));
+
+	transform_ptr offset = constructTransform(	NULL, rotation,
+											3.1415/2, Vec3(0.f,1.f,0.f),
+											Vec3(0.f,2.f,0.f),
+											Vec3(1.f,1.f,1.f));
+	offset->rotate(3.1415/2, Vec3(0.f,0.f,1.f));
+
+	linkGeometry("face", offset);
+}
+
+void Scene::buildLab2(){}
+void Scene::buildLab3(){}

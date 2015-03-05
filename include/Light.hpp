@@ -31,9 +31,13 @@ class Light{
 		void setAttenuation(float at);
 		float getAttenuation();
 
-		Vec4 shineOn(Material m);
+		void on();
+		void off();
+		bool isOn();
+
 
 	private:
+		bool _on;
 		Vec3 _position;
 		Vec4 _ambient;
 		Vec4 _diffuse;

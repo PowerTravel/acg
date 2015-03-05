@@ -3,6 +3,7 @@
 
 #include "Group.hpp"
 #include <vector>
+#include <unordered_map>
 
 #ifndef STATE_PTR
 #define STATE_PTR
@@ -28,30 +29,66 @@ class Camera;
 typedef std::shared_ptr<Camera> camera_ptr;
 #endif //CAMERA_PTR
 
+#ifndef GEOM_TABLE
+#define GEOM_TABLE
+class Geometry;
+typedef std::unordered_map< std::string,  geometry_vec  >  geometry_table;
+#endif //GEOM_TABLE
+
 class Vec3;
+
+/*	Class: 		Scene
+ *	Purpose: 	Constructs the scenegraph with all models states 
+ *				and animations.
+ *	Misc:		It is a singleton.
+ */
 
 class Scene{
 
 	public:
+		
+		enum BS{
+			LAB1,
+			LAB2,
+			LAB3
+		};
+
 		static Scene& getInstance();
 		Group* getRoot();
 
-		void buildScene();
+		void buildScene(Scene::BS);
 	private:
+		// The root node of the scenegraph
 		std::shared_ptr<Group> root;
-		
+		geometry_table gt;	
+
+
 		Scene();
 		virtual ~Scene();
 
 		Scene(Scene const&) = delete;
 		void operator=(Scene const&) = delete;
 
-		// Creates the state that carries the shader and initiates the shader variables
-		void setUpShaderState(State* s);
 
-		geometry_vec constructGeometry(State* s, group_ptr parent, const char* fileName);
+
+
+		// Creates the state that carries the shader and initiates the shader variables
+
+		void loadGeometry(std::string name, std::string path);
+		void linkGeometry(std::string name, group_ptr grp);
+
 		camera_ptr constructCamera(State* s, group_ptr parent, Vec3 eye, Vec3 lookAt, Vec3 up);
 		transform_ptr constructTransform(State* s, group_ptr parenti, float angle, Vec3 axis, Vec3 trans, Vec3 scale );
+
+
+		void buildLab1();
+			void loadLab1Geometries();
+			void setUpLab1ShaderState(State* s);
+			void constructFace(group_ptr parent);
+			void constructCubes(group_ptr parent);
+			void constructSphere(group_ptr parent);
+		void buildLab2();
+		void buildLab3();
 };
 
 #endif // SCENE_HPP

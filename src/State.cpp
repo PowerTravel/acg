@@ -15,6 +15,8 @@ State::State()
 	_cullFace = true;
 	_colorMaterial = false;
 	_material = Material();
+	_isMaterialSet = false;
+	//_isMaterialOn = false;
 	_shader = NULL;
 	_lights = std::list< Lights >();
 	_textures = std::list< Texture >();
@@ -166,7 +168,6 @@ bool State::isMaterialSet()
 {
 	return _isMaterialSet;
 }
-
 
 void State::setShader(shader_ptr s)
 {

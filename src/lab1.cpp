@@ -12,13 +12,16 @@
 #include "RenderVisitor.hpp"
 #include "UpdateVisitor.hpp"
 #include "KeyState.hpp"
+#include "Timer.hpp"
 
 #include <iostream>
 #include <cstdio>
 
 int SCREEN_WIDTH = 620;
 int SCREEN_HEIGHT = 480;
-int FPS = 60;
+float AVERAGE_FPS = 0;
+int TICKS =0;
+int FPS = 100;
 
 void setUpGlut(int argc, char* argv[]);
 void GLEWprintSystemSpecs();
@@ -50,17 +53,17 @@ GLuint program;
 
 UpdateVisitor u;
 RenderVisitor r;	 
+Timer FPS_TIMER;
+Timer RENDER_TIMER;
 int main(int argc, char* argv[])
 {
 	// Set up glut and glew
 	setUpGlut(argc, argv);
 	setUpGlew();
 
-	Scene::getInstance().buildScene();
-	
+	Scene::getInstance().buildScene(Scene::LAB1);
 	
 	KeyState::getInstance().setGlutCallback();
-	
 
 	glutMainProgram();	
 
@@ -69,16 +72,32 @@ int main(int argc, char* argv[])
 
 void updateAndDisplay(int i)
 {	
+	AVERAGE_FPS += 1000000.f/FPS_TIMER.getTime();
 	
 	if( KeyState::getInstance().get() & key_state_bit::KEY_Q)
 	{
 		glutLeaveMainLoop();
 	}
 
+	RENDER_TIMER.start();
 	u.traverse(Scene::getInstance().getRoot());
 	display();
 
+	if(TICKS == FPS)
+	{
+		std::string title = "Assignment 1, FPS: ";
+		title.append(std::to_string(AVERAGE_FPS/FPS));
+		title.append("  RenderTime: ");
+		title.append(std::to_string(RENDER_TIMER.getTime()/1000000));
+		glutSetWindowTitle(title.c_str());
+		AVERAGE_FPS = 0;
+		TICKS=0;
+	}
 	glutTimerFunc(1000/FPS, updateAndDisplay,0);
+
+	RENDER_TIMER.start();
+	FPS_TIMER.start();
+	TICKS++;
 }
 
 void display()
@@ -86,7 +105,6 @@ void display()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//	std::cout<<	"-=NEW DRAW=-  " <<Scene::getInstance().getRoot()->getNrChildren() << std::endl;
 	
 	r.traverse(Scene::getInstance().getRoot());
 	
