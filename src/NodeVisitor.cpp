@@ -1,5 +1,4 @@
 #include "NodeVisitor.hpp"
-
 #include "Geometry.hpp"
 #include "Group.hpp"
 #include "Transform.hpp"
@@ -9,28 +8,32 @@ NodeVisitor::NodeVisitor()
 }
 NodeVisitor::~NodeVisitor(){}
 
+/*
+ * Name:	traverse
+ * Purpose: Given a node it will traverse its sub-tree depth first 
+ *			recursively. For each node it encounters it will call
+ *			the nodes "accept visitor" method.
+ * Input:	Node* node: the 'root node' to be traversed.	
+ * Output:	-	
+ * Misc:	-
+ */
 void NodeVisitor::traverse(Node* node)
 {
+	// Inject itself into the node
+	node->acceptVisitor(*this);
+	
+	// If the node is of type GROUP we traverse it's subtree if it
 	if(node->getType() ==  Node::GROUP  )
 	{
 		Group* grpPtr =(Group*) node;
 		NodeList childList = grpPtr->childList;
-		int i = 1;
-		node->acceptVisitor(*this);
 		for(NodeList::const_iterator ci = childList.begin(); ci != childList.end(); ci++)
 		{
-			//printf("Entering child no %d \n", i);	
 			traverse(*ci);
-			i++;
 		}
-	}else{
-	//	printf("Entering leaf \n");	
-		node->acceptVisitor(*this);
 	}
 }
 
-
-// Update the _state untill we get to a leaf and update();
 void NodeVisitor::apply(Geometry* g)
 {
 	printf("Visiting Geometry from NodeVisitor \n");

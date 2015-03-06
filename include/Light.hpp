@@ -13,6 +13,11 @@ typedef std::shared_ptr<Light> light_ptr;
 #endif // LIGHT_PTR
 
 
+/*	
+ *	Class: 		Light
+ *	Purpose: 	Carries information about the light
+ *	Misc:
+ */
 class Light{
 
 	public:
@@ -20,6 +25,7 @@ class Light{
 		Light(Vec3 pos, Vec4 ambient, Vec4 diffuse, Vec4 specular, float _attenuation, bool on=true);
 		virtual ~Light();
 
+		// Setters and getters for the light attributes
 		void setPosition(Vec3 pos);
 		Vec3 getPosition();
 		void setSpecular(Vec4 spec);
@@ -31,6 +37,7 @@ class Light{
 		void setAttenuation(float at);
 		float getAttenuation();
 
+		// Turn the light on/off or se if its on
 		void on();
 		void off();
 		bool isOn();

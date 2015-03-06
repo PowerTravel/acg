@@ -13,13 +13,6 @@ TransformSpinCallback::TransformSpinCallback(transform_ptr t, float angle, Vec3 
 	_axis = axis;
 	_angle = angle;
 }
-
-void TransformSpinCallback::setAngleAxis( float angle, Vec3 axis)
-{
-	_axis = axis;
-	_angle = angle;
-}
-
 TransformSpinCallback::~TransformSpinCallback()
 {
 

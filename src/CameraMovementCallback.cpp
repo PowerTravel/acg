@@ -5,11 +5,8 @@
 CameraMovementCallback::CameraMovementCallback(camera_ptr cam)
 {	
 	_cam = cam;
-	_p = Vec3();
-	_move = Vec3();
 	_angularVelocity = 0.01;
 	_speed = 0.1;
-	_update = false;
 }
 
 CameraMovementCallback::~CameraMovementCallback()
@@ -22,6 +19,8 @@ void CameraMovementCallback::execute()
 	getKeyState();
 }
 
+// Reads the keystate from the keyState singleton class
+// and updates the camera
 void CameraMovementCallback::getKeyState()
 {	
 

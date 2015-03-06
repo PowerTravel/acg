@@ -17,20 +17,26 @@ class Camera;
 typedef std::list< Node* > NodeList;
 #endif //NODE_LIST
 
+/*	
+ *	Class: 		NodeVisitor
+ *	Purpose: 	BaseClass for the visitor classes. 
+ *	Misc:		All other visitors inherit from this one.
+ */
 class NodeVisitor{
 
 	public:
 
 		NodeVisitor();
 		virtual ~NodeVisitor();
-	
+
+		// A method for traversing the scene graph
 		virtual void traverse( Node* node );
 
+		// Each node has their own apply function
 		virtual void apply(Geometry* g);
 		virtual void apply(Group* grp);
 		virtual void apply(Transform* t);
 		virtual void apply(Camera* cam);
-
 };
 
 

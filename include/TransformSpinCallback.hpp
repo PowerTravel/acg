@@ -11,6 +11,11 @@ typedef std::shared_ptr<Transform> transform_ptr;
 #endif // TRANSFORM_PTR
 
 
+/*	
+ *	Class: 		TransformSpinCallback
+ *	Purpose: 	Adds a rotation to a Transform node
+ *	Misc:		-
+ */
 class TransformSpinCallback : public UpdateCallback
 {
 	public:
@@ -19,13 +24,12 @@ class TransformSpinCallback : public UpdateCallback
 		TransformSpinCallback(transform_ptr t, float angle, Vec3 axis);
 		virtual ~TransformSpinCallback();
 	
-		void setAngleAxis( float angle, Vec3 axis);
 		void execute();
 
 	private:
 		transform_ptr _t;
-		float _angle;
-		Vec3 _axis;
+		float _angle; // The angular velocity
+		Vec3 _axis;	// The axis of rotation
 };
 
 #endif // TRANSFORM_SPIN_CALLBACK 

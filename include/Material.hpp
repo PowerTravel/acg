@@ -13,9 +13,16 @@ class Material;
 typedef std::shared_ptr<Material> material_ptr;
 #endif // MATERIAL_PTR
 
+/*
+ * Class: 	Material
+ * Purpose: Carries information about material and methods to 
+ * 			apply them.
+ * Misc:	-
+ */
 class Material{
 
 	public:
+		// A few presets
 		enum MaterialPreset{
 			RUBBER_RED,
 			PLASTIC_GREEN,
@@ -29,9 +36,12 @@ class Material{
 		Material(float shininess, Vec4 specular, Vec4 diffuse, Vec4 ambient);
 		virtual ~Material();
 
+		// Can set materials from presets or from aiMaterial
 		void setMaterial(MaterialPreset);
 		void setMaterial(const aiMaterial* mat);
 
+		// Getters and setters for not only current values
+		// but also when being illuminated
 		void setShininess(float s);
 		float getShininess();
 		void setSpecular(Vec4 spec);
@@ -44,15 +54,15 @@ class Material{
 		Vec4 getAmbient();
 		Vec4 getAmbient(Light* l);
 
+		// Redundant for my implementation 
+		// but the assignemnt requested it.
 		void apply(State* st);
 	private:
+
 		float _shininess;
 		Vec4 _specular;
 		Vec4 _diffuse;
 		Vec4 _ambient;
-
-	//	static Vec4 totLight;
-	
 };
 
 #endif// MATERIAL_HPP

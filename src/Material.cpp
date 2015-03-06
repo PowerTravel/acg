@@ -41,9 +41,10 @@ void Material::setMaterial(MaterialPreset m)
 		_specular= Vec4(0.5,0.5,0.5,1);
 	}
 }
+
 Material::Material(float shininess, Vec4 specular, Vec4 diffuse, Vec4 ambient)
 {
-	_shininess=shininess;
+	_shininess = shininess;
 	_specular = specular;
 	_diffuse = diffuse;
 	_ambient = ambient;
@@ -54,6 +55,14 @@ Material::~Material()
 
 }
 
+/*
+ * Name:	setMaterial
+ * Purpose: sets the material from an aiMaterial struct
+ * Input:	aiMaterial* mat: A pointer to the aiMaterial one gets
+ *			from assimp.
+ * Output:	-
+ * Misc:	-
+ */
 void Material::setMaterial(const aiMaterial* mat)
 {
 	aiColor4D spec(0.f,0.f,0.f,0.f);
@@ -74,6 +83,8 @@ void Material::setMaterial(const aiMaterial* mat)
 	}
 }
 
+
+// Setters and getters for the Material
 void Material::setShininess(float s)
 {
 	_shininess = s;
@@ -90,6 +101,8 @@ Vec4 Material::getSpecular()
 {
 	return _specular;
 }
+
+// Calculates the specular product when shone on by a light.
 Vec4 Material::getSpecular(Light* l)
 {
 	Vec4 lSpec = l->getSpecular();
@@ -106,6 +119,7 @@ Vec4 Material::getDiffuse()
 {
 	return _diffuse;
 }
+// Calculates the diffuse product when shone on by a light.
 Vec4 Material::getDiffuse(Light* l)
 {
 	Vec4 lDiff = l->getDiffuse();
@@ -122,6 +136,7 @@ Vec4 Material::getAmbient()
 {
 	return _ambient;
 }
+// Calculates the ambient product when shone on by a light.
 Vec4 Material::getAmbient(Light* l)
 {
 	Vec4 lAmb = l->getAmbient();
@@ -131,6 +146,7 @@ Vec4 Material::getAmbient(Light* l)
 					lAmb[3]*_ambient[3]);
 }
 
+// Given a state it applies itself to it
 void Material::apply(State* st)
 {
 	st->setMaterial(*this);

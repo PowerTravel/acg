@@ -5,6 +5,11 @@
 #include <string>
 struct aiTexture;
 
+/*
+ * Class: 	Texture
+ * Purpose: Loads textures to the gpu.
+ * Misc:	Only supports diffuse textures
+ */
 class Texture{
 	
 	public:
@@ -12,7 +17,7 @@ class Texture{
 		Texture(GLenum textureTarget, std::string& filename);
 		virtual ~Texture();
 
-		static void clear(GLenum target = GL_TEXTURE_2D);
+		void clear();
 		void bind(GLenum textureUnit);
 		bool loaded();
 

@@ -3,6 +3,13 @@
 
 #include "NodeVisitor.hpp"
 
+/*	
+ *	Class: 		UpdateVisitor
+ *	Purpose: 	Traverses the scenegraph and calls the update-method
+ *				of all the nodes which if they carry a callback
+ *				will call that.
+ *	Misc:		Derived from NodeVisitor
+ */
 class UpdateVisitor : public NodeVisitor{
 	
 	public:	

@@ -363,8 +363,8 @@ void State::apply()
 			_shader->setUniform1i("gSampler",1, &tex);
 		}
 	}else{
-		// Texture::clear unbinds any loaded textures
-		Texture::clear();
+		// unbind any loaded textures
+		glBindTexture(GL_TEXTURE_2D,0);
 		int use = 0;
 		_shader->setUniform1i("usingTexture",1, &use);
 	}

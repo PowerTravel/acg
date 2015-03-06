@@ -4,7 +4,11 @@
 #include "KeyState.hpp"
 
 
-// Rotates the camera around the point _p at constant distance
+/*	
+ *	Class: 		CameraMovementCallback
+ *	Purpose: 	Controlls the camera movement
+ *	Misc:		-
+ */
 class CameraMovementCallback : public UpdateCallback
 {
 	public:
@@ -12,17 +16,12 @@ class CameraMovementCallback : public UpdateCallback
 		virtual ~CameraMovementCallback();
 
 		void execute();
-
 		void getKeyState();
 
-		void updateCamera();
 	private:
 		camera_ptr _cam;
-		Vec3 _p;
-		Vec3 _move;
 		float _speed;
 		float _angularVelocity;
-		bool _update;
 		
 };
 
