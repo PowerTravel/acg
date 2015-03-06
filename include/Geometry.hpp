@@ -21,6 +21,12 @@ class Geometry;
 typedef std::vector< std::shared_ptr<Geometry> > geometry_vec;
 #endif //GEOMETRY_VEC
 
+
+/*
+ * Class:	Geometry
+ * Purpose:	Loads geometries
+ * Misc:
+ */
 class Geometry : public Node{
 
 	public:
@@ -35,24 +41,18 @@ class Geometry : public Node{
 		Geometry();
 		Geometry(const aiMesh* mesh);
 		virtual ~Geometry();
-	
-		void update();
 
 		void acceptVisitor(NodeVisitor& v);
-
 		void draw();
+
+		// Helperfnction that loads a file
 		static geometry_vec loadFile(const char* filePath);
+		// Create a geometry directly from arrays of floats and ints.
 		void createGeom(int nVerts, int nFaces, float* verts, float* norm, int* face, float* texCoords);
 	
-		void loadVertices(int nrVertices, float* vertices);
-		void loadTextureCoordinates(int nrTexCoords, float* coords);
-		// Assumes they are triangles
-		void loadFaces(int nrFaces, int* faces); 
-		void loadNormals(int nrNormals, float* normals);
 
-		void setLoaded(bool t){ loaded = t;};
 	private:
-
+		// Center of mass, not used atm.
 		Vec3 _cm;
 
 		bool loaded;
@@ -66,7 +66,13 @@ class Geometry : public Node{
 		GLuint normalBuffer;
 		GLuint faceBuffer;
 		
+		
 		void createGeom( const aiMesh* mesh );
+		void loadVertices(int nrVertices, float* vertices);
+		void loadTextureCoordinates(int nrTexCoords, float* coords);
+		// Assumes they are triangles
+		void loadFaces(int nrFaces, int* faces); 
+		void loadNormals(int nrNormals, float* normals);
 };
 
 #endif // GEOMETRY_HPP

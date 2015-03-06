@@ -3,6 +3,7 @@
 
 
 void glut_key_callback(unsigned char c, int x, int y);
+void resize_callback(int width, int height);
 
 class KeyState{
 	
@@ -40,12 +41,15 @@ class KeyState{
 
 		static KeyState& getInstance(); 
 
+		bool hasWindowChanged();
+		void windowChanged();
 		void setGlutCallback();
 		State get();
 		void set(int st);
 
 	private:
 		static State _state;
+		static bool mWindowChanged;
 		
 		KeyState();
 		virtual ~KeyState();

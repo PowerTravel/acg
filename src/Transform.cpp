@@ -39,21 +39,6 @@ void Transform::scale(Vec3 ds)
 	_T.scale(ds);
 }
 
-void Transform::update()
-{
-	//Vec3 v1 = Vec3(0.0, 0.0, 1.0);
-	//Vec3 v2 = Vec3(-0.01, 0.00, 0.00);
-	//Vec3 v3 = Vec3(1.0, 1.0, 1.00);
-	//rotate(0.05, v1);
-	//translate(v2);
-	if(_callback != NULL)
-	{
-		_callback->execute();
-	}
-//	scale(v3);
-}
-
-
 void Transform::acceptVisitor(NodeVisitor& visitor)
 {
 	visitor.apply(this);

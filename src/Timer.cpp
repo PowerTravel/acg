@@ -32,9 +32,9 @@ float Timer::getTime()
 {
 	if(started){
 		if(paused){
-			return pausedTime;
+			return pausedTime/1000000.f;
 		}else{
-			return std::clock() - startTime;
+			return (std::clock() - startTime)/1000000.f;
 		}
 	}
 

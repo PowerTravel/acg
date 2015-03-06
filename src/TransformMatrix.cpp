@@ -49,12 +49,18 @@ void TransformMatrix::rotate(float angle, Vec3 axis, Vec3 p)
 
 void TransformMatrix::scale(Vec3 scale)
 {
+	Vec3 p = getPosition();
+	Vec3 tto = Vec3( -p[0], -p[1], -p[2] );
+	translate(tto);
+
 	Hmat S = Hmat();
 	for(int i=0; i<3; i++)
 	{
 		S[i][i] = scale[i];
 	}
 	_m = S*_m;
+	
+	translate(p);
 }
 
 void TransformMatrix::translate(Vec3 trans)

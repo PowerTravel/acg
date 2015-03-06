@@ -1,22 +1,18 @@
 #include "State.hpp"
 State::State()
 {
-	// If a state is not explicity set they wont
-	// override another state if added.
 	_isPolyModeSet = false;
 	_isShadeTypeSet = false;
 	_isCullFaceSet = false;
 	_isColorMaterialSet = false;
 	_isMaterialSet = false;
 	_isShaderSet = false;
-	//Sets default values
 	_polyMode = FILL;
 	_shadeType = FLAT;
 	_cullFace = true;
 	_colorMaterial = false;
 	_material = Material();
 	_isMaterialSet = false;
-	//_isMaterialOn = false;
 	_shader = NULL;
 	_lights = std::list< Lights >();
 	_textures = std::list< Texture >();
@@ -27,6 +23,17 @@ State::~State()
 
 }
 
+
+/*
+ * Name:	merge
+ * Purpose: Merges this state with another. If identical unique 
+ * 			attributes are set by both the attribute in this state
+ *			is overridden by the one in 's'. Cumulative attributes
+ *			such as textures and lights are added.
+ * Input:	State* s: The state to be merged with this one.	
+ * Output:	-
+ * Misc:	-
+ */
 void State::merge(State* s)
 {
 	if(s->isPolygonModeSet())
@@ -70,6 +77,9 @@ void State::merge(State* s)
 		i++;
 	}
 }
+
+// Below are setters, getter and inspectors for the unique
+// attributes. Se the hpp-file for a description of what they do.
 
 void State::setPolygonMode(PolygonMode m)
 {
@@ -189,18 +199,22 @@ void State::removeShader()
 }
 
 
+// Below cumulative states are pushed, poped and inspected etc.
+
 void State::pushLight(Light l)
 {
 	Lights ls;
 	ls.light = l;
-	ls.enabled = true;
 	_lights.push_back(ls);	
 }
 void State::pushLight(Light l, bool status)
 {
 	Lights ls;
 	ls.light = l;
-	ls.enabled = status;
+	if(!status)
+	{
+		l.off();	
+	}
 	_lights.push_back(ls);	
 }	
 
@@ -271,8 +285,17 @@ void State::popTexture(int n)
 	}
 }
 
+/*
+ * Name:	apply
+ * Purpose: Applies the current state to the GL_state, updates
+ *			uniforms etc.
+ * Input:	-
+ * Output:	-
+ * Misc:	-
+ */
 void State::apply()
 {
+	// Everything hinges on a shader bing set.
 	if( isShaderSet() )
 	{
 		// Set polygon Mode
@@ -284,9 +307,6 @@ void State::apply()
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 		
-		// SMOOTH VS FLAT SHADING NOT IMPLEMENTED
-		glShadeModel(GL_FLAT);
-	
 		// Enable or disable backface culling
 		glCullFace(GL_FRONT);
 		if(_cullFace)
@@ -296,29 +316,40 @@ void State::apply()
 			glDisable(GL_CULL_FACE);
 		}
 		
+	
 		
 
 		// Handle light
 
-		int nrLights = _lights.size();
+		// Get all active lights
+		int nrLights = 0;
+		for(std::list<Lights>::iterator it = _lights.begin(); it!=_lights.end(); it++)
+		{
+ 			Lights ls = *it;
+			Light l = ls.light;
+			if(l.isOn())
+			{
+				nrLights++;	
+			}
+		}
+		
 		float* lpos = new float[nrLights*3];
 		float* diff = new float[nrLights*4];
 		float* spec = new float[nrLights*4];
 		float* amb = new float[nrLights*4];
 		float* att = new float[nrLights];
 		int* enabled = new int[nrLights];
-		
+	
+		// Get all the relevand light-material interaction data
 		int i = 0;
 		for(std::list<Lights>::iterator it = _lights.begin(); it!=_lights.end(); it++)
 		{
  			Lights ls = *it;
-
-			if(ls.enabled)
+			Light l = ls.light;
+			if(l.isOn())
 			{
 				float tmp4[4] ={0};
 				float tmp3[3] ={0};
-				//std::cout << _lights.size() << std::endl;
-				Light l = ls.light;
 				Vec4 ambProd = _material.getAmbient(&l);
 				Vec4 diffProd = _material.getDiffuse(&l);
 				Vec4 specProd = _material.getSpecular(&l);  
@@ -349,10 +380,8 @@ void State::apply()
 				att[i] = l.getAttenuation();
 
 				enabled[i] = 1; 
-			}else{
-				enabled[i] = 0;
+				i++;
 			}
-			i++;
 		}
 		float shin = _material.getShininess();
 
@@ -363,6 +392,7 @@ void State::apply()
 		_shader->setUniform1f("shininess", 1, &shin);
 		_shader->setUniform1i("nrLights", 1, &nrLights);
 		_shader->setUniform1f("attenuation", nrLights, att);
+		_shader->setUniform1i("lightOn", nrLights, enabled);
  	
 		delete[] lpos; 
 		delete[] diff;

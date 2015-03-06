@@ -27,7 +27,6 @@ class Transform: public Group
 		void scale(Vec3 ds);
 		void translate(Vec3 ds);
 
-		void update();
 		void acceptVisitor(NodeVisitor& visitor);
 
 	private:

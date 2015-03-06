@@ -9,7 +9,7 @@ TARGET = lab1.out
 
 SOURCE_DIR = src
 INCLUDE_DIR = include
-LINK_DIR = libraries
+LINK_DIR = lib
 OBJECT_DIR = obj
 #SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 

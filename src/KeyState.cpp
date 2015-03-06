@@ -2,6 +2,7 @@
 #include <GL/freeglut.h>
 
 KeyState::State KeyState::_state = KeyState::State::KEY_NULL;
+bool KeyState::mWindowChanged = false;
 
 KeyState::KeyState()
 {
@@ -27,8 +28,23 @@ void KeyState::setGlutCallback()
 {
 	glutKeyboardFunc(glut_key_callback);
 	glutKeyboardUpFunc(glut_key_callback);
+	glutReshapeFunc(resize_callback);
 }
 
+void KeyState::windowChanged()
+{
+	mWindowChanged=true;
+}
+
+bool KeyState::hasWindowChanged()
+{
+	bool c = false;
+	if(mWindowChanged){
+		mWindowChanged = false;
+		c=true;
+	}	
+	return c;
+}
 void KeyState::set(int st)
 {
 	int currState = (int) _state;
@@ -37,6 +53,15 @@ void KeyState::set(int st)
 	int newState =  currState ^ st; 
 
 	_state = (State) newState;
+}
+
+void resize_callback(int width, int height)
+{
+	// this call to GL viewport should not be here.
+	// It should be in lab1.cpp but I don't know how to make 
+	// that work yet
+	glViewport(0,0,width,height);
+	KeyState::getInstance().windowChanged();
 }
 
 void glut_key_callback(unsigned char c, int x, int y)

@@ -26,9 +26,6 @@ void CameraMovementCallback::getKeyState()
 {	
 
 	KeyState::State st = KeyState::getInstance().get();
-	Hmat M = _cam->getViewMat();
-	Vec3 pos = Vec3(M[0][3], M[1][3],M[2][3]);
-	//std::cout << M << std::endl << std::endl;
 	if( st & key_state_bit::KEY_W) 
 	{
 		_cam->rotateAroundOrigin(_angularVelocity, Vec3(1,0,0));
@@ -60,5 +57,10 @@ void CameraMovementCallback::getKeyState()
 	{
 		_cam->lookAt(Vec3(0,0,4), Vec3(0,0,0), Vec3(0,1,0));
 
+	}
+
+	if(KeyState::getInstance().hasWindowChanged())
+	{
+		_cam->setPerspectiveProjection();
 	}
 }
