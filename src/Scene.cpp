@@ -163,12 +163,12 @@ void Scene::buildLab1()
 	
 	
 	// Create lights and add them to the root node
-	Light l = Light(Vec3(0,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.002 );
-	//l.off();
-	//root->getState()->pushLight(Light(Vec3(0,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.002 ));
-	root->getState()->pushLight(Light(Vec3(0,5,-10), Vec4(0.5,0.5,1.0), Vec4(0.5,0.5,1.0), Vec4(0.5,0.5,1.0), 0.002 ));
-	root->getState()->pushLight(Light(Vec3(0,5,10), Vec4(1.5,0.5,0.5), Vec4(1.5,0.5,0.5), Vec4(1.0,0.5,0.5), 0.002 ));
-	root->getState()->pushLight(l);
+	State lightState = State();
+	lightState.pushLight(Light(Vec3(0,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.002 ));
+	lightState.pushLight(Light(Vec3(0,5,-10), Vec4(0.5,0.5,1.0), Vec4(0.5,0.5,1.0), Vec4(0.5,0.5,1.0), 0.002 ));
+	lightState.pushLight(Light(Vec3(0,5,10), Vec4(1.5,0.5,0.5), Vec4(1.5,0.5,0.5), Vec4(1.0,0.5,0.5), 0.002 ));
+	root->setState(&lightState);	
+
 
 	// Construc the camera and attach it to root
 	camera_ptr cam = constructCamera(	NULL , root, 
@@ -212,7 +212,6 @@ void Scene::setUpLab1ShaderState(State* s)
 	s->getShader()->createUniform("gSampler");
 	s->getShader()->createUniform("usingTexture");
 	s->getShader()->createUniform("nrLights");
-	s->getShader()->createUniform("lightOn");
 }
 
 // Constructs the spinning sphere for lab1 scene.

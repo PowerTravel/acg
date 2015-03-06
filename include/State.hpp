@@ -91,12 +91,8 @@ class State{
 		// the size of the light-uniforms in the fragment
 		// and vertex shader
 		void pushLight(Light l);
-		void pushLight(Light l, bool status);
 		int getNrLights();
 		Light getLight(int n);
-		void enableLight(int n);
-		void disableLight(int n);
-		bool isLightEnabled(int n);
 		void popLight(int n);
 
 		// One diffuse texture is supported at the moment.
@@ -115,15 +111,6 @@ class State{
 		void merge(State* s); 
 	
 	private:
-
-		// This struct should be removed.
-		// The enabled feature has been merged into Light
-		// But the rest of the code has not been updated to 
-		// the change.
-		struct Lights{
-			Light light;
-			bool enabled;
-		};
 
 		// Unique attributes
 		PolygonMode _polyMode;
@@ -145,7 +132,7 @@ class State{
 		bool _isShaderSet;
 
 		// Cumulative attributes
-		std::list< Lights > _lights;
+		std::list< Light > _lights;
 		std::list< Texture > _textures;
 };
 

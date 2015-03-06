@@ -14,7 +14,7 @@ State::State()
 	_material = Material();
 	_isMaterialSet = false;
 	_shader = NULL;
-	_lights = std::list< Lights >();
+	_lights = std::list< Light >();
 	_textures = std::list< Texture >();
 }
 
@@ -65,7 +65,7 @@ void State::merge(State* s)
 	int i = 0;
 	while(i<n)
 	{
-		pushLight(s->getLight(i), s->isLightEnabled(i) );
+		pushLight(s->getLight(i));
 		i++;
 	}
 
@@ -203,19 +203,7 @@ void State::removeShader()
 
 void State::pushLight(Light l)
 {
-	Lights ls;
-	ls.light = l;
-	_lights.push_back(ls);	
-}
-void State::pushLight(Light l, bool status)
-{
-	Lights ls;
-	ls.light = l;
-	if(!status)
-	{
-		l.off();	
-	}
-	_lights.push_back(ls);	
+	_lights.push_back(l);	
 }	
 
 int State::getNrLights()
@@ -224,36 +212,9 @@ int State::getNrLights()
 }
 Light State::getLight(int n)
 {	
-	std::list<Lights>::iterator it = _lights.begin();
+	std::list<Light>::iterator it = _lights.begin();
 	std::advance(it,n);
-	return it->light;
-}
-void State::enableLight(int n)
-{
-	std::list<Lights>::iterator it = _lights.begin();
-	std::advance(it,n);
-	it->enabled = true;
-}
-void State::disableLight(int n)
-{
-	std::list<Lights>::iterator it = _lights.begin();
-	std::advance(it,n);
-	it->enabled = false;
-}
-bool State::isLightEnabled(int n)
-{
-	std::list<Lights>::iterator it = _lights.begin();
-	std::advance(it,n);
-	return it->enabled;
-
-}
-void State::popLight(int n)
-{
-	std::list<Lights>::iterator it = _lights.begin();
-	if(n < _lights.size()){
-		std::advance(it,n);
-		_lights.erase(it);
-	}
+	return *it;
 }
 
 void State::pushTexture(Texture t)
@@ -316,36 +277,29 @@ void State::apply()
 			glDisable(GL_CULL_FACE);
 		}
 		
-	
-		
-
 		// Handle light
 
-		// Get all active lights
+		// Count the active lights
 		int nrLights = 0;
-		for(std::list<Lights>::iterator it = _lights.begin(); it!=_lights.end(); it++)
+		for(std::list<Light>::iterator it = _lights.begin(); it!=_lights.end(); it++)
 		{
- 			Lights ls = *it;
-			Light l = ls.light;
-			if(l.isOn())
+			if(it->isOn())
 			{
 				nrLights++;	
 			}
 		}
-		
+	
+		// Get all the relevant light-material interaction data
 		float* lpos = new float[nrLights*3];
 		float* diff = new float[nrLights*4];
 		float* spec = new float[nrLights*4];
 		float* amb = new float[nrLights*4];
 		float* att = new float[nrLights];
-		int* enabled = new int[nrLights];
-	
-		// Get all the relevand light-material interaction data
 		int i = 0;
-		for(std::list<Lights>::iterator it = _lights.begin(); it!=_lights.end(); it++)
+		for(std::list<Light>::iterator it = _lights.begin(); it!=_lights.end(); it++)
 		{
- 			Lights ls = *it;
-			Light l = ls.light;
+			//only use lights that are turned on
+ 			Light l = *it;
 			if(l.isOn())
 			{
 				float tmp4[4] ={0};
@@ -379,7 +333,6 @@ void State::apply()
 				
 				att[i] = l.getAttenuation();
 
-				enabled[i] = 1; 
 				i++;
 			}
 		}
@@ -392,16 +345,15 @@ void State::apply()
 		_shader->setUniform1f("shininess", 1, &shin);
 		_shader->setUniform1i("nrLights", 1, &nrLights);
 		_shader->setUniform1f("attenuation", nrLights, att);
-		_shader->setUniform1i("lightOn", nrLights, enabled);
  	
 		delete[] lpos; 
 		delete[] diff;
 		delete[] spec;
 		delete[] amb;
 		delete[] att;
-		delete[] enabled;
 	}
-	// Apply Texture
+
+	// Apply Texture if we have them
 	if( !_textures.empty() && _colorMaterial == false ){
 		int use = 1;
 		_shader->setUniform1i("usingTexture",1, &use);
@@ -411,6 +363,7 @@ void State::apply()
 			_shader->setUniform1i("gSampler",1, &tex);
 		}
 	}else{
+		// Texture::clear unbinds any loaded textures
 		Texture::clear();
 		int use = 0;
 		_shader->setUniform1i("usingTexture",1, &use);

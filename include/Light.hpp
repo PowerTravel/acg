@@ -17,7 +17,7 @@ class Light{
 
 	public:
 		Light();
-		Light(Vec3 pos, Vec4 ambient, Vec4 diffuse, Vec4 specular, float _attenuation);
+		Light(Vec3 pos, Vec4 ambient, Vec4 diffuse, Vec4 specular, float _attenuation, bool on=true);
 		virtual ~Light();
 
 		void setPosition(Vec3 pos);

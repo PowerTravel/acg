@@ -10,13 +10,14 @@ Light::Light()
 	_attenuation = 0.2;
 }
 
-Light::Light(Vec3 position, Vec4 ambient, Vec4 diffuse, Vec4 specular, float attenuation)
+Light::Light(Vec3 position, Vec4 ambient, Vec4 diffuse, Vec4 specular, float attenuation, bool on)
 {
 	_position = position;
 	_ambient = ambient;
 	_diffuse = diffuse;
 	_specular = specular;
 	_attenuation = attenuation;
+	_on = on;
 }
 
 Light::~Light()
@@ -81,30 +82,6 @@ bool Light::isOn()
 {
 	return _on;
 }
-/*
-Vec4 Light::shineOn(Material m)
-{	
-	Vec4 mc4 = m.getSpecular();
-	float alpha = mc4[3];
-	Vec3 mc = mc4.asVec3();
-	Vec3 l = _specular.asVec3();
-	float specular = mc*l;
-
-	mc4 = m.getDiffuse();
-	alpha = alpha * mc4[3];
-	mc = mc4.asVec3();
-	l = _specular.asVec3();
-	float diffuse = mc*l;
-
-	mc4 = m.getAmbient();
-	alpha = alpha * mc4[3];
-	mc = mc4.asVec3();
-	l = _ambient.asVec3();
-	float ambient = mc*l;
-
-	return Vec4(specular,diffuse,ambient,alpha);
-}
-*/
 void Light::setAttenuation(float at)
 {
 	_attenuation = at;
