@@ -42,14 +42,15 @@ class Geometry : public Node{
 
 		void draw();
 		static geometry_vec loadFile(const char* filePath);
+		void createGeom(int nVerts, int nFaces, float* verts, float* norm, int* face, float* texCoords);
 	
 		void loadVertices(int nrVertices, float* vertices);
 		void loadTextureCoordinates(int nrTexCoords, float* coords);
 		// Assumes they are triangles
 		void loadFaces(int nrFaces, int* faces); 
 		void loadNormals(int nrNormals, float* normals);
-		//static bool loadFile(const char* filePath);
 
+		void setLoaded(bool t){ loaded = t;};
 	private:
 
 		Vec3 _cm;

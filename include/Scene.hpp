@@ -83,6 +83,7 @@ class Scene{
 
 		void buildLab1();
 			void loadLab1Geometries();
+			void createFloor(group_ptr parent);
 			void setUpLab1ShaderState(State* s);
 			void constructFace(group_ptr parent);
 			void constructCubes(group_ptr parent);

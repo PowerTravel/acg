@@ -9,6 +9,7 @@ TARGET = lab1.out
 
 SOURCE_DIR = src
 INCLUDE_DIR = include
+LINK_DIR = libraries
 OBJECT_DIR = obj
 #SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
@@ -32,7 +33,7 @@ DEPS := $(OBJS:.o=.d)
 all : $(TARGET) 
 
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET) $(LINKER_FLAGS) 
+	$(CC) $(OBJS) -o $(TARGET) -L$(LINK_DIR) $(LINKER_FLAGS) 
 
 
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.cpp

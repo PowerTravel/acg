@@ -21,9 +21,24 @@ void Material::setMaterial(MaterialPreset m)
 	if(m == RUBBER_RED)
 	{
 		_shininess=10;
+		_ambient = Vec4(0.05, 0,0,1);
 		_diffuse= Vec4(0.7,0.04,0.04,1);
 		_specular = Vec4(0.5,0.4,0.4,1);
-		_ambient = Vec4(0.05, 0,0,1);
+	}else if(m == GOLD){
+		_shininess=51.2;
+		_ambient = Vec4(0.24725, 0.1995,0.0745,1);
+		_diffuse = Vec4(0.75164,0.60648,0.22648,1);
+		_specular= Vec4(0.628281,0.55802,0.366065,1);
+	}else if(m == OBSIDIAN){
+		_shininess=38.4;
+		_ambient = Vec4(0.05375, 0.05,0.06625,1);
+		_diffuse = Vec4(0.18275,0.17,0.22525,1);
+		_specular= Vec4(0.332741,0.328634,0.3463425,1);
+	}else if(m == PLASTIC_GREEN){
+		_shininess=32;
+		_ambient = Vec4(0, 0,0,1);
+		_diffuse = Vec4(0.1,0.35,0.1,1);
+		_specular= Vec4(0.5,0.5,0.5,1);
 	}
 }
 Material::Material(float shininess, Vec4 specular, Vec4 diffuse, Vec4 ambient)

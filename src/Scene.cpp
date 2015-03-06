@@ -89,12 +89,11 @@ transform_ptr Scene::constructTransform(State* s, group_ptr parent, float angle,
 
 void Scene::buildLab1()
 {
-
 	gt = geometry_table();
 	loadGeometry("cube", "models/box.obj");
 	loadGeometry("sphere", "models/sphere.obj");
 	loadGeometry("face", "models/Capsule/capsule.obj");
-//	loadGeometry("paris", "../vrlib/models/Paris/paris.obj");
+
 
 	// Load the shader and add it to the root node
 	State s;
@@ -103,8 +102,9 @@ void Scene::buildLab1()
 	
 	
 	// Create lights and add them to the root node
-	root->getState()->pushLight(Light(Vec3(10,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.002 ));
-	root->getState()->pushLight(Light(Vec3(0,10,10), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.002 ));
+	root->getState()->pushLight(Light(Vec3(0,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.002 ));
+	root->getState()->pushLight(Light(Vec3(0,5,10), Vec4(1.5,0.5,0.5), Vec4(1.5,0.5,0.5), Vec4(1.0,0.5,0.5), 0.002 ));
+	root->getState()->pushLight(Light(Vec3(0,5,-10), Vec4(0.5,0.5,1.0), Vec4(0.5,0.5,1.0), Vec4(0.5,0.5,1.0), 0.002 ));
 
 	// Construc the camera and attach it to root
 	camera_ptr cam = constructCamera(	NULL , root, 
@@ -116,6 +116,89 @@ void Scene::buildLab1()
 	constructSphere(cam);
 	constructCubes(cam);
 	constructFace(cam);
+	createFloor(cam);
+}
+
+void Scene::createFloor(group_ptr parent)
+{
+
+	int nrVert = 6*4;
+	float vert[] = { 10,  0.05,  10.5,
+					 10, -0.05,  10.5,
+					 10, -0.05, -10.5,
+					 10,  0.05, -10.5,
+					-10,  0.05, -10.5,
+					-10, -0.05, -10.5,
+					-10, -0.05,  10.5,
+					-10,  0.05,  10.5,
+					 10,  0.05, -10.5,
+					 10, -0.05, -10.5,
+					-10, -0.05, -10.5,
+					-10,  0.05, -10.5,
+					-10,  0.05,  10.5,
+					-10, -0.05,  10.5,
+					 10, -0.05,  10.5,
+					 10,  0.05,  10.5,
+					-10,  0.05, -10.5,
+					-10,  0.05,  10.5,
+					 10,  0.05,  10.5,
+					 10,  0.05, -10.5,
+					-10, -0.05, -10.5,
+					 10, -0.05, -10.5,
+					 10, -0.05,  10.5,
+					-10, -0.05,  10.5};
+	
+	float norm[] = {1, 0,  0, 
+					1, 0,  0,
+					1, 0,  0,
+					1, 0,  0,
+					-1, 0, 0,
+					-1, 0, 0,
+					-1, 0, 0,
+					-1, 0, 0,
+					0, 0, -1,
+					0, 0, -1,
+					0, 0, -1,
+					0, 0, -1,
+					0, 0,  1,
+					0, 0,  1,
+					0, 0,  1,
+					0, 0,  1,
+					0, 1,  0,
+					0, 1,  0,
+					0, 1,  0,
+					0, 1,  0,
+					0, -1, 0,
+					0, -1, 0,
+					0, -1, 0,
+					0, -1, 0};
+	int nrFaces = 12; 
+ 	int faces[] = {	 3,  0,  1, 
+					 1,  2,  3,
+					 7,  4,  5,
+					 5,  6,  7,
+					11,  8,  9,
+					 9, 10, 11,
+					15, 12, 13,
+					13, 14, 15,
+					19, 16, 17,
+					17, 18, 19,
+					23, 20, 21,
+					21, 22, 23};
+
+	geometry_vec g = geometry_vec( );
+	g.push_back(std::shared_ptr<Geometry>(new Geometry()) );
+	g[0]->createGeom(nrVert, nrFaces, vert,  norm,  faces, NULL);
+	
+	State mat = State();
+	mat.setMaterial(Material(Material::OBSIDIAN));
+	mat.setColorMaterial(true);
+
+	transform_ptr lower = constructTransform(&mat, parent, 0, Vec3(), Vec3(0,-4,0), Vec3(1,1,1) );
+
+	std::pair< std::string, geometry_vec > pair("floor", g);
+	gt.insert(pair);
+	linkGeometry("floor", lower);
 }
 
 void Scene::setUpLab1ShaderState(State* s)
@@ -150,7 +233,6 @@ void Scene::constructSphere(group_ptr parent)
 	lineState.setPolygonMode(State::LINE);
 	lineState.setCullFace(false);
 
-
 	transform_ptr sphere = constructTransform(	&lineState, parent,
 											0.0, Vec3(0.f,0.f,-1.f),
 											Vec3(0.f,0.f,0.f),
@@ -158,6 +240,7 @@ void Scene::constructSphere(group_ptr parent)
 	sphere->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(sphere,0.005,Vec3(0,1,0))));
 
 	linkGeometry("sphere", sphere);
+
 }
 
 void Scene::constructCubes(group_ptr parent)
@@ -178,7 +261,7 @@ void Scene::constructCubes(group_ptr parent)
 
 	State noTex = State();
 	noTex.setColorMaterial(true);
-	noTex.setMaterial(Material::RUBBER_RED);
+	noTex.setMaterial(Material::PLASTIC_GREEN);
 
 	transform_ptr cube2 = constructTransform(	&noTex, rot,
 											3.1415/2, Vec3(0.f,0.f,1.f),

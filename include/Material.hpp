@@ -18,7 +18,9 @@ class Material{
 	public:
 		enum MaterialPreset{
 			RUBBER_RED,
-			GLASS_YELLOW
+			PLASTIC_GREEN,
+			GOLD,
+			OBSIDIAN
 		};
 
 		Material();

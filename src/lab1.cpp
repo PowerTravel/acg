@@ -1,14 +1,8 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-//#include <GL/glut.h>
 #include <GL/freeglut.h>
-//#include <GL/freeglut_ext.h>
-//#include "Shader.hpp"
-//#include "Geometry.hpp"
-//#include "Transform.hpp"
 #include "Scene.hpp"
-//#include "Camera.hpp"
 #include "RenderVisitor.hpp"
 #include "UpdateVisitor.hpp"
 #include "KeyState.hpp"
@@ -21,7 +15,7 @@ int SCREEN_WIDTH = 620;
 int SCREEN_HEIGHT = 480;
 float AVERAGE_FPS = 0;
 int TICKS =0;
-int FPS = 100;
+int FPS = 60;
 
 void setUpGlut(int argc, char* argv[]);
 void GLEWprintSystemSpecs();
@@ -87,7 +81,7 @@ void updateAndDisplay(int i)
 	{
 		std::string title = "Assignment 1, FPS: ";
 		title.append(std::to_string(AVERAGE_FPS/FPS));
-		title.append("  RenderTime: ");
+		title.append("  SceneGraphTime [s]: ");
 		title.append(std::to_string(RENDER_TIMER.getTime()/1000000));
 		glutSetWindowTitle(title.c_str());
 		AVERAGE_FPS = 0;
@@ -110,7 +104,6 @@ void display()
 	
 	glutSwapBuffers();
 //	glutPostRedisplay();
-//	glutTimerFunc(1000/60, display,0);
 }
 
 void setUpGlut(int argc, char* argv[])
