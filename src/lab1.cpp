@@ -143,7 +143,7 @@ void glutMainProgram()
 	glutMainLoop();
 }
 
-
+/*
 void GLEWprintSystemSpecs()
 {
 	const GLubyte* vendor = glGetString(GL_VENDOR);
@@ -166,8 +166,8 @@ void GLEWprintSystemSpecs()
 	fprintf(stderr, "Shading language version = %s \n", shading);
 	fprintf(stderr, "shading extenstion = %s \n\n", extension);
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-
 }
+*/
 
 void setUpGlew()
 {
@@ -196,5 +196,6 @@ void setUpGlew()
 */
 
 	// this prints the computers compatibility.
+	// Does not work on itchy
 	 //GLEWprintSystemSpecs();	
 }
