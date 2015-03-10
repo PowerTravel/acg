@@ -24,6 +24,14 @@ class Shader{
 
 	public:
 
+		enum DataTypes{
+			VBO_VERTEX,
+			VBO_NORMAL,
+			VBO_TEXTURE_COORDINATE,
+			VBO_FACE,
+			UNIFORM,
+		};
+
 		Shader();
 		Shader(const char* vShaderFile, const char* fShaderFile);
 		virtual ~Shader();
@@ -43,7 +51,6 @@ class Shader{
 		void setUniform2i(std::string name, int count, int* data);
 		void setUniform3i(std::string name, int count, int* data);
 		void setUniform4i(std::string name, int count, int* data);
-
 
 		GLuint getUniform(std::string name);
 

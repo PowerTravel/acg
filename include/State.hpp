@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <memory>
 #include <list>
+#include <map>
 #include "Shader.hpp"
 #include "Material.hpp"
 #include "Light.hpp"
@@ -36,10 +37,14 @@ class State{
 		};
 
 		enum ShadeType{
-			FLAT,
 			PHONG,
-			BLINN_PHONG
 		}; 
+
+		enum TexMap{
+			DIFFUSE,
+			SPECULAR,
+			SHADOW
+		};
 
 		// Setters and getters for unique attributes
 
@@ -96,10 +101,11 @@ class State{
 		void popLight(int n);
 
 		// One diffuse texture is supported at the moment.
-		void pushTexture(Texture t);
+		bool hasTexture(TexMap m);
+		void addTexture(TexMap m,Texture t);
 		int getNrTextures();
-		Texture getTexture(int n);
-		void popTexture(int n);
+		Texture getTexture(TexMap m);
+		void popTexture(TexMap m);
 
 		// Sets the GL_state to repressent this state.
 		void apply();
@@ -133,7 +139,12 @@ class State{
 
 		// Cumulative attributes
 		std::list< Light > _lights;
-		std::list< Texture > _textures;
+
+		std::map<int, Texture> _textures;
+
+		// Get a vector stuffed with enums for iteration
+		std::vector<TexMap> getMapVector();
+		//std::list< Texture > _textures;
 };
 
 #endif // STATE_HPP

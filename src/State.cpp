@@ -8,14 +8,15 @@ State::State()
 	_isMaterialSet = false;
 	_isShaderSet = false;
 	_polyMode = FILL;
-	_shadeType = FLAT;
+	_shadeType = PHONG;
 	_cullFace = true;
 	_colorMaterial = false;
 	_material = Material();
 	_isMaterialSet = false;
 	_shader = NULL;
+
 	_lights = std::list< Light >();
-	_textures = std::list< Texture >();
+	_textures = std::map<int, Texture>();
 }
 
 State::~State()
@@ -62,20 +63,31 @@ void State::merge(State* s)
 	}
 
 	int n = s->getNrLights();
-	int i = 0;
-	while(i<n)
+	for(int i=0; i<n; i++)
 	{
 		pushLight(s->getLight(i));
-		i++;
 	}
 
-	n = s->getNrTextures();
-	i = 0;
-	while(i<n)
+
+	std::vector<TexMap> mv = getMapVector();
+	n = mv.size();
+	for(int i =0; i<n; i++ )
 	{
-		pushTexture(s->getTexture(i));
-		i++;
+		if(s->hasTexture(mv[i]))
+		{
+			addTexture(mv[i], s->getTexture(mv[i]) );
+		}	
 	}
+	
+}
+
+std::vector<State::TexMap> State::getMapVector()
+{
+	std::vector<TexMap> mv = std::vector<TexMap>();
+	mv.push_back(State::DIFFUSE);
+	mv.push_back(State::SPECULAR);
+	mv.push_back(State::SHADOW);
+	return mv;
 }
 
 // Below are setters, getter and inspectors for the unique
@@ -116,7 +128,7 @@ bool State::isShadeTypeSet()
 }
 void State::removeShadeType()
 {
-	_shadeType = FLAT;
+	_shadeType = PHONG;
 	_isShadeTypeSet = false;
 }
 
@@ -217,33 +229,34 @@ Light State::getLight(int n)
 	return *it;
 }
 
-void State::pushTexture(Texture t)
+bool State::hasTexture(State::TexMap m)
 {
-	_textures.push_back(t);
+	return  _textures.count(m)==1;
+}
+void State::addTexture(State::TexMap m, Texture t)
+{
+	_textures.erase(m);
+	std::pair<State::TexMap, Texture > pair( m, t );
+	_textures.insert(pair);
 }
 int State::getNrTextures()
 {
 	return _textures.size();
 }
-Texture State::getTexture(int n)
+
+Texture State::getTexture(State::TexMap m)
 {
-	std::list<Texture>::iterator it = _textures.begin();
-	if(n < _textures.size()){
-		std::advance(it,n);
-		return *it;
+	if(_textures.count(m)){
+		return _textures[m];
 	}else{
 		std::cerr<<"Index out of bounds when accesing a texture in state." << std::endl;
 		return Texture();
 	}
 	
 }
-void State::popTexture(int n)
+void State::popTexture(State::TexMap m)
 {
-	std::list<Texture>::iterator it = _textures.begin();
-	if(n < _textures.size()){
-		std::advance(it,n);
-		_textures.erase(it);
-	}
+	_textures.erase(m);
 }
 
 /*
@@ -353,6 +366,30 @@ void State::apply()
 		delete[] att;
 	}
 
+
+	std::vector<TexMap> mv = getMapVector(); 
+	int n = mv.size();
+	//std::cerr << _textures.size();
+	if(!_textures.empty() && _colorMaterial == false){
+		int use = 1;
+		_shader->setUniform1i("usingTexture",1, &use);
+		for(int i = 0; i<n; i++)
+		{
+			if(_textures.count(mv[i])==1)
+			{
+				_textures[mv[i]].bind(GL_TEXTURE0);
+				int tex = 0;
+				_shader->setUniform1i("gSampler",1, &tex);
+			}		
+		}
+	}else{
+		// unbind any loaded textures
+		glBindTexture(GL_TEXTURE_2D,0);
+		int use = 0;
+		_shader->setUniform1i("usingTexture",1, &use);
+	}
+/*
+
 	// Apply Texture if we have them
 	if( !_textures.empty() && _colorMaterial == false ){
 		int use = 1;
@@ -368,4 +405,5 @@ void State::apply()
 		int use = 0;
 		_shader->setUniform1i("usingTexture",1, &use);
 	}
+*/
 }

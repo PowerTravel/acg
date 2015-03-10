@@ -13,6 +13,7 @@ struct aiTexture;
 class Texture{
 	
 	public:
+		
 		Texture();
 		Texture(GLenum textureTarget, std::string& filename);
 		virtual ~Texture();

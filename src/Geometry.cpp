@@ -99,7 +99,7 @@ geometry_vec Geometry::loadFile(const char* filePath){
 					Texture t = Texture(GL_TEXTURE_2D, fullPath);
 					if(t.loaded())
 					{
-						materialState.pushTexture(t);
+						materialState.addTexture(State::DIFFUSE, t);
 					}
 				}
 			}
