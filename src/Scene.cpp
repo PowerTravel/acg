@@ -201,18 +201,22 @@ void Scene::setUpLab1ShaderState(State* s)
 	//s->getShader()->createAttribute("vertex");
 	//s->getShader()->createAttribute("normal");
 	//s->getShader()->createAttribute("texCoord");
-	s->getShader()->createUniform("M");
-	s->getShader()->createUniform("V");
-	s->getShader()->createUniform("P");
+//	s->getShader()->createUniform("M");
+//	s->getShader()->createUniform("V");
+//	s->getShader()->createUniform("P");
 	s->getShader()->createUniform("ambientProduct");
 	s->getShader()->createUniform("diffuseProduct");
 	s->getShader()->createUniform("specularProduct");
 	s->getShader()->createUniform("lightPosition");
 	s->getShader()->createUniform("attenuation");
 	s->getShader()->createUniform("shininess");
-	s->getShader()->createUniform("gSampler");
-	s->getShader()->createUniform("usingTexture");
+	s->getShader()->createUniform("diffuseTextureID");
+	s->getShader()->createUniform("shadowMapID");
+	s->getShader()->createUniform("usingDiffTexture");
+	s->getShader()->createUniform("usingShadowMap");
 	s->getShader()->createUniform("nrLights");
+	s->getShader()->createUniform("BiasLightPVM");	
+	
 }
 
 // Constructs the spinning sphere for lab1 scene.
@@ -359,14 +363,14 @@ transform_ptr Scene::createFloor(group_ptr parent)
 	g[0]->createGeom(nrVert, nrFaces, vert,  norm,  faces, NULL);
 	
 	State mat = State();
-	mat.setMaterial(Material(Material::OBSIDIAN));
+	mat.setMaterial(Material(Material::RUBBER_RED));
 	mat.setColorMaterial(true);
 
-	transform_ptr lower = constructTransform(&mat, parent, 0, Vec3(), Vec3(0,-4,0), Vec3(1,1,1) );
+	transform_ptr lower = constructTransform(&mat, parent, 0, Vec3(), Vec3(0,-4,0), Vec3(10,0.5,10) );
 
 	std::pair< std::string, geometry_vec > pair("floor", g);
 	gt.insert(pair);
-	linkGeometry("floor", lower);
+	linkGeometry("cube", lower);
 	return lower;
 }
 
@@ -389,10 +393,6 @@ void Scene::buildLab2()
 	root->setState( &s );	
 
 	shader_ptr shadowShader = shader_ptr(new Shader(V_SHADER, F_SHADER));
-	shadowShader->createUniform("M");
-	shadowShader->createUniform("V");
-	shadowShader->createUniform("P");
-
 
 	std::shared_ptr<RenderToTexture> shd = std::shared_ptr<RenderToTexture>(new RenderToTexture(shadowShader));
 
@@ -400,11 +400,8 @@ void Scene::buildLab2()
 	
 	// Create lights and add them to the root node
 	State lightState = State();
-	lightState.pushLight(Light(Vec3(0,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.0 ));
+	lightState.pushLight(Light(Vec3(0,100,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.0 ));
 	root->setState(&lightState);
-
-//	shadowShaderState.getShader()->createUniform("vPositions");
-//	shadowShaderState.getShader()->createUniform("vNormal");
 
 
 	 //Construc the camera and attach it to root

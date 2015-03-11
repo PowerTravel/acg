@@ -5,7 +5,9 @@
 
 NodeVisitor::NodeVisitor()
 {
+
 }
+
 NodeVisitor::~NodeVisitor(){}
 
 /*
@@ -23,6 +25,7 @@ void NodeVisitor::traverse(Node* node)
 	node->acceptVisitor(*this);
 	
 	// If the node is of type GROUP we traverse it's subtree if it
+	// is a GROUP
 	if(node->getType() ==  Node::GROUP  )
 	{
 		Group* grpPtr =(Group*) node;

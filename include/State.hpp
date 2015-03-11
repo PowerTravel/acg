@@ -116,6 +116,7 @@ class State{
 		// added together
 		void merge(State* s); 
 
+		std::vector<TexMap> getMapVector();
 	private:
 
 		// Unique attributes
@@ -143,7 +144,6 @@ class State{
 		std::map<int, Texture> _textures;
 
 		// Get a vector stuffed with enums for iteration
-		std::vector<TexMap> getMapVector();
 		//std::list< Texture > _textures;
 };
 

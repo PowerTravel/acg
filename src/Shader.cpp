@@ -97,6 +97,12 @@ Shader::Shader(const char* vShaderFile, const char* fShaderFile)
 	}
 	
 	this->program = program;
+
+	// M, V, P are default variables that all shaders are assumed to
+	// use, That is Model, View and Projection matrices
+	createUniform("M");
+	createUniform("V");
+	createUniform("P");
 }
 
 Shader::~Shader()

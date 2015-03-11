@@ -39,6 +39,8 @@ class NodeVisitor{
 		virtual void apply(Group* grp);
 		virtual void apply(Transform* t);
 		virtual void apply(Camera* cam);
+
+	protected:
 };
 
 

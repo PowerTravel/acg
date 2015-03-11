@@ -29,7 +29,6 @@ class RenderVisitor : public NodeVisitor{
 		void apply(Transform* t);
 		void apply(Camera* t);
 
-		//void printMatStruct();
 	
 	private:
 
@@ -75,6 +74,7 @@ class RenderVisitor : public NodeVisitor{
 		state_ptr syncStates(State* lastState, State* newState);
 		
 		void sendPVMtoGPU(shader_ptr s);
+		void initTextures(State* s);
 };
 
 #endif // RENDER_VISITOR_HPP

@@ -23,7 +23,7 @@ class Node{
 
 	public:
 		// Identifyer if the Node is able to have children or not.
-		enum Type{NODE, GROUP};
+		enum N_Type{NODE, GROUP};
 		
 		Node();
 		virtual ~Node();
@@ -34,13 +34,13 @@ class Node{
 		virtual void connectCallback(callback_ptr cb);
 		UpdateCallback* getUpdateCallback();
 
-		Type getType();
+		N_Type getType();
 		void setState(State* s);
 		State* getState();	
 
 
 	protected:
-		Type _type;
+		N_Type _type;
 		state_ptr _state;
 		callback_ptr _callback;
 };

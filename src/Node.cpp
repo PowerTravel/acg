@@ -87,12 +87,12 @@ State* Node::getState()
  * Purpose:	gets the Type of the node, which tells us if it is able
  *			to have children or not.
  * Input: 	-
- * Output:	Node::Type: the type of the node.
+ * Output:	Node::N_Type: the type of the node.
  * Misc:	Type can be 'NODE' or 'GROUP' The difference between them
  * 			being that GROUP can have children while NODE cannot.
  *			It is set at creation and cannot be changed later.
  */
-Node::Type Node::getType()
+Node::N_Type Node::getType()
 {
 	return _type;
 }

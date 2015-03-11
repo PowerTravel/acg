@@ -43,8 +43,25 @@ void RenderToTexture::acceptVisitor(NodeVisitor& v)
 	v.apply(this);
 }
 
-void RenderToTexture::render()
+void RenderToTexture::bindBuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
-	
+}
+void RenderToTexture::clearBuffer()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void RenderToTexture::bindTexture(GLenum id)
+{
+	_depthTex.bind(id);
+}
+void RenderToTexture::clearTexture()
+{
+	_depthTex.clear();
+}
+
+Shader* RenderToTexture::getShader()
+{
+	return  _s.get();
 }

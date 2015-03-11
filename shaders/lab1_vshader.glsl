@@ -2,13 +2,14 @@
 layout (location = 0) in vec3 vPosition;
 layout (location = 1) in vec2 tempTex;
 layout (location = 2) in vec3 vNormals;
-uniform mat4 M, V, P;
+uniform mat4 M, V, P, BiasLightPVM;
 varying vec2 texCoord0; 
 uniform int nrLights;
 
 uniform vec3 lightPosition[3];
 varying vec3 L[3],E[3],H[3],N[3];
 varying float R[3];
+varying vec4 ShadowCoord;
 
 void main()
 {
@@ -28,4 +29,6 @@ void main()
 		N[i] = normalize(VM*vn).xyz;
 	}
 	gl_Position = P*vec4(pos,1);
+
+	ShadowCoord = BiasLightPVM*vec4(vPosition,1);
 }

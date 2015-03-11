@@ -368,37 +368,4 @@ void State::apply()
 		delete[] att;
 	}
 
-
-	std::vector<TexMap> mv = getMapVector(); 
-	int n = mv.size();
-	//std::cerr << _textures.size();
-	if(!_textures.empty() && _colorMaterial == false){
-		int use = 1;
-		_shader->setUniform1i("usingTexture",1, &use);
-		for(int i = 0; i<n; i++)
-		{
-
-			if(mv[i] == DIFFUSE){
-				if(hasTexture(DIFFUSE))
-				{
-					_textures[mv[i]].bind(GL_TEXTURE0);
-					int tex = 0;
-					_shader->setUniform1i("gSampler",1, &tex);
-				}
-			}else if(mv[i]==SHADOW){
-
-				if(hasTexture(SHADOW))
-				{
-				}
-			}
-		}
-	}else{
-		// unbind any loaded textures
-		glBindTexture(GL_TEXTURE_2D,0);
-		int use = 0;
-		_shader->setUniform1i("usingTexture",1, &use);
-	}
-
-	
-
 }

@@ -81,7 +81,7 @@ void Texture::clear()
 /*
  * Name:	bind	
  * Purpose: Binds its texture to the glState
- * Input:	GLenum textureUnit: The slot  	
+ * Input:	GLenum textureUnit: The slot 
  * Output:	-
  * Misc:	-
  */

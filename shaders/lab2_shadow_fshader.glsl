@@ -1,12 +1,11 @@
 #version 330 core
 
-layout(location=0) out vec3 fragmentDepth;
-
-uniform mat4 M,V,P;
+layout(location=0) out float fragmentDepth;
 
 void main(){
 
-	fragmentDepth.r = gl_FragCoord.z;
-	fragmentDepth.g = gl_FragCoord.z;
-	fragmentDepth.b = gl_FragCoord.z;
+	fragmentDepth = gl_FragCoord.z;
+	//gl_FragColor.r = gl_FragCoord.z; 
+	//gl_FragColor.g = gl_FragCoord.z; 
+	//gl_FragColor.b = gl_FragCoord.z; 
 }
