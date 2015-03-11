@@ -387,31 +387,8 @@ void State::apply()
 				}
 			}else if(mv[i]==SHADOW){
 
-				// NOT USED
 				if(hasTexture(SHADOW))
 				{
-					GLuint fb = 0;
-					glGenFramebuffers(1, &fb);
-					glBindFramebuffer(GL_FRAMEBUFFER, fb);
-
-					GLuint dt = 0;
-					glGenTextures(1, &dt);
-					glBindTexture(GL_TEXTURE_2D, dt);
-
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16 ,1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT,0  );
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-					glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, dt, 0);
-					glDrawBuffer(GL_NONE);
-
-					if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-					{
-						std::cerr << "Failed to create framebuffer in STATE.cpp" << std::endl;
-					}
-
-					glBindFramebuffer(GL_FRAMEBUFFER,0);
 				}
 			}
 		}

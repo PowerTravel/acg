@@ -11,6 +11,7 @@ class Geometry;
 class Group;
 class Transform;
 class Camera;
+class RenderToTexture;
 
 #ifndef NODE_LIST
 #define NODE_LIST
@@ -33,6 +34,7 @@ class NodeVisitor{
 		virtual void traverse( Node* node );
 
 		// Each node has their own apply function
+		virtual void apply(RenderToTexture* tex);
 		virtual void apply(Geometry* g);
 		virtual void apply(Group* grp);
 		virtual void apply(Transform* t);

@@ -91,11 +91,11 @@ class Scene{
 
 		// Functions related to constructing the scene in lab1
 		void buildLab1();
-			void createFloor(group_ptr parent);
 			void setUpLab1ShaderState(State* s);
-			void constructFace(group_ptr parent);
-			void constructCubes(group_ptr parent);
-			void constructSphere(group_ptr parent);
+			transform_ptr constructFace(group_ptr parent);
+			transform_ptr constructCubes(group_ptr parent);
+			transform_ptr constructSphere(group_ptr parent);
+			transform_ptr createFloor(group_ptr parent);
 		void buildLab2();
 		void buildLab3();
 };

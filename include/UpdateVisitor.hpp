@@ -3,6 +3,7 @@
 
 #include "NodeVisitor.hpp"
 
+
 /*	
  *	Class: 		UpdateVisitor
  *	Purpose: 	Traverses the scenegraph and calls the update-method
@@ -16,6 +17,7 @@ class UpdateVisitor : public NodeVisitor{
 		UpdateVisitor();
 		virtual ~UpdateVisitor();
 
+		void apply(RenderToTexture* tex);
 		void apply(Geometry* g);
 		void apply(Group* grp);
 		void apply(Transform* t);

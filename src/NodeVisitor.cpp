@@ -34,6 +34,10 @@ void NodeVisitor::traverse(Node* node)
 	}
 }
 
+void NodeVisitor::apply(RenderToTexture* tex)
+{
+	printf("Visiting RenderToTexture from NodeVisitor \n");
+}
 void NodeVisitor::apply(Geometry* g)
 {
 	printf("Visiting Geometry from NodeVisitor \n");

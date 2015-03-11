@@ -1,4 +1,5 @@
 #include "Scene.hpp"
+#include "RenderToTexture.hpp"
 #include "Geometry.hpp"
 #include "Camera.hpp"
 #include "Transform.hpp"
@@ -215,7 +216,7 @@ void Scene::setUpLab1ShaderState(State* s)
 }
 
 // Constructs the spinning sphere for lab1 scene.
-void Scene::constructSphere(group_ptr parent)
+transform_ptr Scene::constructSphere(group_ptr parent)
 {
 	// Create a state that renders lines.
 	State lineState = State();
@@ -231,10 +232,12 @@ void Scene::constructSphere(group_ptr parent)
 
 	linkGeometry("sphere", sphere);
 
+	return sphere;
+
 }
 
 // Builds the two spinning cubes for the lab1 scene.
-void Scene::constructCubes(group_ptr parent)
+transform_ptr Scene::constructCubes(group_ptr parent)
 {
 	// Build the textured cube
 	transform_ptr rot = constructTransform(	NULL, parent,
@@ -262,10 +265,12 @@ void Scene::constructCubes(group_ptr parent)
 											Vec3(1.f,1.f,1.f));
 	cube2->connectCallback(std::shared_ptr<TransformSpinCallback>( new TransformSpinCallback(cube2, 0.05, Vec3(0,-1,0) )));
 	linkGeometry("cube", cube2);	
+
+	return rot;
 }
 
 // Construct the circling face for the lab1 scene
-void Scene::constructFace(group_ptr parent)
+transform_ptr Scene::constructFace(group_ptr parent)
 {
 
 	transform_ptr rotation = constructTransform(NULL, parent,0, Vec3(0.f,1.f,0.f), Vec3(0.f,0.f,0.f),Vec3(1.f,1.f,1.f));
@@ -276,11 +281,12 @@ void Scene::constructFace(group_ptr parent)
 
 	offset->rotate(3.1415/2, Vec3(0.f,0.f,1.f));
 	linkGeometry("face", offset);
+	return rotation;
 }
 
 // Creates the floor piece to show that we can load an
 // object without a file for the lab1 scene.
-void Scene::createFloor(group_ptr parent)
+transform_ptr Scene::createFloor(group_ptr parent)
 {
 
 	int nrVert = 6*4;
@@ -361,6 +367,7 @@ void Scene::createFloor(group_ptr parent)
 	std::pair< std::string, geometry_vec > pair("floor", g);
 	gt.insert(pair);
 	linkGeometry("floor", lower);
+	return lower;
 }
 
 void Scene::buildLab2()
@@ -378,43 +385,36 @@ void Scene::buildLab2()
 
 	// Load and initiate the shader and add it to the root node
 	State s;
-//	setUpLab1ShaderState( &s );
-//	root->setState( &s );	
+	setUpLab1ShaderState( &s );
+	root->setState( &s );	
 
-	// Shadow branch
-	State shadowShaderState = State();
-	shadowShaderState.setShader( shader_ptr(new Shader(V_SHADER, F_SHADER)) );
-	shadowShaderState.getShader()->createUniform("M");
-	shadowShaderState.getShader()->createUniform("V");
-	shadowShaderState.getShader()->createUniform("P");
-	//shadowShaderState.addTexture(Texture());
+	shader_ptr shadowShader = shader_ptr(new Shader(V_SHADER, F_SHADER));
+	shadowShader->createUniform("M");
+	shadowShader->createUniform("V");
+	shadowShader->createUniform("P");
 
 
-	group_ptr shd = group_ptr(new Group());
-	shd->setState(&shadowShaderState);
+	std::shared_ptr<RenderToTexture> shd = std::shared_ptr<RenderToTexture>(new RenderToTexture(shadowShader));
 
-	
+	root -> addChild(shd);
 	
 	// Create lights and add them to the root node
 	State lightState = State();
-	lightState.pushLight(Light(Vec3(0,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.002 ));
-	root->setState(&lightState);	
+	lightState.pushLight(Light(Vec3(0,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.0 ));
+	root->setState(&lightState);
 
-	shadowShaderState.getShader()->createUniform("vPositions");
-	shadowShaderState.getShader()->createUniform("vNormal");
+//	shadowShaderState.getShader()->createUniform("vPositions");
+//	shadowShaderState.getShader()->createUniform("vNormal");
 
 
 	 //Construc the camera and attach it to root
-	 camera_ptr cam = constructCamera(	NULL , root, 
+	 camera_ptr cam = constructCamera(	NULL , shd, 
 										Vec3(0.f, 0.f,4.f),
 										Vec3(0.f, 0.f,0.f),
 										Vec3(0.f, 1.f, 0.f));
 	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
 
-	cam->addChild(shd);
-	
-	constructCubes(shd);
-	createFloor(shd);
-
+	transform_ptr cube = constructCubes(cam);
+	transform_ptr floor = createFloor(cam);
 }
 void Scene::buildLab3(){}

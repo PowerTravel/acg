@@ -10,10 +10,8 @@
 
 RenderVisitor::RenderVisitor()
 {
-	mList =std::list<Mc>();
-	sList = std::list<Sc>();
+	std::list<aggregate_data> aList;
 	_isModelviewSet = false;
-	_rtt = NULL;
 }
 
 RenderVisitor::~RenderVisitor()
@@ -23,11 +21,7 @@ RenderVisitor::~RenderVisitor()
 
 void RenderVisitor::apply(RenderToTexture* tex)
 {
-	modify_mList(tex->childList.size(), Hmat());
-	modify_sList(tex->childList.size(), tex->getState());
-
-	//State s = State();
-	//s.addTexture(State::SHADOW, tex->getTexture());
+	modify_aList(tex->childList.size(), Hmat(), tex->getState(), tex);
 }
 
 
@@ -43,34 +37,35 @@ void RenderVisitor::apply(RenderToTexture* tex)
 void RenderVisitor::apply(Geometry* g)
 {
 	// this matrix contain the accumulated ModelMatrix.
-	mList.front().m.get(_M); 
+	aList.front().m.get(_M);
 	
-	// We sync the geometries state with the lates entry in the sList.
-	state_ptr state = syncStates(sList.front().s.get(),g->getState() );
+	// We sync the geometries state with the lates entry in the aList.
+	state_ptr state = syncStates(aList.front().s.get(),g->getState() );
 
 	if( state->isShaderSet() )
 	{
 		// If a material is set previously it overrides
 		// any material that may have been loaded to the 
 		// geometry from a file.
-		if(sList.front().s->isMaterialSet())
+		if(aList.front().s->isMaterialSet())
 		{
-			state->setMaterial(sList.front().s->getMaterial());
+			state->setMaterial(aList.front().s->getMaterial());
 		}
 
 		// Apply the state to openGL
 		state->apply();
 
-		// Send the Model View and projection matrices to the shader
-		shader_ptr shader = state->getShader();		
-		shader->setUniformMatrix("M",1, _M);
-		if(_isModelviewSet)
+		// if renderToTexture exists we want to create dynamic shadows
+		if(aList.front().rtt != NULL)
 		{
-			shader->setUniformMatrix("V", 1, _V);
-			shader->setUniformMatrix("P", 1, _P);
-		}else{
-			std::cerr<<"No CameraMatrix active. Probably not rendering properly."<<std::endl;
+			//aList.front().rtt->render();
+		//	std::cout << "lel" << std::endl;
 		}
+
+
+
+		// Send the Model View and projection matrices to the shader
+		sendPVMtoGPU(state->getShader());
 
 		// draw the geometry
 		g->draw();
@@ -80,8 +75,19 @@ void RenderVisitor::apply(Geometry* g)
 
 	// Since we are in a leaf we now want to erase all entries
 	// in these lists up to the entry that has unvisited children.
-	decrease_sList();
-	decrease_mList();
+	decrease_aList();
+}
+
+void RenderVisitor::sendPVMtoGPU(shader_ptr s)
+{
+		s->setUniformMatrix("M",1, _M);
+		if(_isModelviewSet)
+		{
+			s->setUniformMatrix("V", 1, _V);
+			s->setUniformMatrix("P", 1, _P);
+		}else{
+			std::cerr<<"No CameraMatrix active. Probably not rendering properly."<<std::endl;
+		}
 }
 
 /*
@@ -94,12 +100,9 @@ void RenderVisitor::apply(Geometry* g)
 void RenderVisitor::apply(Group* grp)
 {
 	// This node will never have transformation matrices,
-	// But it may have children, thus we add a unit matrix
+	// But it may have children and a state, thus we add a unit matrix
 	// together with the number of children it has.
-	modify_mList(grp->childList.size(), Hmat());
-
-	// We also sync the states and add them to the sList
-	modify_sList(grp->childList.size(), grp->getState());
+	modify_aList(grp->childList.size(), Hmat(), grp->getState(), NULL);
 }
 
 /*
@@ -118,8 +121,7 @@ void RenderVisitor::apply(Camera* cam)
 	_isModelviewSet = true;
 
 	// See apply (Group)
-	modify_mList(cam->childList.size(), Hmat());
-	modify_sList(cam->childList.size(), cam->getState());
+	modify_aList(cam->childList.size(), Hmat(), cam->getState(), NULL);
 }
 
 
@@ -133,21 +135,22 @@ void RenderVisitor::apply(Camera* cam)
  */
 void RenderVisitor::apply(Transform* t)
 {	
-	modify_mList(t->childList.size(), t->getM());
-	modify_sList(t->childList.size(), t->getState());
+	modify_aList(t->childList.size(), t->getM(), t->getState(), NULL);
 }
 
 /*
- * Name:	modify_mList	
- * Purpose: Adds or removes entries in the mList
+ * Name:	modify_aList	
+ * Purpose: Adds or removes entries in the aList
  * Input:	-int count: The number of children the added Hmat
  *			will be relevant for.
- *			-Hnat m: The matrix to be summed up.
+ *			-Hmat m: The matrix to be summed up.
+ *			-State* s: The state that should be accumulated
+ *			-RenderToTexture* t: If we want to render to a texture
+ *			instead of to the screen
  * Output:	-
  * Misc:	-
  */
- // Use for group nodes
-void RenderVisitor::modify_mList(int count, Hmat m)
+void RenderVisitor::modify_aList(int count, Hmat m, State* s, RenderToTexture* t )
 {
 	// If the node is a leaf
 	if(count == 0)
@@ -156,101 +159,63 @@ void RenderVisitor::modify_mList(int count, Hmat m)
 		// that corresponds to already visited nodes with
 		// no children. Those entries are the ones where 
 		// 'count' has been reduced to 1; 
-		decrease_mList();
+		decrease_aList();
 
 	// If the node has children we push the matrix
 	}else{
-		Mc result;
+		aggregate_data result;
 		result.count = count;	
-
-		if(!mList.empty())
-		{
-			// sum the two latest matrices
-			result.m = mList.front().m*m ;
-		}else{
+		
+		if(aList.empty()){
 			// or if this is the first entry we add it as is
 			result.m = m;
-		}
-		mList.push_front(result);
+			
+			result.s = state_ptr(new State());
+			result.s->merge(s);
+
+			result.rtt = t;
+		}else{
+			// sum the two latest matrices
+			result.m = aList.front().m*m ;
+			
+			state_ptr oldState = aList.front().s;
+			result.s = syncStates(oldState.get(), s);
+
+			if(t != NULL){
+				result.rtt = t;	
+			}else{
+				result.rtt = aList.front().rtt;
+			}
+		}	
+
+		aList.push_front(result);
 	}
 }
 
+
 /*
- * Name:	decrease_mList	
+ * Name:	decrease_aList	
  * Purpose:	Pops entries that corresponds to already visited nodes.
  * 			Those are the entries that have had their 'count' reduced
  *	 		to 1. Also, reduce the next remaining entrys count 
- *			by 1 indicating that one subtree has been processed.
+ *			by 1 indicating that one of its childs subtree has been
+ *			processed.
  * Input:	-
  * Output:	-
  * Misc:	-
  */
-void RenderVisitor::decrease_mList()
+void RenderVisitor::decrease_aList()
 {	
-	std::list<Mc>::iterator it=mList.begin();
+	std::list<aggregate_data>::iterator it=aList.begin();
 	// pop all entries with count reduced to 1.
-	while( it->count <= 1 && it!= mList.end() )
+	while( it->count <= 1 && it!= aList.end() )
 	{
 		it++;
-		mList.pop_front();
+		aList.pop_front();
 	}
 	// Reduce the count of the remaing top with one
-	mList.front().count--;
+	aList.front().count--;
 }
-
-/*
- * Name:	modify_sList
- * Purpose:	adds or removes entries in the sList 
- * Input:	-int count: the number of children in the node that called
- *			the method.
- *			State* s: The state of the node that called the method.
- * Output:	-
- * Misc:	Works almost exactly as modify_mList but instead of
- *			multiplyinh matrices it sums states
- */
-void RenderVisitor::modify_sList(int count, State* s)
-{
-	if(count == 0)
-	{
-		decrease_sList();
-	}else{
-		Sc result;
-		result.count = count;
-		if(!sList.empty())
-		{
-			state_ptr oldState = sList.front().s;
-			result.s = syncStates(oldState.get(), s);
-		}else{
-			result.s = state_ptr(new State());
-			result.s->merge(s);
-		}
-		sList.push_front(result);
-	}
-}
-
-/*
- * Name:	decrease_sList	
- * Purpose:	Decrease the sList after a leaf has been processed 
- * Input:	-	
- * Output:	-
- * Misc:	Works exactly as decrease_mList. Se that for a moder
- *			deetailed description.
- */
-void RenderVisitor::decrease_sList()
-{
-	if(!sList.empty())
-	{
-		std::list<Sc>::iterator it=sList.begin();
-		
-		while( it->count <= 1 && it!= sList.end() )
-		{
-			it++;
-			sList.pop_front();
-		}
-		sList.front().count--;
-	}
-}
-
 
 /*
  * Name:	syncStates

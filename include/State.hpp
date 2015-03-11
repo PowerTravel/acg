@@ -115,7 +115,7 @@ class State{
 		// If they both carry cumulative attributes they will get 
 		// added together
 		void merge(State* s); 
-	
+
 	private:
 
 		// Unique attributes

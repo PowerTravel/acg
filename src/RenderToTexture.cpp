@@ -1,8 +1,9 @@
 #include "RenderToTexture.hpp"
 #include "NodeVisitor.hpp"
 
-RenderToTexture::RenderToTexture(int w, int h)
+RenderToTexture::RenderToTexture(std::shared_ptr<Shader> s, int w, int h)
 {
+	_s = s;
 	_framebuffer= 0;
 	glGenFramebuffers(1, &_framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
@@ -42,11 +43,8 @@ void RenderToTexture::acceptVisitor(NodeVisitor& v)
 	v.apply(this);
 }
 
-void RenderToTexture::bind()
+void RenderToTexture::render()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
-}
-void RenderToTexture::clear()
-{
-
+	
 }
