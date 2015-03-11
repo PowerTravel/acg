@@ -5,6 +5,12 @@
 #include <vector>
 #include <unordered_map>
 
+#ifndef GROUP_PTR
+#define GROUP_PTR
+class State;
+typedef std::shared_ptr<Group> group_ptr;
+#endif // GROUP_PTR
+
 #ifndef STATE_PTR
 #define STATE_PTR
 class State;

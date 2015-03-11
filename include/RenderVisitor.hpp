@@ -5,6 +5,9 @@
 #include "Hmat.hpp"
 #include <list>
 
+class RenderToTexture;
+
+
 /*	
  *	Class: 		RenderVisitor
  *	Purpose: 	Traverses the scenegraph and renders it.
@@ -20,6 +23,7 @@ class RenderVisitor : public NodeVisitor{
 		RenderVisitor();
 		virtual ~RenderVisitor();
 		
+		void apply(RenderToTexture* tex);
 		void apply(Geometry* g);
 		void apply(Group* grp);
 		void apply(Transform* t);
@@ -67,6 +71,9 @@ class RenderVisitor : public NodeVisitor{
 		// får jag segfault när jag stänger av programmet.
 //		Hmat _V; // View Mat
 //		Hmat _P; // Projection Mat
+
+
+		RenderToTexture* _rtt;
 
 		// Methods related to manipulating the mList
 		void decrease_mList();

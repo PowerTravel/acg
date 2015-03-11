@@ -5,13 +5,13 @@
 #include <stdlib.h>
 #include <GL/glew.h>
 
-#include <unordered_map>
+#include <map>
 #include <string>
 #include <memory>
 
 #ifndef UNI_TABLE
 #define UNI_TABLE
-typedef std::unordered_map<std::string, GLuint> UniTable;
+typedef std::map<std::string, GLuint> UniTable;
 #endif //UNI_TABLE
 
 #ifndef SHADER_PTR
@@ -23,7 +23,7 @@ typedef std::shared_ptr<Shader> shader_ptr;
 class Shader{
 
 	public:
-
+/*
 		enum DataTypes{
 			VBO_VERTEX,
 			VBO_NORMAL,
@@ -31,7 +31,7 @@ class Shader{
 			VBO_FACE,
 			UNIFORM,
 		};
-
+*/
 		Shader();
 		Shader(const char* vShaderFile, const char* fShaderFile);
 		virtual ~Shader();

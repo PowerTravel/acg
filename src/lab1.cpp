@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	setUpGlew();
 
 	// Build our scene
-	Scene::getInstance().buildScene(Scene::LAB1);
+	Scene::getInstance().buildScene(Scene::LAB2);
 
 	// KeyState records buttonpresses
 	KeyState::getInstance().setGlutCallback();

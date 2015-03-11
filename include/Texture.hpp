@@ -8,14 +8,15 @@ struct aiTexture;
 /*
  * Class: 	Texture
  * Purpose: Loads textures to the gpu.
- * Misc:	Only supports diffuse textures
+ * Misc:	Only supports 2D textures
  */
 class Texture{
 	
 	public:
 		
 		Texture();
-		Texture(GLenum textureTarget, std::string& filename);
+		Texture( GLuint id);
+		Texture( std::string& filename);
 		virtual ~Texture();
 
 		void clear();
@@ -24,7 +25,6 @@ class Texture{
 
 	private:
 		GLuint _id;
-		GLenum _textureTarget;
 		bool _loaded;
 };
 

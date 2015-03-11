@@ -363,5 +363,58 @@ void Scene::createFloor(group_ptr parent)
 	linkGeometry("floor", lower);
 }
 
-void Scene::buildLab2(){}
+void Scene::buildLab2()
+{
+	// Load the relevant gemoetries from files
+	gt = geometry_table();
+	loadGeometry("cube", "models/box.obj");
+	loadGeometry("sphere", "models/sphere.obj");
+	loadGeometry("face", "models/Capsule/capsule.obj");
+
+
+	
+	char V_SHADER[] = "shaders/lab2_shadow_vshader.glsl";
+	char F_SHADER[] = "shaders/lab2_shadow_fshader.glsl";
+
+	// Load and initiate the shader and add it to the root node
+	State s;
+//	setUpLab1ShaderState( &s );
+//	root->setState( &s );	
+
+	// Shadow branch
+	State shadowShaderState = State();
+	shadowShaderState.setShader( shader_ptr(new Shader(V_SHADER, F_SHADER)) );
+	shadowShaderState.getShader()->createUniform("M");
+	shadowShaderState.getShader()->createUniform("V");
+	shadowShaderState.getShader()->createUniform("P");
+	//shadowShaderState.addTexture(Texture());
+
+
+	group_ptr shd = group_ptr(new Group());
+	shd->setState(&shadowShaderState);
+
+	
+	
+	// Create lights and add them to the root node
+	State lightState = State();
+	lightState.pushLight(Light(Vec3(0,0,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.002 ));
+	root->setState(&lightState);	
+
+	shadowShaderState.getShader()->createUniform("vPositions");
+	shadowShaderState.getShader()->createUniform("vNormal");
+
+
+	 //Construc the camera and attach it to root
+	 camera_ptr cam = constructCamera(	NULL , root, 
+										Vec3(0.f, 0.f,4.f),
+										Vec3(0.f, 0.f,0.f),
+										Vec3(0.f, 1.f, 0.f));
+	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
+
+	cam->addChild(shd);
+	
+	constructCubes(shd);
+	createFloor(shd);
+
+}
 void Scene::buildLab3(){}

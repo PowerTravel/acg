@@ -33,7 +33,6 @@ class Group: public Node{
 		
 		void acceptVisitor(NodeVisitor& v);
 		
-
 		int getNrChildren();
 		
 		NodeList childList;

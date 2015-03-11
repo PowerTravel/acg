@@ -9,6 +9,12 @@ Texture::Texture()
 	_loaded = false;
 }
 
+Texture::Texture( GLuint id)
+{
+	_id = id;
+	_loaded = true;
+}
+
 /*
  * Name:	Texture
  * Purpose: Given a filename and textureTarget (probably redundant as
@@ -19,9 +25,8 @@ Texture::Texture()
  * Output:	-
  * Misc:	Only jpg and png supported
  */
-Texture::Texture(GLenum textureTarget, std::string& filename)
+Texture::Texture(std::string& filename)
 {
-	_textureTarget = textureTarget;
 	vr::Image* img = NULL;
 	_loaded = false;
 
@@ -42,23 +47,14 @@ Texture::Texture(GLenum textureTarget, std::string& filename)
 	// send the texture to the gpu	
 	if(img != NULL ){
 		glGenTextures(1, &_id);
-		glBindTexture(_textureTarget, _id);	
+		glBindTexture(GL_TEXTURE_2D, _id);	
   	
-		glTexParameterf(_textureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameterf(_textureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		
-		glTexImage2D(_textureTarget, 0, GL_RGB, img->width(), img->height(), 0, GL_RGB, GL_UNSIGNED_BYTE, img->data() );
-
-		
-/*		Ignore this. Saving for later.
-		vr::Image* image = img;
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-  		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-  		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  		gluBuild2DMipmaps( GL_TEXTURE_2D, 3, image->width(), image->height(), GL_RGB, GL_UNSIGNED_BYTE, image->data());
-		*/
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img->width(), img->height(), 0, GL_RGB, GL_UNSIGNED_BYTE, img->data() );
 
   		glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -67,7 +63,7 @@ Texture::Texture(GLenum textureTarget, std::string& filename)
 }
 Texture::~Texture()
 {
-
+	
 }
 
 /*
@@ -79,7 +75,7 @@ Texture::~Texture()
  */
 void Texture::clear()
 {
-	glBindTexture(_textureTarget,0);
+	glBindTexture(GL_TEXTURE_2D,0);
 }
 
 /*
@@ -94,7 +90,7 @@ void Texture::bind(GLenum textureUnit)
 	if(_loaded)
 	{
 		glActiveTexture(textureUnit);
-		glBindTexture(_textureTarget, _id);
+		glBindTexture(GL_TEXTURE_2D, _id);
 	}
 }
 

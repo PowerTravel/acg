@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include "RenderVisitor.hpp"
+#include "RenderToTexture.hpp"
 #include "Transform.hpp"
 #include "Geometry.hpp"
 #include "Camera.hpp"
@@ -12,12 +13,24 @@ RenderVisitor::RenderVisitor()
 	mList =std::list<Mc>();
 	sList = std::list<Sc>();
 	_isModelviewSet = false;
+	_rtt = NULL;
 }
 
 RenderVisitor::~RenderVisitor()
 {
 
 }
+
+void RenderVisitor::apply(RenderToTexture* tex)
+{
+	modify_mList(tex->childList.size(), Hmat());
+	modify_sList(tex->childList.size(), tex->getState());
+
+	//State s = State();
+	//s.addTexture(State::SHADOW, tex->getTexture());
+}
+
+
 
 /*
  * Name:	apply (Geometry)

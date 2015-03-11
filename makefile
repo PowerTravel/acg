@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project 
-LOCAL_OBJ_FILES = lab1.o Shader.o Node.o Geometry.o Transform.o State.o Group.o  NodeVisitor.o RenderVisitor.o UpdateVisitor.o Quaternion.o Vec3.o Vec4.o Hmat.o TransformMatrix.o Camera.o Scene.o UpdateCallback.o TransformSpinCallback.o CameraMovementCallback.o KeyState.o Light.o Material.o Texture.o Timer.o
+LOCAL_OBJ_FILES = lab1.o Shader.o Node.o Geometry.o Transform.o State.o Group.o  NodeVisitor.o RenderVisitor.o UpdateVisitor.o Quaternion.o Vec3.o Vec4.o Hmat.o TransformMatrix.o Camera.o Scene.o UpdateCallback.o TransformSpinCallback.o CameraMovementCallback.o KeyState.o Light.o Material.o Texture.o Timer.o RenderToTexture.o
 
 REMOTE_OBJ_FILES = Image.o JPGReader.o PNGReader.o FileSystem.o 
 OBJ_FILES = $(LOCAL_OBJ_FILES) $(REMOTE_OBJ_FILES)

@@ -272,6 +272,8 @@ void State::apply()
 	// Everything hinges on a shader bing set.
 	if( isShaderSet() )
 	{
+		getShader()->use();
+
 		// Set polygon Mode
 		if( _polyMode == POINT ){
 			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
@@ -375,29 +377,43 @@ void State::apply()
 		_shader->setUniform1i("usingTexture",1, &use);
 		for(int i = 0; i<n; i++)
 		{
-			if(_textures.count(mv[i])==1)
-			{
-				_textures[mv[i]].bind(GL_TEXTURE0);
-				int tex = 0;
-				_shader->setUniform1i("gSampler",1, &tex);
-			}		
-		}
-	}else{
-		// unbind any loaded textures
-		glBindTexture(GL_TEXTURE_2D,0);
-		int use = 0;
-		_shader->setUniform1i("usingTexture",1, &use);
-	}
-/*
 
-	// Apply Texture if we have them
-	if( !_textures.empty() && _colorMaterial == false ){
-		int use = 1;
-		_shader->setUniform1i("usingTexture",1, &use);
-		for(std::list<Texture>::iterator it = _textures.begin(); it != _textures.end(); it++){
-			it->bind(GL_TEXTURE0);
-			int tex = 0;
-			_shader->setUniform1i("gSampler",1, &tex);
+			if(mv[i] == DIFFUSE){
+				if(hasTexture(DIFFUSE))
+				{
+					_textures[mv[i]].bind(GL_TEXTURE0);
+					int tex = 0;
+					_shader->setUniform1i("gSampler",1, &tex);
+				}
+			}else if(mv[i]==SHADOW){
+
+				// NOT USED
+				if(hasTexture(SHADOW))
+				{
+					GLuint fb = 0;
+					glGenFramebuffers(1, &fb);
+					glBindFramebuffer(GL_FRAMEBUFFER, fb);
+
+					GLuint dt = 0;
+					glGenTextures(1, &dt);
+					glBindTexture(GL_TEXTURE_2D, dt);
+
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16 ,1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT,0  );
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+					glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, dt, 0);
+					glDrawBuffer(GL_NONE);
+
+					if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+					{
+						std::cerr << "Failed to create framebuffer in STATE.cpp" << std::endl;
+					}
+
+					glBindFramebuffer(GL_FRAMEBUFFER,0);
+				}
+			}
 		}
 	}else{
 		// unbind any loaded textures
@@ -405,5 +421,7 @@ void State::apply()
 		int use = 0;
 		_shader->setUniform1i("usingTexture",1, &use);
 	}
-*/
+
+	
+
 }

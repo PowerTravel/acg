@@ -96,7 +96,7 @@ geometry_vec Geometry::loadFile(const char* filePath){
 					std::string fileName = path.C_Str();
 					fullPath = fullPath.replace(fullPath.rfind("/")+1, std::string::npos, path.C_Str() );
 					
-					Texture t = Texture(GL_TEXTURE_2D, fullPath);
+					Texture t = Texture(fullPath);
 					if(t.loaded())
 					{
 						materialState.addTexture(State::DIFFUSE, t);
