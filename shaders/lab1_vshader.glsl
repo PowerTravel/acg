@@ -31,4 +31,6 @@ void main()
 	gl_Position = P*vec4(pos,1);
 
 	ShadowCoord = BiasLightPVM*vec4(vPosition,1);
+
+	//gl_Position = ShadowCoord;
 }

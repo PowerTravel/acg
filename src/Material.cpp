@@ -4,7 +4,7 @@
 #include "Light.hpp"
 Material::Material()
 {
-	setMaterial(RUBBER_RED);
+	setMaterial(PEARL);
 }
 
 Material::Material(const aiMaterial* mat)
@@ -39,6 +39,11 @@ void Material::setMaterial(MaterialPreset m)
 		_ambient = Vec4(0, 0,0,1);
 		_diffuse = Vec4(0.1,0.35,0.1,1);
 		_specular= Vec4(0.5,0.5,0.5,1);
+	}else if(m == PEARL){
+		_shininess=11;
+		_ambient = Vec4(0.01, 0.01,0.01,1);
+		_diffuse = Vec4(1,0.829,0.829,1);
+		_specular= Vec4(0.3,0.3,0.3,1);
 	}
 }
 

@@ -142,9 +142,6 @@ class State{
 		std::list< Light > _lights;
 
 		std::map<int, Texture> _textures;
-
-		// Get a vector stuffed with enums for iteration
-		//std::list< Texture > _textures;
 };
 
 #endif // STATE_HPP

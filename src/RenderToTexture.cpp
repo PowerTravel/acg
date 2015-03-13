@@ -17,10 +17,13 @@ RenderToTexture::RenderToTexture(std::shared_ptr<Shader> s, int w, int h)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTex, 0);
+
+	//glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTex, 0);
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTex, 0);
 
 	// Draw only depth, no color.
 	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
 
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
@@ -30,7 +33,7 @@ RenderToTexture::RenderToTexture(std::shared_ptr<Shader> s, int w, int h)
 	_depthTex = Texture(depthTex);
 
 	
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 }
 RenderToTexture::~RenderToTexture()
@@ -46,6 +49,10 @@ void RenderToTexture::acceptVisitor(NodeVisitor& v)
 void RenderToTexture::bindBuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cerr << "Failed to create framebuffer in STATE.cpp" << std::endl;
+	}
 }
 void RenderToTexture::clearBuffer()
 {
@@ -64,4 +71,9 @@ void RenderToTexture::clearTexture()
 Shader* RenderToTexture::getShader()
 {
 	return  _s.get();
+}
+
+Texture RenderToTexture::getTexture()
+{
+	return _depthTex;
 }

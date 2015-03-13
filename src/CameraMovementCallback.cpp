@@ -55,7 +55,10 @@ void CameraMovementCallback::getKeyState()
 	if( st & key_state_bit::KEY_R)
 	{
 		_cam->lookAt(Vec3(0,0,4), Vec3(0,0,0), Vec3(0,1,0));
-
+	}
+	if( st & key_state_bit::KEY_T)
+	{
+		_cam->lookAt(Vec3(0,5,2), Vec3(0,0,0), Vec3(0,1,0));
 	}
 
 	if(KeyState::getInstance().hasWindowChanged())

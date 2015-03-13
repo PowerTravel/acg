@@ -7,10 +7,12 @@
 
 #include "TransformSpinCallback.hpp"
 #include "CameraMovementCallback.hpp"
+geometry_table Scene::_gt = geometry_table();
+group_ptr Scene::root = group_ptr (new Group);
 
 Scene::Scene()
 {
-	root = std::shared_ptr<Group> (new Group);
+	//root = std::shared_ptr<Group> (new Group);
 }
 Scene::~Scene()
 {
@@ -59,7 +61,7 @@ void Scene::buildScene(Scene::BS bs)
  */
 void Scene::linkGeometry(std::string name, group_ptr grp)
 {
-	geometry_vec g = gt[name.c_str()];
+	geometry_vec g = _gt[name.c_str()];
 	for(int i = 0; i<g.size(); i++)
 	{
 		grp->addChild(g[i]);
@@ -80,7 +82,7 @@ void Scene::loadGeometry(std::string name, std::string path)
 {
 	geometry_vec g1=  Geometry::loadFile(path.c_str());
 	std::pair< std::string, geometry_vec > pair(name, g1);
-	gt.insert(pair);
+	_gt.insert(pair);
 }
 
 /*
@@ -136,7 +138,9 @@ transform_ptr Scene::constructTransform(State* s, group_ptr parent, float angle,
 	t->translate(trans);
 	t->scale(scale);
 
-	parent->addChild(t);
+	if(parent != NULL){
+		parent->addChild(t);
+	}
 	return t;
 }
 
@@ -151,7 +155,7 @@ transform_ptr Scene::constructTransform(State* s, group_ptr parent, float angle,
 void Scene::buildLab1()
 {
 	// Load the relevant gemoetries from files
-	gt = geometry_table();
+	_gt = geometry_table();
 	loadGeometry("cube", "models/box.obj");
 	loadGeometry("sphere", "models/sphere.obj");
 	loadGeometry("face", "models/Capsule/capsule.obj");
@@ -216,7 +220,6 @@ void Scene::setUpLab1ShaderState(State* s)
 	s->getShader()->createUniform("usingShadowMap");
 	s->getShader()->createUniform("nrLights");
 	s->getShader()->createUniform("BiasLightPVM");	
-	
 }
 
 // Constructs the spinning sphere for lab1 scene.
@@ -366,18 +369,19 @@ transform_ptr Scene::createFloor(group_ptr parent)
 	mat.setMaterial(Material(Material::RUBBER_RED));
 	mat.setColorMaterial(true);
 
-	transform_ptr lower = constructTransform(&mat, parent, 0, Vec3(), Vec3(0,-4,0), Vec3(10,0.5,10) );
+	transform_ptr lower = constructTransform(&mat, parent, 0, Vec3(), Vec3(0,-1,0), Vec3(10,0.5,10) );
 
 	std::pair< std::string, geometry_vec > pair("floor", g);
-	gt.insert(pair);
+	_gt.insert(pair);
 	linkGeometry("cube", lower);
+	//linkGeometry("floor", lower);
 	return lower;
 }
 
 void Scene::buildLab2()
 {
 	// Load the relevant gemoetries from files
-	gt = geometry_table();
+	//_gt = geometry_table();
 	loadGeometry("cube", "models/box.obj");
 	loadGeometry("sphere", "models/sphere.obj");
 	loadGeometry("face", "models/Capsule/capsule.obj");
@@ -400,18 +404,75 @@ void Scene::buildLab2()
 	
 	// Create lights and add them to the root node
 	State lightState = State();
-	lightState.pushLight(Light(Vec3(0,100,0), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), Vec4(0.5,0.5,0.5), 0.0 ));
+	lightState.pushLight(Light(Vec3(0,5,2), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0 ));
 	root->setState(&lightState);
 
 
+
 	 //Construc the camera and attach it to root
-	 camera_ptr cam = constructCamera(	NULL , shd, 
+	 camera_ptr cam = constructCamera(	NULL , root, 
 										Vec3(0.f, 0.f,4.f),
 										Vec3(0.f, 0.f,0.f),
 										Vec3(0.f, 1.f, 0.f));
 	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
 
+	transform_ptr ffc = createQuad( cam, shd->getTexture() );
 	transform_ptr cube = constructCubes(cam);
 	transform_ptr floor = createFloor(cam);
+	shd -> addChild(cam);
 }
 void Scene::buildLab3(){}
+
+transform_ptr Scene::createQuad(group_ptr parent, Texture texi)
+{
+	float vec[] = {	-0.5,-0.5,0,
+					0.5,-0.5,0,
+					-0.5,0.5,0,
+					0.5,0.5,0};	
+
+	float norm[] = {0,0,1,
+					0,0,1,
+					0,0,1,
+					0,0,1};
+
+	int face[] = { 0,1,2,
+				   1,3,2};
+
+	float tex[] = {	0,0,
+					0,1,
+					1,0,
+					1,1};
+
+	State s = State();
+	s.setCullFace(false);
+	//std::string fullPath = "models/eye.jpg";
+	//Texture texture = Texture(fullPath);
+	if(texi.loaded())
+	{
+		s.addTexture(State::DIFFUSE, texi);
+	}
+
+	geometry_vec g = geometry_vec( );
+	g.push_back(std::shared_ptr<Geometry>(new Geometry()) );
+	g[0]->createGeom(4, 2, vec,  norm,  face, tex);
+
+	std::pair< std::string, geometry_vec > pair("ffc", g);
+	_gt.insert(pair);
+
+
+	transform_ptr t =  constructTransform(&s, parent, 0, Vec3(0,1,0), Vec3(0,0,0), Vec3(1,1,1) );	
+	
+	linkGeometry("ffc", t);
+
+	return t;
+}
+
+int Scene::getNrGeometrys(std::string key)
+{
+	return _gt[key.c_str()].size();
+}
+Geometry* Scene::getGeometry(std::string key, int i)
+{
+	geometry_vec g = _gt[key.c_str()];
+	return g[i].get();
+}

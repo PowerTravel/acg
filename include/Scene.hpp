@@ -62,13 +62,16 @@ class Scene{
 		Group* getRoot();
 
 		void buildScene(Scene::BS);
+		Geometry* getGeometry(std::string key,int i);
+		int getNrGeometrys(std::string key);
+
 	private:
 		// The root node of the scenegraph
-		std::shared_ptr<Group> root;
+		static std::shared_ptr<Group> root;
 		// A table of all loaded geometries. 
 		// Each entry is a vector carrying many geometries
 		// Each vector corresponds to an .obj file
-		geometry_table gt;	
+		static geometry_table _gt;	
 
 
 		Scene();
@@ -76,6 +79,9 @@ class Scene{
 
 		Scene(Scene const&) = delete;
 		void operator=(Scene const&) = delete;
+
+
+
 
 
 		// Makes it easy to load a geometry
@@ -86,7 +92,7 @@ class Scene{
 		// Makes it easy to set up a camera.
 		camera_ptr constructCamera(State* s, group_ptr parent, Vec3 eye, Vec3 lookAt, Vec3 up);
 		// Makes it easy to set up a transformation Group
-		transform_ptr constructTransform(State* s, group_ptr parenti, float angle, Vec3 axis, Vec3 trans, Vec3 scale );
+		transform_ptr constructTransform(State* s, group_ptr parent, float angle, Vec3 axis, Vec3 trans, Vec3 scale );
 
 
 		// Functions related to constructing the scene in lab1
@@ -97,7 +103,9 @@ class Scene{
 			transform_ptr constructSphere(group_ptr parent);
 			transform_ptr createFloor(group_ptr parent);
 		void buildLab2();
+			transform_ptr createQuad( group_ptr parent, Texture texi );
 		void buildLab3();
+	
 };
 
 #endif // SCENE_HPP

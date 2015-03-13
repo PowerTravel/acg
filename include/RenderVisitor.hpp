@@ -69,12 +69,16 @@ class RenderVisitor : public NodeVisitor{
 		// Manipulates the aList
 		void modify_aList(int count, Hmat m, State* s, RenderToTexture* t );
 		void decrease_aList();
-
+	
 		//void makeStateCurrent(State* s);
 		state_ptr syncStates(State* lastState, State* newState);
 		
 		void sendPVMtoGPU(shader_ptr s);
 		void initTextures(State* s);
+		void getLightViewMat(Vec3 at, State* s, float* V, float* P);
+		
+		// Debug temp members
+		RenderToTexture* _rtt;
 };
 
 #endif // RENDER_VISITOR_HPP

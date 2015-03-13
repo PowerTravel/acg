@@ -21,6 +21,7 @@ RenderVisitor::~RenderVisitor()
 
 void RenderVisitor::apply(RenderToTexture* tex)
 {
+	_rtt = tex;
 	modify_aList(tex->childList.size(), Hmat(), tex->getState(), tex);
 }
 
@@ -41,96 +42,119 @@ void RenderVisitor::apply(Geometry* g)
 	
 	// We sync the geometries state with the lates entry in the aList.
 	state_ptr state = syncStates(aList.front().s.get(),g->getState() );
-	float shadowBiasPVM[16];
-	Hmat I = Hmat();
-	I.get(shadowBiasPVM);
 	if( state->isShaderSet() )
 	{
-		// First we render the depthMap since it will be the same
-		// each time and don't depend on the State
+		// We render to depth map if we have lights and passed through
+		// a Render to Texture node
 		RenderToTexture* rtt = aList.front().rtt;
 		if(rtt != NULL && state->getNrLights() != 0)
 		{
-		
+
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
 
-			Shader* ss = rtt->getShader();
-			ss->use();
-
-			// Object position, Light poistion
-			Vec3 op, lp;
-			// Get the position of the object being illuminated
-			int dim = 4;
-			for(int i=0; i<dim-1; i++)
-			{
-				op[i] = _M[dim*i+3];
-			}	
-			// Get the position of the first light
-			lp = state->getLight(0).getPosition();
-			Camera lc = Camera(lp, op, Vec3(0,1,0));
+			Shader* shader = rtt->getShader();
+			shader->use();
 			
 			float lView[16], lProj[16];
-			lc.getViewMat().get(lView);
-			lc.getProjectionMat().get(lProj);
+			getLightViewMat(Vec3(0,0,0),state.get(),lView, lProj );
 
-			ss->setUniformMatrix("M", 1, _M);
-			ss->setUniformMatrix("V", 1, lView);
-			ss->setUniformMatrix("P", 1, lProj);	
-	
+			shader->setUniformMatrix("M", 1, _M);
+			shader->setUniformMatrix("V", 1, lView);
+			shader->setUniformMatrix("P", 1, lProj);
+
 			rtt->bindBuffer();
-
 			g->draw();
+		//	rtt->clearBuffer();
+		}else{
 
-			rtt->clearBuffer();
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			// If a material is set previously it overrides
+			// any material that may have been loaded to the 
+			// geometry from a file.
+			if(aList.front().s->isMaterialSet())
+			{
+				state->setMaterial(aList.front().s->getMaterial());
+			}
 
-			Hmat mtmp = Hmat(_M);
-			Hmat vtmp = Hmat(lView);
-			Hmat ptmp = Hmat(lProj);
-
-			float biasf[] = { 0.5,0,0,0.5,
-							 0,0.5,0,0.5,
-							 0,0,0.5,0.5,
-							 0,0,0, 1};
-			Hmat bias = Hmat(biasf);
-
-
-			Hmat pvmTmp;
-			pvmTmp = vtmp*mtmp;
-			pvmTmp = ptmp*pvmTmp;
-			pvmTmp = bias*pvmTmp;
-			pvmTmp.get(shadowBiasPVM);	
-		}
-
-		// If a material is set previously it overrides
-		// any material that may have been loaded to the 
-		// geometry from a file.
-		if(aList.front().s->isMaterialSet())
-		{
-			state->setMaterial(aList.front().s->getMaterial());
-		}
-
-		// Apply the state to openGL
-		state->apply();
+			// Apply the state to openGL
+			state->apply();
 		
-		initTextures(state.get());
+			initTextures(state.get());
 
-		// Send the Model View and projection matrices to the shader
-		sendPVMtoGPU(state->getShader());
+			// Send the Model View and projection matrices to the shader
+			sendPVMtoGPU(state->getShader());
+			
+			float shadowBiasPVM[16];
+			Hmat I = Hmat();
+			I.get(shadowBiasPVM);
+			if(rtt == NULL && state->getNrLights()!=0){
+				float lView[16], lProj[16];
+				getLightViewMat(Vec3(0,0,0),state.get(),lView, lProj );
 
-		if(rtt != NULL && state->getNrLights()!=0){
-			state->getShader()->setUniformMatrix("BiasLightPVM", 1, shadowBiasPVM);
+				Hmat mtmp = Hmat(_M);
+				Hmat vtmp = Hmat(lView);
+				Hmat ptmp = Hmat(lProj);
+
+				float biasf[] = { 0.5,0,0,0.5,
+								 0,0.5,0,0.5,
+								 0,0,0.5,0.5,
+								 0,0,0, 1};
+				Hmat bias = Hmat(biasf);
+			//	Hmat bias = Hmat();
+				Hmat pvmTmp;
+				pvmTmp = vtmp*mtmp;
+				pvmTmp = ptmp*pvmTmp;
+				pvmTmp = bias*pvmTmp;
+				pvmTmp.get(shadowBiasPVM);	
+				//std::cout << pvmTmp << std::endl << std::endl;
+				state->getShader()->setUniformMatrix("BiasLightPVM", 1, shadowBiasPVM);
+			}
+
+			// draw the geometry
+			g->draw();
 		}
-
-		// draw the geometry
-		g->draw();
 	}else{
 		std::cerr<<"No shader present. Not rendering geometry."<<std::endl;
 	}
 
+
+
+
+
+
+
 	// Since we are in a leaf we now want to erase all entries
 	// in these lists up to the entry that has unvisited children.
 	decrease_aList();
+}
+
+void RenderVisitor::getLightViewMat(Vec3 at, State* s, float* V, float* P)
+{
+	// Object position, Light poistion
+	Vec3 lp, zn;
+	// Get the position of the object being illuminated
+	lp = s->getLight(0).getPosition();
+	zn = at-lp;
+
+	Vec3 up1, up2;
+	up1 = Vec3(0,1,0);
+	up2 = Vec3(1,0,0);
+
+	float lenUp1 = up1.norm();
+	float lenUp2 = up2.norm();
+	float znLen = zn.norm();
+
+	Camera lc;
+	if( abs(zn * up1) < abs(znLen*lenUp1) )
+	{
+		lc = Camera(lp, at, up1 );
+	}else{
+		lc = Camera(lp, at, up2 );
+	}
+	
+	lc.getViewMat().get(V);
+	lc.getProjectionMat().get(P);
 }
 
 void RenderVisitor::initTextures(State* s)
@@ -140,28 +164,23 @@ void RenderVisitor::initTextures(State* s)
 		// Tell shader we are using a diffuseTexture
 		int useDiffuse = 1;
 		shade->setUniform1i("usingDiffTexture",1, &useDiffuse);
-	
 		s->getTexture(State::DIFFUSE).bind(GL_TEXTURE0);
 		int tex = 0;
 		shade->setUniform1i("diffuseTextureID",1, &tex);
 	}else{
 		// unbind any loaded textures
-		glBindTexture(GL_TEXTURE_2D,0);
 		int useDiffuse = 0;
 		shade->setUniform1i("usingDiffTexture",1, &useDiffuse);
 	}
 
-	RenderToTexture* rtt = aList.front().rtt;
-	if(aList.front().rtt != NULL)
+	if(_rtt != NULL)
 	{
 		int useShadow= 1;
 		shade->setUniform1i("usingShadowMap",1, &useShadow);
-
-		rtt->bindTexture(GL_TEXTURE1);
+		_rtt->bindTexture(GL_TEXTURE1);
 		int shd = 1;
 		shade->setUniform1i("shadowMapID",1, &shd);
 	}else{
-		glBindTexture(GL_TEXTURE_2D,0);
 		int useShadow = 0;
 		shade->setUniform1i("usingShadowMap",1, &useShadow);
 	}

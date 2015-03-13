@@ -7,7 +7,7 @@
 #include "Texture.hpp"
 class RenderToTexture: public Group{
 	public:
-		RenderToTexture(std::shared_ptr<Shader> s, int w=620, int h = 480);
+		RenderToTexture(std::shared_ptr<Shader> s, int w=1024, int h = 1024);
 		virtual ~RenderToTexture();
 
 		Shader* getShader();
@@ -18,6 +18,8 @@ class RenderToTexture: public Group{
 		void clearBuffer();
 		void bindTexture(GLenum id);
 		void clearTexture();
+
+		Texture getTexture();
 		
 	private:
 		GLuint _framebuffer;

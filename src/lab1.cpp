@@ -24,8 +24,8 @@ void resize(int width, int height); // Not used, KeyState Handles this call.
 void idleFunk();
 
 // A few global variables.
-int SCREEN_WIDTH = 620;
-int SCREEN_HEIGHT = 480;
+int SCREEN_WIDTH = 1024;
+int SCREEN_HEIGHT = 1024;
 int FPS = 60;
 UpdateVisitor u;
 RenderVisitor r;	 

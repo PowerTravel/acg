@@ -27,7 +27,8 @@ class Material{
 			RUBBER_RED,
 			PLASTIC_GREEN,
 			GOLD,
-			OBSIDIAN
+			OBSIDIAN,
+			PEARL
 		};
 
 		Material();
