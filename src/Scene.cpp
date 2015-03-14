@@ -7,8 +7,12 @@
 
 #include "TransformSpinCallback.hpp"
 #include "CameraMovementCallback.hpp"
+#include "UpdateVisitor.hpp"
+#include "RenderVisitor.hpp"
 geometry_table Scene::_gt = geometry_table();
 group_ptr Scene::root = group_ptr (new Group);
+UpdateVisitor Scene::u = UpdateVisitor();
+RenderVisitor Scene::r = RenderVisitor();	 
 
 Scene::Scene()
 {
@@ -28,6 +32,15 @@ Group* Scene::getRoot()
 {
 	static Group* ptr = root.get();
 	return ptr;
+}
+
+UpdateVisitor* Scene::getUpdateVisitor()
+{
+	return &u;
+}
+RenderVisitor* Scene::getRenderVisitor()
+{
+	return &r;
 }
 
 /*

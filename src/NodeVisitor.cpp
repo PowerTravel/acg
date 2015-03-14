@@ -3,10 +3,7 @@
 #include "Group.hpp"
 #include "Transform.hpp"
 
-NodeVisitor::NodeVisitor()
-{
-
-}
+NodeVisitor::NodeVisitor(){}
 
 NodeVisitor::~NodeVisitor(){}
 
@@ -21,6 +18,22 @@ NodeVisitor::~NodeVisitor(){}
  */
 void NodeVisitor::traverse(Node* node)
 {
+	init();
+	doTraverse(node);
+	cleanup();
+}
+
+void NodeVisitor::init()
+{
+
+}
+void NodeVisitor::cleanup()
+{
+
+}
+void NodeVisitor::doTraverse(Node* node)
+{
+	
 	// Inject itself into the node
 	node->acceptVisitor(*this);
 	
@@ -32,7 +45,7 @@ void NodeVisitor::traverse(Node* node)
 		NodeList childList = grpPtr->childList;
 		for(NodeList::const_iterator ci = childList.begin(); ci != childList.end(); ci++)
 		{
-			traverse(*ci);
+			doTraverse(*ci);
 		}
 	}
 }

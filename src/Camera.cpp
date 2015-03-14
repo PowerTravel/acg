@@ -6,6 +6,7 @@ Camera::Camera()
 {
 	_V.set(Hmat());
 	_P = Hmat();
+	_aspect =1;
 	setPerspectiveProjection();
 }
 
@@ -13,6 +14,7 @@ Camera::Camera(Vec3 eye, Vec3 at, Vec3 up)
 {
 	lookAt(eye,at,up);
 	_P = Hmat();
+	_aspect =1;
 	setPerspectiveProjection();
 }
 
@@ -130,7 +132,6 @@ void Camera::rotateAroundOrigin(float angle, Vec3 axis)
  */
 void Camera::setPerspectiveProjection(float fovy, float near, float far)
 {
-	setAspect(); // Get the active aspect ratio from GLUT
 	_fovy = fovy;
 	_near = near;
 	_far = far;
@@ -215,11 +216,12 @@ Hmat Camera::getViewMat()
 	return _V.get();
 }
 
-void Camera::setAspect()
+void Camera::setAspect(float aspect)
 {
-    GLint portSize[4];
-    glGetIntegerv( GL_VIEWPORT, portSize );
-	float w = (float) portSize[2]-portSize[0];
-	float h = (float) portSize[3]-portSize[1];
-	_aspect = w/h;
+	_aspect = aspect;
+    //GLint portSize[4];
+    //glGetIntegerv( GL_VIEWPORT, portSize );
+	//float w = (float) portSize[2]-portSize[0];
+	//float h = (float) portSize[3]-portSize[1];
+//	_aspect = w/h;
 }

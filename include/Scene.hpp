@@ -5,6 +5,8 @@
 #include <vector>
 #include <unordered_map>
 
+
+
 #ifndef GROUP_PTR
 #define GROUP_PTR
 class State;
@@ -42,6 +44,8 @@ typedef std::unordered_map< std::string,  geometry_vec  >  geometry_table;
 #endif //GEOM_TABLE
 
 class Vec3;
+class UpdateVisitor;
+class RenderVisitor;
 
 /*	Class: 		Scene
  *	Purpose: 	Constructs the scenegraph with all models states 
@@ -65,6 +69,9 @@ class Scene{
 		Geometry* getGeometry(std::string key,int i);
 		int getNrGeometrys(std::string key);
 
+		UpdateVisitor* getUpdateVisitor();
+		RenderVisitor* getRenderVisitor();
+
 	private:
 		// The root node of the scenegraph
 		static std::shared_ptr<Group> root;
@@ -81,7 +88,9 @@ class Scene{
 		void operator=(Scene const&) = delete;
 
 
-
+		
+		static UpdateVisitor u;
+		static RenderVisitor r;	 
 
 
 		// Makes it easy to load a geometry

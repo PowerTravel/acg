@@ -17,12 +17,21 @@ class UpdateVisitor : public NodeVisitor{
 		UpdateVisitor();
 		virtual ~UpdateVisitor();
 
+		void windowChanged();
+
 		void apply(RenderToTexture* tex);
 		void apply(Geometry* g);
 		void apply(Group* grp);
 		void apply(Transform* t);
 		void apply(Camera* cam);
 
+	protected:
+
+		virtual void init();
+		virtual void cleanup();
+
+	private:
+		bool _windowChanged;
 };
 
 

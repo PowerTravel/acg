@@ -12,7 +12,12 @@ RenderToTexture::RenderToTexture(std::shared_ptr<Shader> s, int w, int h)
 	glGenTextures(1, &depthTex);
 	glBindTexture(GL_TEXTURE_2D, depthTex);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16 , w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT,0  );
+    GLint portSize[4];
+    glGetIntegerv( GL_VIEWPORT, portSize );
+	float ww = (float) portSize[2]-portSize[0];
+	float hh = (float) portSize[3]-portSize[1];
+	std::cout << ww << " " << hh << std::endl;
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16 , ww, hh, 0, GL_DEPTH_COMPONENT, GL_FLOAT,0  );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -39,6 +44,16 @@ RenderToTexture::RenderToTexture(std::shared_ptr<Shader> s, int w, int h)
 RenderToTexture::~RenderToTexture()
 {
 
+}
+
+void RenderToTexture::resizeTexture(int width, int height)
+{
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16 , width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT,0  );
+	
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cerr << "Failed to resize framebuffer in STATE.cpp" << std::endl;
+	}
 }
 
 void RenderToTexture::acceptVisitor(NodeVisitor& v)

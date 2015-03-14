@@ -24,11 +24,11 @@ void resize(int width, int height); // Not used, KeyState Handles this call.
 void idleFunk();
 
 // A few global variables.
-int SCREEN_WIDTH = 1024;
-int SCREEN_HEIGHT = 1024;
+int SCREEN_WIDTH = 512;
+int SCREEN_HEIGHT = 512;
 int FPS = 60;
-UpdateVisitor u;
-RenderVisitor r;	 
+//UpdateVisitor u;
+//RenderVisitor r;	 
 // used to calculate fps and scenegraph traverse time.
 float AVERAGE_FPS = 0;
 int TICKS =0;
@@ -40,6 +40,8 @@ int main(int argc, char* argv[])
 	// Set up glut and glew
 	setUpGlut(argc, argv);
 	setUpGlew();
+
+//	r = RenderVisitor();
 
 	// Build our scene
 	Scene::getInstance().buildScene(Scene::LAB2);
@@ -67,7 +69,7 @@ void updateAndDisplay(int i)
 	}
 
 	// let the updateVisitor traverse the scenegraph	
-	u.traverse(Scene::getInstance().getRoot());
+	Scene::getInstance().getUpdateVisitor()->traverse(Scene::getInstance().getRoot());
 	// Among other things lets the renderVisitor traverse the scenegraph
 	display();
 
@@ -97,7 +99,8 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	// Traverse the scenegraph and draw all objects
-	r.traverse(Scene::getInstance().getRoot());
+	Scene::getInstance().getRenderVisitor()->traverse(Scene::getInstance().getRoot());
+	//r.traverse(Scene::getInstance().getRoot());
 
 	glutSwapBuffers();
 }

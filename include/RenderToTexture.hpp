@@ -19,6 +19,8 @@ class RenderToTexture: public Group{
 		void bindTexture(GLenum id);
 		void clearTexture();
 
+		void resizeTexture(int width, int height);
+
 		Texture getTexture();
 		
 	private:

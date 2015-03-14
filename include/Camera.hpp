@@ -40,6 +40,7 @@ class Camera : public Group
 		void setPerspectiveProjection(float fovy=45.f, float near=-1.f, float far=-30.f);
 		void setOrthographicProjection(float left=-4.f, float right=4.f, float bottom=-2.f, float top=2.f, float near = -100.f, float far =100.f );
 
+		void setAspect(float aspect);
 	private:
 		Hmat _P; // Projection matrix
 		TransformMatrix _V; // View matrix
@@ -55,8 +56,6 @@ class Camera : public Group
 		void orthographic( float left, float right, float bottom,
 				    float top,  float near,  float far);
 
-		// Helperfunction to get the aspect directly from the viewport via glut. A violation of dependance I don't like but meh...
-		void setAspect();
 
 };
 

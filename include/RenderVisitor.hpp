@@ -3,6 +3,7 @@
 
 #include "NodeVisitor.hpp"
 #include "Hmat.hpp"
+#include "Timer.hpp"
 #include <list>
 
 class RenderToTexture;
@@ -79,6 +80,8 @@ class RenderVisitor : public NodeVisitor{
 		
 		// Debug temp members
 		RenderToTexture* _rtt;
+		Timer _t;
+		float _lastTime;
 };
 
 #endif // RENDER_VISITOR_HPP

@@ -61,8 +61,4 @@ void CameraMovementCallback::getKeyState()
 		_cam->lookAt(Vec3(0,5,2), Vec3(0,0,0), Vec3(0,1,0));
 	}
 
-	if(KeyState::getInstance().hasWindowChanged())
-	{
-		_cam->setPerspectiveProjection();
-	}
 }

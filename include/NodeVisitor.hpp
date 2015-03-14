@@ -39,8 +39,13 @@ class NodeVisitor{
 		virtual void apply(Group* grp);
 		virtual void apply(Transform* t);
 		virtual void apply(Camera* cam);
-
+		
 	protected:
+		virtual void init();
+		virtual void cleanup();
+
+	private:
+		void doTraverse(Node* node);
 };
 
 

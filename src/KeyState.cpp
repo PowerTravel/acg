@@ -1,4 +1,6 @@
 #include "KeyState.hpp"
+#include "Scene.hpp"
+#include "UpdateVisitor.hpp"
 #include <GL/freeglut.h>
 
 KeyState::State KeyState::_state = KeyState::State::KEY_NULL;
@@ -62,6 +64,7 @@ void resize_callback(int width, int height)
 	// that work yet
 	glViewport(0,0,width,height);
 	KeyState::getInstance().windowChanged();
+	Scene::getInstance().getUpdateVisitor()->windowChanged();	
 }
 
 void glut_key_callback(unsigned char c, int x, int y)
