@@ -44,9 +44,11 @@ void CameraMovementCallback::getKeyState()
 	}
 	if( st & key_state_bit::KEY_P)
 	{
-		Hmat V = _cam->getViewMat();
-		Vec3 pos = Vec3(V[0][3], V[1][3], V[2][3] );
-		std::cout << "Cam Pos: " << pos  << std::endl;
+		_cam->setPerspectiveProjection();
+	}
+	if( st & key_state_bit::KEY_O)
+	{
+		_cam->setOrthographicProjection();
 	}
 	if( st & key_state_bit::KEY_Z )
 	{
@@ -61,10 +63,13 @@ void CameraMovementCallback::getKeyState()
 	if( st & key_state_bit::KEY_R)
 	{
 		_cam->lookAt(Vec3(0,0,4), Vec3(0,0,0), Vec3(0,1,0));
+		_cam->setPerspectiveProjection();
 	}
 	if( st & key_state_bit::KEY_T)
 	{
 		_cam->lookAt(Vec3(0,5,4), Vec3(0,0,0), Vec3(0,1,0));
+		_cam->setPerspectiveProjection();
+		//_cam->setOrthographicProjection();
 	}
 
 }

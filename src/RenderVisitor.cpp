@@ -24,7 +24,6 @@ RenderVisitor::~RenderVisitor()
 
 void RenderVisitor::apply(RenderToTexture* tex)
 {
-
 	_rtt = tex;
 	tex->bindBuffer();
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -73,7 +72,6 @@ void RenderVisitor::apply(Geometry* g)
 
 			rtt->bindBuffer();
 			
-	//		glClear(GL_DEPTH_BUFFER_BIT);
     		GLint portSize[4];
     		glGetIntegerv( GL_VIEWPORT, portSize );
 			float w = (float) portSize[2]-portSize[0];
@@ -127,12 +125,20 @@ void RenderVisitor::apply(Geometry* g)
 				Hmat bias = Hmat(biasf);
 				//Hmat bias = Hmat();
 				Hmat pvmTmp;
-				pvmTmp = vtmp*mtmp;
-				pvmTmp = ptmp*pvmTmp;
-				pvmTmp = bias*pvmTmp;
+				pvmTmp = vtmp*mtmp;			// Viev * Model
+				pvmTmp = ptmp*pvmTmp;		// Project * Viev * Model
+				//pvmTmp = bias*pvmTmp;		// Bias * Project * View * Model
 				pvmTmp.get(shadowBiasPVM);	
-				//std::cout << pvmTmp << std::endl << std::endl;
+		//		std::cout << pvmTmp << std::endl << std::endl;
 				state->getShader()->setUniformMatrix("BiasLightPVM", 1, shadowBiasPVM);
+			
+
+
+				
+				state->getShader()->setUniformMatrix("B", 1, biasf);
+				state->getShader()->setUniformMatrix("Ml", 1, _M);
+				state->getShader()->setUniformMatrix("Vl", 1, lView);
+				state->getShader()->setUniformMatrix("Pl", 1, lProj);
 			}
 
 			// draw the geometry

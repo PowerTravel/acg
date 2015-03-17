@@ -78,6 +78,10 @@ void glut_key_callback(unsigned char c, int x, int y)
 	{
 		st  += (int) KeyState::KEY_D;	
 	}
+	if( c == 'o' || c == 'O' )
+	{
+		st  += (int) KeyState::KEY_O;	
+	}
 	if( c == 'p' || c == 'P' )
 	{
 		st  += (int) KeyState::KEY_P;	

@@ -232,6 +232,12 @@ void Scene::setUpLab1ShaderState(State* s)
 	s->getShader()->createUniform("usingShadowMap");
 	s->getShader()->createUniform("nrLights");
 	s->getShader()->createUniform("BiasLightPVM");	
+	
+	
+	s->getShader()->createUniform("B");	
+	s->getShader()->createUniform("Ml");	
+	s->getShader()->createUniform("Vl");	
+	s->getShader()->createUniform("Pl");	
 }
 
 // Constructs the spinning sphere for lab1 scene.
@@ -381,7 +387,7 @@ transform_ptr Scene::createFloor(group_ptr parent)
 	mat.setMaterial(Material(Material::RUBBER_RED));
 	mat.setColorMaterial(true);
 
-	transform_ptr lower = constructTransform(&mat, parent, 0, Vec3(), Vec3(0,-1,0), Vec3(10,0.5,10) );
+	transform_ptr lower = constructTransform(&mat, parent, 0, Vec3(), Vec3(0,-2,0), Vec3(10,0.5,10) );
 
 	std::pair< std::string, geometry_vec > pair("floor", g);
 	_gt.insert(pair);
@@ -430,7 +436,7 @@ void Scene::buildLab2()
 	transform_ptr floor = createFloor(cam);
 
 	transform_ptr pillar = constructTransform(NULL, cam, 1 ,Vec3(1,1,1), Vec3(0,3,-2), Vec3(1,4,1));
-//	pillar->connectCallback(std::shared_ptr<TransformSpinCallback>(new TransformSpinCallback(pillar, 0.05, Vec3(1,1,1))));
+	pillar->connectCallback(std::shared_ptr<TransformSpinCallback>(new TransformSpinCallback(pillar, 0.05, Vec3(1,1,1))));
 	linkGeometry("cube", pillar);
 
 

@@ -6,11 +6,17 @@ uniform float attenuation[3];
 uniform float shininess;
 uniform int usingDiffTexture, usingShadowMap, nrLights;
 uniform sampler2D diffuseTextureID;//, shadowMapID;
-uniform sampler2DShadow shadowMapID;
+//uniform sampler2DShadow shadowMapID;
+uniform sampler2D shadowMapID;
 varying vec3 L[3],E[3],H[3],N[3];
 varying float R[3];
 varying vec2 texCoord0; 
 varying vec4 ShadowCoord;
+
+
+
+varying vec4 pos2;
+
 void main() 
 { 
 	float visibility=1;
@@ -42,20 +48,24 @@ void main()
 		}
 	
 		float att = 1/( 1 + attenuation[i]*pow(R[i],2) );
-		
+	
+	
 		visibility = 1;
 		// We only support shadows for the first light
 		if(usingShadowMap != 0 && i==0){
-			if(texture(shadowMapID, vec3(ShadowCoord.xy,1)) < ShadowCoord.z){	
+//			if(texture(shadowMapID, vec3(ShadowCoord.xy,1)) < ShadowCoord.z){	
+			if(texture2D(shadowMapID, ShadowCoord.xy).z < ShadowCoord.z){	
 				visibility=0.5;
 			}
 		}
+	
 		color += ambient+visibility*att*(diffuse+specular);
 	}
-	//fragColor = vec4(ShadowCoord.xy,vec2(0,1));
-	fragColor = color;
 //	fragColor = vec4(texture(shadowMapID, vec3(ShadowCoord.xy,1)));
 //	fragColor = vec4(ShadowCoord.xyz,1);
+	fragColor = color;
 //	fragColor = vec4(texCoord0.st,0,1);
-//	fragColor = texture2D(shadowMapID, texCoord0).zzzz;
+	//fragColor = texture2D(shadowMapID, texCoord0.xy).xyzw;
+	//fragColor = texture2D(shadowMapID, ShadowCoord.xy).xxxx;
+	//fragColor = vec4(x,y,0,1);
 }
