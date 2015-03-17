@@ -20,7 +20,6 @@ void GLEWprintSystemSpecs();
 // A few callbacks
 void updateAndDisplay(int i);
 void display();
-void resize(int width, int height); // Not used, KeyState Handles this call.
 void idleFunk();
 
 // A few global variables.
@@ -120,12 +119,6 @@ void setUpGlut(int argc, char* argv[])
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glutInitWindowPosition(50,50);
 	glutCreateWindow("Assignment 1");
-}
-
-void resize(int width, int height)
-{
-	glViewport(0,0,width,height);
-	display();
 }
 
 void idleFunk()
