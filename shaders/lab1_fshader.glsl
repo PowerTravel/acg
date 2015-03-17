@@ -13,8 +13,6 @@ varying vec2 texCoord0;
 varying vec4 ShadowCoord;
 void main() 
 { 
-
-
 	float visibility=1;
 	vec4 color = vec4(0,0,0,0);
 	for(int i = 0; i<nrLights; i++)
@@ -28,7 +26,7 @@ void main()
 		{
 			float alpha=1;
 			diffuse = Kd*(alpha*texture2D(diffuseTextureID,texCoord0.st)+(1-alpha)*diffuseProduct[i]);
-			//diffuse = (alpha*texture2D(diffuseTextureID,texCoord0.ts)+(1-alpha)*diffuseProduct[i]);
+			//diffuse = (alpha*texture2D(diffuseTextureID,texCoord0.st)+(1-alpha)*diffuseProduct[i]);
 		}else{
 			diffuse = Kd*diffuseProduct[i];
 		}
@@ -54,10 +52,10 @@ void main()
 		}
 		color += ambient+visibility*att*(diffuse+specular);
 	}
-//	fragColor = vec4(ShadowCoord.xy,vec2(0,1));
+	//fragColor = vec4(ShadowCoord.xy,vec2(0,1));
 	fragColor = color;
 //	fragColor = vec4(texture(shadowMapID, vec3(ShadowCoord.xy,1)));
 //	fragColor = vec4(ShadowCoord.xyz,1);
-	//fragColor = vec4(texCoord0.st,0,1);
+//	fragColor = vec4(texCoord0.st,0,1);
 //	fragColor = texture2D(shadowMapID, texCoord0).zzzz;
 }

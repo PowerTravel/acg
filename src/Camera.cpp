@@ -115,6 +115,8 @@ void Camera::rotateAroundOrigin(float angle, Vec3 axis)
 	// Rotates around the origin because we only rotate the
 	// view-matrix directly. Quite a dirty hackind of a hack 
 	// since the cameras position never changes.
+//	Hmat V = _V.get();
+//	Hmat V_inv = _V.getRigidInverse();
 	_V.rotate(angle,axis);
 }
 
@@ -219,9 +221,4 @@ Hmat Camera::getViewMat()
 void Camera::setAspect(float aspect)
 {
 	_aspect = aspect;
-    //GLint portSize[4];
-    //glGetIntegerv( GL_VIEWPORT, portSize );
-	//float w = (float) portSize[2]-portSize[0];
-	//float h = (float) portSize[3]-portSize[1];
-//	_aspect = w/h;
 }

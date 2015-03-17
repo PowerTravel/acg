@@ -18,6 +18,8 @@ TransformMatrix::~TransformMatrix()
 
 void TransformMatrix::rotate(float angle, Vec3 axis)
 {
+
+	//Hmat m_inv = getRigidInverse();
 	// tto = translate TO origin,
 	// tfo = translate (back) FROM origin;
 	Vec3 tto = Vec3( -_m[0][3], -_m[1][3], -_m[2][3] );
@@ -30,6 +32,7 @@ void TransformMatrix::rotate(float angle, Vec3 axis)
 	_m = R*_m;
 
 	translate(tfo);
+
 }
 
 void TransformMatrix::rotate(float angle, Vec3 axis, Vec3 p)
@@ -54,13 +57,29 @@ void TransformMatrix::scale(Vec3 scale)
 	translate(tto);
 
 	Hmat S = Hmat();
+	
 	for(int i=0; i<3; i++)
 	{
 		S[i][i] = scale[i];
 	}
-	_m = S*_m;
+
+	_m = _m*S;
 	
 	translate(p);
+}
+
+
+Hmat TransformMatrix::getRigidInverse()
+{	
+	Hmat t_inv = Hmat();
+	t_inv[0][3] = _m[0][3];
+	t_inv[1][3] = _m[1][3];
+	t_inv[2][3] = _m[2][3];
+
+	Hmat r_inv = _m.T();
+
+	return t_inv * r_inv;
+
 }
 
 void TransformMatrix::translate(Vec3 trans)

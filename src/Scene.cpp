@@ -16,7 +16,6 @@ RenderVisitor Scene::r = RenderVisitor();
 
 Scene::Scene()
 {
-	//root = std::shared_ptr<Group> (new Group);
 }
 Scene::~Scene()
 {
@@ -400,7 +399,6 @@ void Scene::buildLab2()
 	loadGeometry("face", "models/Capsule/capsule.obj");
 
 
-	
 	char V_SHADER[] = "shaders/lab2_shadow_vshader.glsl";
 	char F_SHADER[] = "shaders/lab2_shadow_fshader.glsl";
 
@@ -417,10 +415,8 @@ void Scene::buildLab2()
 	
 	// Create lights and add them to the root node
 	State lightState = State();
-	lightState.pushLight(Light(Vec3(0,5,2), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0 ));
+	lightState.pushLight(Light(Vec3(0,5,4), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0 ));
 	root->setState(&lightState);
-
-
 
 	 //Construc the camera and attach it to root
 	 camera_ptr cam = constructCamera(	NULL , root, 
@@ -430,8 +426,14 @@ void Scene::buildLab2()
 	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
 
 	transform_ptr ffc = createQuad( cam, shd->getTexture() );
-	transform_ptr cube = constructCubes(cam);
+	
 	transform_ptr floor = createFloor(cam);
+
+	transform_ptr pillar = constructTransform(NULL, cam, 1 ,Vec3(1,1,1), Vec3(0,3,-2), Vec3(1,4,1));
+//	pillar->connectCallback(std::shared_ptr<TransformSpinCallback>(new TransformSpinCallback(pillar, 0.05, Vec3(1,1,1))));
+	linkGeometry("cube", pillar);
+
+
 	shd -> addChild(cam);
 }
 void Scene::buildLab3(){}
@@ -452,14 +454,12 @@ transform_ptr Scene::createQuad(group_ptr parent, Texture texi)
 				   1,3,2};
 
 	float tex[] = {	0,0,
-					0,1,
 					1,0,
+					0,1,
 					1,1};
 
 	State s = State();
-	s.setCullFace(false);
-	//std::string fullPath = "models/eye.jpg";
-	//Texture texture = Texture(fullPath);
+	s.setCullFace(true);
 	if(texi.loaded())
 	{
 		s.addTexture(State::DIFFUSE, texi);
@@ -471,7 +471,6 @@ transform_ptr Scene::createQuad(group_ptr parent, Texture texi)
 
 	std::pair< std::string, geometry_vec > pair("ffc", g);
 	_gt.insert(pair);
-
 
 	transform_ptr t =  constructTransform(&s, parent, 0, Vec3(0,1,0), Vec3(0,0,0), Vec3(1,1,1) );	
 	

@@ -20,6 +20,8 @@ class TransformMatrix{
 		Hmat get();
 		void set(Hmat m);
 
+		Hmat getRigidInverse();
+
 		Vec3 getPosition();
 
 	private:

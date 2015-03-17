@@ -42,6 +42,10 @@ class Camera : public Group
 
 		void setAspect(float aspect);
 	private:
+		
+
+
+
 		Hmat _P; // Projection matrix
 		TransformMatrix _V; // View matrix
 
@@ -50,13 +54,10 @@ class Camera : public Group
 		// Variables related to position and orientation
 		Vec3 _eye, _at, _up;
 	
-
 		// The actual implementation of perspective and orthographic projection
 		void perspective();
 		void orthographic( float left, float right, float bottom,
 				    float top,  float near,  float far);
-
-
 };
 
 #endif // CAMERA_HPP

@@ -26,6 +26,9 @@ void RenderVisitor::apply(RenderToTexture* tex)
 {
 
 	_rtt = tex;
+	tex->bindBuffer();
+	glClear(GL_DEPTH_BUFFER_BIT);
+	tex->clearBuffer();
 	modify_aList(tex->childList.size(), Hmat(), tex->getState(), tex);
 }
 
@@ -55,6 +58,7 @@ void RenderVisitor::apply(Geometry* g)
 		{
 
 			glEnable(GL_CULL_FACE);
+			glDisable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
 
 			Shader* shader = rtt->getShader();
@@ -69,7 +73,7 @@ void RenderVisitor::apply(Geometry* g)
 
 			rtt->bindBuffer();
 			
-			glClear(GL_DEPTH_BUFFER_BIT);
+	//		glClear(GL_DEPTH_BUFFER_BIT);
     		GLint portSize[4];
     		glGetIntegerv( GL_VIEWPORT, portSize );
 			float w = (float) portSize[2]-portSize[0];
@@ -91,6 +95,10 @@ void RenderVisitor::apply(Geometry* g)
 			if(aList.front().s->isMaterialSet())
 			{
 				state->setMaterial(aList.front().s->getMaterial());
+			}
+			if(aList.front().s->hasTexture(State::DIFFUSE))
+			{
+				state->addTexture(State::DIFFUSE ,aList.front().s->getTexture(State::DIFFUSE));
 			}
 
 			// Apply the state to openGL
@@ -117,7 +125,7 @@ void RenderVisitor::apply(Geometry* g)
 								 0,0,0.5,0.5,
 								 0,0,0, 1};
 				Hmat bias = Hmat(biasf);
-			//	Hmat bias = Hmat();
+				//Hmat bias = Hmat();
 				Hmat pvmTmp;
 				pvmTmp = vtmp*mtmp;
 				pvmTmp = ptmp*pvmTmp;
@@ -201,7 +209,7 @@ void RenderVisitor::getLightViewMat(Vec3 at, State* s, float* V, float* P)
    	glGetIntegerv( GL_VIEWPORT, portSize );
 	float w = (float) portSize[2]-portSize[0];
 	float h = (float) portSize[3]-portSize[1];
-	if( abs(zn * up1) < abs(znLen*lenUp1) )
+	if( abs(zn * up1) <= abs(znLen*lenUp1) )
 	{
 		lc = Camera(lp, at, up1 );
 	}else{

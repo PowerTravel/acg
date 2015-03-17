@@ -28,9 +28,9 @@ void main()
 		H[i] = normalize(L[i]+E[i]);
 		N[i] = normalize(VM*vn).xyz;
 	}
-	gl_Position = P*vec4(pos,1);
 
 	ShadowCoord = BiasLightPVM*vec4(vPosition,1);
 
-	//gl_Position = ShadowCoord;
+	gl_Position = P*vec4(pos,1);
+//	gl_Position = ShadowCoord;
 }

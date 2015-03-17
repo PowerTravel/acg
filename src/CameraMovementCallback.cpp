@@ -42,6 +42,12 @@ void CameraMovementCallback::getKeyState()
 		_cam->rotateAroundOrigin(_angularVelocity, Vec3(0,1,0));
 
 	}
+	if( st & key_state_bit::KEY_P)
+	{
+		Hmat V = _cam->getViewMat();
+		Vec3 pos = Vec3(V[0][3], V[1][3], V[2][3] );
+		std::cout << "Cam Pos: " << pos  << std::endl;
+	}
 	if( st & key_state_bit::KEY_Z )
 	{
 		_cam->translate(Vec3(0,0,-_speed));
@@ -58,7 +64,7 @@ void CameraMovementCallback::getKeyState()
 	}
 	if( st & key_state_bit::KEY_T)
 	{
-		_cam->lookAt(Vec3(0,5,2), Vec3(0,0,0), Vec3(0,1,0));
+		_cam->lookAt(Vec3(0,5,4), Vec3(0,0,0), Vec3(0,1,0));
 	}
 
 }
