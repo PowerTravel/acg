@@ -263,6 +263,11 @@ void Geometry::loadVertices(int nrVertices, float* vertices)
 // Texture Coordinates are loaded to space 1;
 void Geometry::loadTextureCoordinates(int nrTexCoords, float* coords)
 {
+	for(int i = 0; i<nrTexCoords; i++)
+	{
+		coords[i*2] = 1-coords[i*2];
+	}
+
 	glBindVertexArray(VAO);
 	glGenBuffers(1, &textureBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer );
