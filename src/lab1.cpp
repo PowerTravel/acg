@@ -119,6 +119,7 @@ void setUpGlut(int argc, char* argv[])
 	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	glutInitWindowPosition(50,50);
 	glutCreateWindow("Assignment 1");
+	glViewport(0,0,SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
 void idleFunk()

@@ -25,11 +25,9 @@ void NodeVisitor::traverse(Node* node)
 
 void NodeVisitor::init()
 {
-
 }
 void NodeVisitor::cleanup()
 {
-
 }
 void NodeVisitor::doTraverse(Node* node)
 {

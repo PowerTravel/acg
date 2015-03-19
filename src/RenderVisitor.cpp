@@ -71,19 +71,9 @@ void RenderVisitor::apply(Geometry* g)
 			shader->setUniformMatrix("P", 1, lProj);
 
 			rtt->bindBuffer();
-			
-    		GLint portSize[4];
-    		glGetIntegerv( GL_VIEWPORT, portSize );
-			float w = (float) portSize[2]-portSize[0];
-			float h = (float) portSize[3]-portSize[1];
-			rtt->resizeTexture(w,h);
-			Vec4 VV = Vec4(portSize[0],portSize[1],portSize[2],portSize[3]);
-			//std::cout  << w <<" " << h <<   std::endl;
-			//std::cout  << VV <<   std::endl;
-			
 
 			g->draw();
-		//	rtt->clearBuffer();
+			rtt->clearBuffer();
 		}else{
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -107,9 +97,6 @@ void RenderVisitor::apply(Geometry* g)
 			// Send the Model View and projection matrices to the shader
 			sendPVMtoGPU(state->getShader());
 			
-			float shadowBiasPVM[16];
-			Hmat I = Hmat();
-			I.get(shadowBiasPVM);
 			if(rtt == NULL && state->getNrLights()!=0){
 				float lView[16], lProj[16];
 				getLightViewMat(Vec3(0,0,0),state.get(),lView, lProj );
@@ -123,37 +110,28 @@ void RenderVisitor::apply(Geometry* g)
 								 0,0,0.5,0.5,
 								 0,0,0, 1};
 				Hmat bias = Hmat(biasf);
-				//Hmat bias = Hmat();
 				Hmat pvmTmp;
 				pvmTmp = vtmp*mtmp;			// Viev * Model
 				pvmTmp = ptmp*pvmTmp;		// Project * Viev * Model
-				//pvmTmp = bias*pvmTmp;		// Bias * Project * View * Model
+				pvmTmp = bias*pvmTmp;		// Bias * Project * View * Model
+
+				float shadowBiasPVM[16];
 				pvmTmp.get(shadowBiasPVM);	
-		//		std::cout << pvmTmp << std::endl << std::endl;
 				state->getShader()->setUniformMatrix("BiasLightPVM", 1, shadowBiasPVM);
-			
 
-
-				
 				state->getShader()->setUniformMatrix("B", 1, biasf);
 				state->getShader()->setUniformMatrix("Ml", 1, _M);
 				state->getShader()->setUniformMatrix("Vl", 1, lView);
 				state->getShader()->setUniformMatrix("Pl", 1, lProj);
 			}
-
+			
 			// draw the geometry
 			g->draw();
 		}
 	}else{
 		std::cerr<<"No shader present. Not rendering geometry."<<std::endl;
 	}
-
-
-
-
-
-
-
+	
 	// Since we are in a leaf we now want to erase all entries
 	// in these lists up to the entry that has unvisited children.
 	decrease_aList();
@@ -166,41 +144,7 @@ void RenderVisitor::getLightViewMat(Vec3 at, State* s, float* V, float* P)
 	// Get the position of the object being illuminated
 	lp = s->getLight(0).getPosition();
 
-/*	
-
-	Vec4 LP = Vec4();
-	LP[0] = lp[0];	
-	LP[1] = lp[1];
-	LP[2] = lp[2];
-	LP[3] = 1;
-	TransformMatrix T = TransformMatrix();
-	_lastTime += _t.getTime()/1000;
-	T.rotate(_lastTime, Vec3(0,1,0));
-	Hmat TT = T.get();
-
-	Vec4 LA = Vec4();
-	for(int i = 0; i<4; i++)
-	{
-	 	float tmp = 0;
-		for(int j=0; j<4; j++)
-		{
-			tmp = tmp + TT[i][j]*LP[j];
-		}
-		LA[i] = tmp;
-	}
-
-	//std::cout << LA << std::endl;;
-
-	lp[0] = LA[0];	
-	lp[1] = LA[1];
-	lp[2] = LA[2];
-	 
-*/
-
-
-
 	zn = at-lp;
-	//std::cout << _lastTime<< std::endl;
 
 	Vec3 up1, up2;
 	up1 = Vec3(0,1,0);
@@ -211,16 +155,17 @@ void RenderVisitor::getLightViewMat(Vec3 at, State* s, float* V, float* P)
 	float znLen = zn.norm();
 
 	Camera lc;
-   	GLint portSize[4];
-   	glGetIntegerv( GL_VIEWPORT, portSize );
-	float w = (float) portSize[2]-portSize[0];
-	float h = (float) portSize[3]-portSize[1];
 	if( abs(zn * up1) <= abs(znLen*lenUp1) )
 	{
 		lc = Camera(lp, at, up1 );
 	}else{
 		lc = Camera(lp, at, up2 );
 	}
+   	
+	GLint portSize[4];
+   	glGetIntegerv( GL_VIEWPORT, portSize );
+	float w = (float) portSize[2]-portSize[0];
+	float h = (float) portSize[3]-portSize[1];
 	lc.setAspect(w/h);
 	lc.setPerspectiveProjection();
 

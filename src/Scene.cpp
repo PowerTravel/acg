@@ -435,8 +435,8 @@ void Scene::buildLab2()
 	
 	transform_ptr floor = createFloor(cam);
 
-	transform_ptr pillar = constructTransform(NULL, cam, 1 ,Vec3(1,1,1), Vec3(0,3,-2), Vec3(1,4,1));
-	pillar->connectCallback(std::shared_ptr<TransformSpinCallback>(new TransformSpinCallback(pillar, 0.05, Vec3(1,1,1))));
+	transform_ptr pillar = constructTransform(NULL, cam, 0 ,Vec3(0,0,0), Vec3(0,1.5,-2), Vec3(1,6,1));
+	pillar->connectCallback(std::shared_ptr<TransformSpinCallback>(new TransformSpinCallback(pillar, 0.025, Vec3(0,0,1))));
 	linkGeometry("cube", pillar);
 
 

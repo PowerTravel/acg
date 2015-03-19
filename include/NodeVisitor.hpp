@@ -43,7 +43,6 @@ class NodeVisitor{
 	protected:
 		virtual void init();
 		virtual void cleanup();
-
 	private:
 		void doTraverse(Node* node);
 };

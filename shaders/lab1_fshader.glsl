@@ -65,7 +65,8 @@ void main()
 //	fragColor = vec4(ShadowCoord.xyz,1);
 	fragColor = color;
 //	fragColor = vec4(texCoord0.st,0,1);
-	//fragColor = texture2D(shadowMapID, texCoord0.xy).xyzw;
-	//fragColor = texture2D(shadowMapID, ShadowCoord.xy).xxxx;
+	//fragColor = texture2D(shadowMapID, texCoord0.xy).xxxx;
+	//fragColor = texture2D(shadowMapID, ShadowCoord.xy).zzzz;
 	//fragColor = vec4(x,y,0,1);
+	//fragColor = ShadowCoord;
 }
