@@ -1,4 +1,4 @@
-#ifndef CAMERA_HPP
+		#ifndef CAMERA_HPP
 #define CAMERA_HPP
 #include "Group.hpp"
 #include "Hmat.hpp"
@@ -29,39 +29,35 @@ class Camera : public Group
 		// Manipulation of position and orientation
 		void lookAt(Vec3 v);
 		void lookAt(Vec3 eye, Vec3 at, Vec3 up);
-		void rotate(float angle, Vec3 axis);
+		void rotateAroundOrigin(float angle, Vec3 axis);
 		void translate(Vec3 t);
 
 		// Getters of the view and projection matrices
 		Hmat getProjectionMat();
 		Hmat getViewMat();
-		Vec3 getPos();
 
 		// Support is given for perspective and orthographic projection
-		void setPerspectiveProjection(float fovy=45.f, float near=-1.f, float far=-10.f);
+		void setPerspectiveProjection(float fovy=45.f, float near=-1.f, float far=-30.f);
 		void setOrthographicProjection(float left=-10.f, float right=10.f, float bottom=-10.f, float top=10.f, float near = 50.f, float far =-50.f );
 
 		void setAspect(float aspect);
-
-		void update();
 	private:
-	
+		
+
+
+
 		Hmat _P; // Projection matrix
 		TransformMatrix _V; // View matrix
 
-		// Variables related to perspective and orthographic projection
+		// Variables related to perspective projection
 		float _fovy, _aspect, _near, _far;
-
-		bool _moved, _perspectiveChange;
-		
-		// Variables related to position and orientation in World Coord
-		Vec3 _pos, _x, _y, _z;
+		// Variables related to position and orientation
+		Vec3 _eye, _at, _up;
+	
 		// The actual implementation of perspective and orthographic projection
 		void perspective();
 		void orthographic( float left, float right, float bottom,
 				    float top,  float near,  float far);
-
-		void updatePosition();
 };
 
 #endif // CAMERA_HPP

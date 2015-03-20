@@ -1,4 +1,5 @@
 #include "Vec3.hpp"
+#include "Vec4.hpp"
 //#include "Hmat.h"
 #include <cmath>
 #include <stdexcept>
@@ -223,4 +224,9 @@ void Vec3::get(float* r)
 	r[0] = v[0];
 	r[1] = v[1];
 	r[2] = v[2];
+}
+
+Vec4 Vec3::asVec4(float w)
+{
+	return Vec4(v[0],v[1],v[2],w);
 }

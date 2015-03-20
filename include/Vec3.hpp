@@ -2,6 +2,8 @@
 #define VEC3_HPP
 #include <iostream>
 
+class Vec4;
+
 // Homogeneous vector
 class Vec3
 {
@@ -57,6 +59,7 @@ class Vec3
 		Vec3& operator*=( float& f );
 	
 		void get(float* r);
+		Vec4 asVec4(float w = 0);
 	private:
 		float v[3];
 };

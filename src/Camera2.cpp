@@ -6,14 +6,6 @@ Camera::Camera()
 {
 	_V.set(Hmat());
 	_P = Hmat();
-	_pos = Vec3(-2,0,0); 
-	_x = Vec3(1,0,0);
-	_y = Vec3(0,1,0);
-	_z = Vec3(0,0,1);
-
-	_moved = true;
-	_perspectiveChange = true;
-
 	_aspect =1;
 	setPerspectiveProjection();
 }
@@ -44,6 +36,23 @@ void Camera::acceptVisitor(NodeVisitor& v)
 }
 
 /*
+ * Name:	lookAt	
+ * Purpose: Rotates the camera to point at 'at'v 
+ * Input:	Vec3 at: A point which the camera should look at.
+ * Output:	-	
+ * Misc:	-
+ */
+void Camera::lookAt(Vec3 at)
+{
+	// Extract the 'up' or y-axis and the position
+	// from the view matrix and update the viewMatrix
+	Hmat M = _V.get();
+	Vec3 vy = Vec3(M[1][0], M[1][1], M[1][2]);
+	Vec3 pos = Vec3(M[0][3], M[1][3], M[2][3]);
+	lookAt(pos, at, vy);
+}
+
+/*
  * Name:	lookAt
  * Purpose: Translates the camera to 'eye', points it at 'at' and
  *			rotates it so that 'up' is up.
@@ -56,42 +65,59 @@ void Camera::acceptVisitor(NodeVisitor& v)
 void Camera::lookAt(Vec3 eye, Vec3 at, Vec3 up)
 {
 	// Calculate the x, y and z axis for the camera.
-	_pos = eye;
-	_z = at-_pos;
-	_z.normalize();
-	_x = up^_z; // ^ means cross-product
-	_x.normalize();
-	_y = _z^_x;
-	_y.normalize();
-	_moved = true;
+	Vec3 vz = at-eye;
+	vz.normalize();
+	Vec3 vx = up^vz; // ^ means cross-product
+	vx.normalize();
+	Vec3 vy = vz^vx;
+	vy.normalize();
+
+	// Build a rotationmatrix which rotates from world coordinates
+	// to camera coordinates
+	float tx,ty,tz;
+	float tx1 = -(eye*vx);
+	float ty2 = -(eye*vy);
+	float tz3 = -(eye*vz);
+	tx = - eye[0]*vx[0] - eye[1]*vx[1] - eye[2]*vx[2]; 
+	ty = - eye[0]*vy[0] - eye[1]*vy[1] - eye[2]*vy[2]; 
+	tz = - eye[0]*vz[0] - eye[1]*vz[1] - eye[2]*vz[2];
+
+	float m[] = {	vx[0], vx[1], vx[2], tx, 
+					vy[0], vy[1], vy[2], ty, 
+					vz[0], vz[1], vz[2], tz,
+					0.0f ,0.0f, 0.0f, 1};
+	Hmat V = Hmat(m);
+	_V.set(V);
 }
 
+/*
+ * Name:	translate
+ * Purpose: Translates the camera by 't'.
+ * Input:	-Vec3 t: A vector containing the ammount and direction 
+ *			of the translation.
+ * Output:	-
+ * Misc:	It translates by t, not to t.
+ */
 void Camera::translate(Vec3 t)
 {
-	Vec4 T = Vec4(t[0], t[1], t[2]);
-	Hmat V_inv = _V.getRigidInverse();
-	Vec3 dt = (V_inv*T).asVec3();
-	_pos = _pos + dt;
-	_moved = true;
+	_V.translate(t);
 }
 
-void Camera::rotate(float angle, Vec3 axis)
+/*
+ * Name:	rotateAroundOrigin
+ * Purpose: Rotates the camera around world-origin.
+ * Input:	-float angle: The angle of rotation
+ * Output:	-Vec3 axis: The axis of rotation
+ * Misc:	-Uses a dirty hack
+ */
+void Camera::rotateAroundOrigin(float angle, Vec3 axis)
 {	
-	TransformMatrix R = TransformMatrix();
-	R.rotate(angle,axis);
-	Hmat HR = R.get();
-
-	Vec4 xc = HR.row(0);
-	Vec4 yc = HR.row(1);
-	Vec4 zc = HR.row(2);
-
-	Hmat V_inv = _V.getRigidInverse();
-	_x = (V_inv*xc).asVec3(); 
-	_y = (V_inv*yc).asVec3();
-	_z = (V_inv*zc).asVec3();
-
-	_moved = true;
-
+	// Rotates around the origin because we only rotate the
+	// view-matrix directly. Quite a dirty hackind of a hack 
+	// since the cameras position never changes.
+//	Hmat V = _V.get();
+//	Hmat V_inv = _V.getRigidInverse();
+	_V.rotate(angle,axis);
 }
 
 /*
@@ -192,40 +218,7 @@ Hmat Camera::getViewMat()
 	return _V.get();
 }
 
-Vec3 Camera::getPos()
-{
-	return _pos;
-}
-
 void Camera::setAspect(float aspect)
 {
 	_aspect = aspect;
-}
-
-void Camera::update()
-{
-	if( _callback!= NULL){
-		_callback->execute();
-	}
-	
-	if( _moved )
-	{
-		updatePosition();
-		_moved = false;
-	}
-}
-
-void Camera::updatePosition()
-{
-	float tx,ty,tz;
-	tx = - _pos[0]*_x[0] - _pos[1]*_x[1] - _pos[2]*_x[2]; 
-	ty = - _pos[0]*_y[0] - _pos[1]*_y[1] - _pos[2]*_y[2]; 
-	tz = - _pos[0]*_z[0] - _pos[1]*_z[1] - _pos[2]*_z[2];
-
-	float v[] = {	_x[0], _x[1], _x[2], tx, 
-					_y[0], _y[1], _y[2], ty, 
-					_z[0], _z[1], _z[2], tz,
-					0.0f ,0.0f, 0.0f, 1};
-	Hmat V = Hmat(v);
-	_V.set(V);
 }

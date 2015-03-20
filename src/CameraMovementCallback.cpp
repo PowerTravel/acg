@@ -27,24 +27,25 @@ void CameraMovementCallback::getKeyState()
 	KeyState::State st = KeyState::getInstance().get();
 	if( st & key_state_bit::KEY_W) 
 	{
-		_cam->rotateAroundOrigin(_angularVelocity, Vec3(1,0,0));
+		_cam->translate(Vec3(0,0,_speed));
 	}
 	if( st & key_state_bit::KEY_A)
 	{
-		_cam->rotateAroundOrigin(-_angularVelocity, Vec3(0,1,0));
+		_cam->rotate(_angularVelocity, Vec3(0,1,0));
 	}
 	if( st & key_state_bit::KEY_S )
 	{
-		_cam->rotateAroundOrigin(-_angularVelocity, Vec3(1,0,0));
+		_cam->translate(Vec3(0,0,-_speed));
 	}
 	if( st & key_state_bit::KEY_D )
 	{
-		_cam->rotateAroundOrigin(_angularVelocity, Vec3(0,1,0));
-
+		_cam->rotate(-_angularVelocity, Vec3(0,1,0));
 	}
 	if( st & key_state_bit::KEY_P)
 	{
 		_cam->setPerspectiveProjection();
+		//std::cout << _cam->getViewMat() << std::endl<<std::endl;
+		//std::cout << _cam->getPos() << std::endl << std::endl;
 	}
 	if( st & key_state_bit::KEY_O)
 	{
@@ -52,12 +53,12 @@ void CameraMovementCallback::getKeyState()
 	}
 	if( st & key_state_bit::KEY_Z )
 	{
-		_cam->translate(Vec3(0,0,-_speed));
+		_cam->translate(Vec3(0,-_speed,0));
 
 	}
 	if( st & key_state_bit::KEY_X )
 	{
-		_cam->translate(Vec3(0,0, _speed));
+		_cam->translate(Vec3(0,_speed,0));
 
 	}
 	if( st & key_state_bit::KEY_R)

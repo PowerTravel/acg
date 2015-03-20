@@ -22,7 +22,7 @@ class TransformMatrix{
 
 		Hmat getRigidInverse();
 
-		Vec3 getPosition();
+//		Vec3 getPosition();
 
 	private:
 		Hmat _m;

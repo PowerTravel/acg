@@ -168,7 +168,7 @@ void RenderVisitor::getLightViewMat(Vec3 at, State* s, float* V, float* P)
 	float h = (float) portSize[3]-portSize[1];
 	lc.setAspect(w/h);
 	lc.setPerspectiveProjection();
-
+	lc.update();
 
 	lc.getViewMat().get(V);
 	lc.getProjectionMat().get(P);

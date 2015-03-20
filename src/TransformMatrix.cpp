@@ -52,7 +52,7 @@ void TransformMatrix::rotate(float angle, Vec3 axis, Vec3 p)
 
 void TransformMatrix::scale(Vec3 scale)
 {
-	Vec3 p = getPosition();
+	Vec3 p = Vec3(_m[0][3],_m[1][3],_m[2][3]);
 	Vec3 tto = Vec3( -p[0], -p[1], -p[2] );
 	translate(tto);
 
@@ -72,14 +72,18 @@ void TransformMatrix::scale(Vec3 scale)
 Hmat TransformMatrix::getRigidInverse()
 {	
 	Hmat t_inv = Hmat();
-	t_inv[0][3] = _m[0][3];
-	t_inv[1][3] = _m[1][3];
-	t_inv[2][3] = _m[2][3];
+	t_inv[0][3] = -_m[0][3];
+	t_inv[1][3] = -_m[1][3];
+	t_inv[2][3] = -_m[2][3];
+	t_inv[3][3] = 1;
 
 	Hmat r_inv = _m.T();
+	r_inv[3][0] = 0;
+	r_inv[3][1] = 0;
+	r_inv[3][2] = 0;
+	r_inv[3][3] = 1;
 
 	return t_inv * r_inv;
-
 }
 
 void TransformMatrix::translate(Vec3 trans)
@@ -92,8 +96,6 @@ void TransformMatrix::translate(Vec3 trans)
 	_m= T*_m;
 }
 
-// OPENGL IS USES COLUMN MAJOR REPRESENTATION 
-// OF MATRICES.
 Hmat TransformMatrix::get()
 {
 	return _m;
@@ -105,7 +107,7 @@ void TransformMatrix::set(Hmat m)
 }
 		
 		
-Vec3 TransformMatrix::getPosition()
-{
-	return Vec3(_m[0][3],_m[1][3],_m[2][3]);
-}
+//Vec3 TransformMatrix::getPosition()
+//{
+//	return Vec3(_m[0][3],_m[1][3],_m[2][3]);
+//}
