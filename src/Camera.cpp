@@ -6,6 +6,7 @@ Camera::Camera()
 {
 	_V.set(Hmat());
 	_P = Hmat();
+	_R = Hmat();
 	_pos = Vec3(-2,0,0); 
 	_x = Vec3(1,0,0);
 	_y = Vec3(0,1,0);
@@ -81,17 +82,18 @@ void Camera::rotate(float angle, Vec3 axis)
 	R.rotate(angle,axis);
 	Hmat HR = R.get();
 
-	Vec4 xc = HR.row(0);
-	Vec4 yc = HR.row(1);
-	Vec4 zc = HR.row(2);
+	_R = HR*_R;	
 
+	Vec4 xc = _R.row(0);
+	Vec4 yc = _R.row(1);
+	Vec4 zc = _R.row(2);
+  
 	Hmat V_inv = _V.getRigidInverse();
 	_x = (V_inv*xc).asVec3(); 
 	_y = (V_inv*yc).asVec3();
 	_z = (V_inv*zc).asVec3();
-
+	
 	_moved = true;
-
 }
 
 /*
@@ -212,6 +214,7 @@ void Camera::update()
 	{
 		updatePosition();
 		_moved = false;
+		_R = Hmat();
 	}
 }
 

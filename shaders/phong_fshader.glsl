@@ -49,12 +49,11 @@ void main()
 	
 		float att = 1/( 1 + attenuation[i]*pow(R[i],2) );
 	
-	
 		visibility = 1;
 		// We only support shadows for the first light
 		if(usingShadowMap != 0 && i==0){
 //			if(texture(shadowMapID, vec3(ShadowCoord.xy,1)) < ShadowCoord.z){	
-			if(texture2D(shadowMapID, ShadowCoord.xy).z < ShadowCoord.z){	
+			if(texture2D(shadowMapID, ShadowCoord.xy).r < ShadowCoord.z){	
 				visibility=0.5;
 			}
 		}
@@ -62,7 +61,7 @@ void main()
 		color += ambient+visibility*att*(diffuse+specular);
 	}
 //	fragColor = vec4(texture(shadowMapID, vec3(ShadowCoord.xy,1)));
-//	fragColor = vec4(ShadowCoord.xyz,1);
+//	fragColor = vec4(ShadowCoord.xy,0,1);
 	fragColor = color;
 //	fragColor = vec4(texCoord0.st,0,1);
 	//fragColor = texture2D(shadowMapID, texCoord0.xy).xxxx;

@@ -36,6 +36,20 @@ Hmat::Hmat(Vec4 r0, Vec4 r1, Vec4 r2, Vec4 r3)
 	m[3] = r3;
 }
 
+Hmat::Hmat(Vec3 r0, Vec3 r1, Vec3 r2, Vec3 r3)
+{
+	Vec4 r00 = r0.asVec4();
+	Vec4 r11 = r1.asVec4();
+	Vec4 r22 = r2.asVec4();
+	Vec4 r33 = r3.asVec4();
+	m = std::vector<Vec4>(4);
+	m[0] = r00;
+	m[1] = r11;
+	m[2] = r22;
+	m[3] = r33;
+	m[3][3] = 1;
+}
+
 Hmat::~Hmat()
 {
 

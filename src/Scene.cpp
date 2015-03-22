@@ -208,8 +208,8 @@ void Scene::buildLab1()
 // Declares the uniforms for the lab1 shader
 void Scene::setUpLab1ShaderState(State* s)
 {
-	char V_SHADER[] = "shaders/lab1_vshader.glsl";
-	char F_SHADER[] = "shaders/lab1_fshader.glsl";
+	char V_SHADER[] = "shaders/phong_vshader.glsl";
+	char F_SHADER[] = "shaders/phong_fshader.glsl";
 
 	s->setShader( shader_ptr(new Shader(V_SHADER, F_SHADER)) );
 
@@ -405,8 +405,8 @@ void Scene::buildLab2()
 	loadGeometry("face", "models/Capsule/capsule.obj");
 
 
-	char V_SHADER[] = "shaders/lab2_shadow_vshader.glsl";
-	char F_SHADER[] = "shaders/lab2_shadow_fshader.glsl";
+	char V_SHADER[] = "shaders/shadow_vshader.glsl";
+	char F_SHADER[] = "shaders/shadow_fshader.glsl";
 
 	// Load and initiate the shader and add it to the root node
 	State s;

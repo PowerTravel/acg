@@ -3,7 +3,8 @@
 #include "UpdateVisitor.hpp"
 #include <GL/freeglut.h>
 
-KeyState::State KeyState::_state = KeyState::State::KEY_NULL;
+KeyState::Key_State KeyState::_key = KeyState::Key_State::KEY_NULL;
+KeyState::Special_Key_State KeyState::_special_key = KeyState::Special_Key_State::SPECIAL_KEY_NULL;
 bool KeyState::mWindowChanged = false;
 
 KeyState::KeyState()
@@ -21,15 +22,21 @@ KeyState& KeyState::getInstance()
 	static KeyState instance;
 	return instance;
 }
-KeyState::State KeyState::get()
+KeyState::Key_State KeyState::get()
 {	
-	return _state;
+	return _key;
+}
+KeyState::Special_Key_State KeyState::get_special()
+{
+	return _special_key;
 }
 
 void KeyState::setGlutCallback()
 {
 	glutKeyboardFunc(glut_key_callback);
 	glutKeyboardUpFunc(glut_key_callback);
+	glutSpecialFunc(glut_special_key_callback);
+	glutSpecialUpFunc(glut_special_key_callback);
 	glutReshapeFunc(resize_callback);
 }
 
@@ -49,12 +56,20 @@ bool KeyState::hasWindowChanged()
 }
 void KeyState::set(int st)
 {
-	int currState = (int) _state;
+	int currState = (int) _key;
 
 	// Updates to the new state
 	int newState =  currState ^ st; 
 
-	_state = (State) newState;
+	_key = (Key_State) newState;
+}
+void KeyState::special_set(int st)
+{
+	int currState = (int) _special_key;
+	
+	int newState = currState ^ st; 
+	
+	_special_key = (Special_Key_State) newState;
 }
 
 void resize_callback(int width, int height)
@@ -114,6 +129,28 @@ void glut_key_callback(unsigned char c, int x, int y)
 	{
 		st  += (int) KeyState::KEY_Z;	
 	}
+
 	KeyState::getInstance().set( st );
 }
 
+void glut_special_key_callback(int c, int x, int y)
+{
+	int st = 0;
+	if( c == GLUT_KEY_UP)
+	{	
+		st += (int) KeyState::SPECIAL_KEY_UP;
+	}
+	if( c == GLUT_KEY_DOWN)
+	{
+		st += (int) KeyState::SPECIAL_KEY_DOWN;
+	}
+	if( c == GLUT_KEY_LEFT)
+	{
+		st += (int) KeyState::SPECIAL_KEY_LEFT;
+	}
+	if( c == GLUT_KEY_RIGHT)
+	{
+		st += (int) KeyState::SPECIAL_KEY_RIGHT;
+	}
+	KeyState::getInstance().special_set( st );
+}

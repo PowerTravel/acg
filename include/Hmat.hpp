@@ -49,6 +49,7 @@ class Hmat
 		Hmat(TypeFlag = IDENTITY);
 		Hmat(float mat[]);
 		Hmat(Vec4 r0, Vec4 r1, Vec4 r2, Vec4 r3);
+		Hmat(Vec3 r0, Vec3 r1, Vec3 r2, Vec3 r3);
 		virtual ~Hmat();
 		
 		void get(float mat[]);

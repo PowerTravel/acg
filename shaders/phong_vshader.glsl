@@ -2,7 +2,7 @@
 layout (location = 0) in vec3 vPosition;
 layout (location = 1) in vec2 tempTex;
 layout (location = 2) in vec3 vNormals;
-uniform mat4 M, V, P, BiasLightPVM;
+uniform mat4 M, V, P;
 uniform mat4 B,Pl,Vl,Ml;
 varying vec2 texCoord0; 
 uniform int nrLights;
@@ -33,9 +33,8 @@ void main()
 	}
 
 	ShadowCoord = B*Pl*Vl*Ml*vec4(vPosition, 1);
-	//ShadowCoord = BiasLightPVM*vec4(vPosition,1);
 
-	gl_Position = ShadowCoord;
+//	gl_Position = ShadowCoord;
 	
 	gl_Position = P*vec4(pos,1);
 }

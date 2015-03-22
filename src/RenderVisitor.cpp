@@ -50,6 +50,13 @@ void RenderVisitor::apply(Geometry* g)
 	state_ptr state = syncStates(aList.front().s.get(),g->getState() );
 	if( state->isShaderSet() )
 	{
+
+		float lView[16], lProj[16];
+		if(state->getNrLights() != 0)
+		{
+			getLightViewMat(Vec3(0,0,0),state.get(),lView, lProj );
+		}
+	
 		// We render to depth map if we have lights and passed through
 		// a Render to Texture node
 		RenderToTexture* rtt = aList.front().rtt;
@@ -63,15 +70,12 @@ void RenderVisitor::apply(Geometry* g)
 			Shader* shader = rtt->getShader();
 			shader->use();
 			
-			float lView[16], lProj[16];
-			getLightViewMat(Vec3(0,0,0),state.get(),lView, lProj );
 
 			shader->setUniformMatrix("M", 1, _M);
 			shader->setUniformMatrix("V", 1, lView);
 			shader->setUniformMatrix("P", 1, lProj);
 
 			rtt->bindBuffer();
-
 			g->draw();
 			rtt->clearBuffer();
 		}else{
@@ -98,8 +102,6 @@ void RenderVisitor::apply(Geometry* g)
 			sendPVMtoGPU(state->getShader());
 			
 			if(rtt == NULL && state->getNrLights()!=0){
-				float lView[16], lProj[16];
-				getLightViewMat(Vec3(0,0,0),state.get(),lView, lProj );
 
 				Hmat mtmp = Hmat(_M);
 				Hmat vtmp = Hmat(lView);
@@ -109,15 +111,15 @@ void RenderVisitor::apply(Geometry* g)
 								 0,0.5,0,0.5,
 								 0,0,0.5,0.5,
 								 0,0,0, 1};
-				Hmat bias = Hmat(biasf);
-				Hmat pvmTmp;
-				pvmTmp = vtmp*mtmp;			// Viev * Model
-				pvmTmp = ptmp*pvmTmp;		// Project * Viev * Model
-				pvmTmp = bias*pvmTmp;		// Bias * Project * View * Model
+//				Hmat bias = Hmat(biasf);
+//				Hmat pvmTmp;
+//				pvmTmp = vtmp*mtmp;			// Viev * Model
+//				pvmTmp = ptmp*pvmTmp;		// Project * Viev * Model
+//				pvmTmp = bias*pvmTmp;		// Bias * Project * View * Model
 
-				float shadowBiasPVM[16];
-				pvmTmp.get(shadowBiasPVM);	
-				state->getShader()->setUniformMatrix("BiasLightPVM", 1, shadowBiasPVM);
+//				float shadowBiasPVM[16];
+//				pvmTmp.get(shadowBiasPVM);
+				//state->getShader()->setUniformMatrix("BiasLightPVM", 1, shadowBiasPVM);
 
 				state->getShader()->setUniformMatrix("B", 1, biasf);
 				state->getShader()->setUniformMatrix("Ml", 1, _M);

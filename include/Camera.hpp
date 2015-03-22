@@ -48,6 +48,7 @@ class Camera : public Group
 	
 		Hmat _P; // Projection matrix
 		TransformMatrix _V; // View matrix
+		Hmat _R;
 
 		// Variables related to perspective and orthographic projection
 		float _fovy, _aspect, _near, _far;
