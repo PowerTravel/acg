@@ -111,9 +111,9 @@ void RenderVisitor::apply(Geometry* g)
 //								 0,0.5,0,0.5,
 //								 0,0,0.5,0.5,
 //								 0,0,0, 1};
-				float biasf[] = { 1,0,0,0.5,
-								 0,1,0,0.5,
-								 0,0,1,0.5,
+				float biasf[] = { 0.5,0,0,0.5,
+								 0,0.5,0,0.5,
+								 0,0,0.5,0.5,
 								 0,0,0, 1};
 //				Hmat bias = Hmat(biasf);
 //				Hmat pvmTmp;

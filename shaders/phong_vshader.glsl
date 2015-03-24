@@ -32,7 +32,7 @@ void main()
 		N[i] = normalize(VM*vn).xyz;
 	}
 
-	ShadowCoord =B* Pl*Vl*Ml*vec4(vPosition, 1);
+	ShadowCoord =B * Pl*Vl*Ml*vec4(vPosition, 1);
 
 //	gl_Position = ShadowCoord;
 	

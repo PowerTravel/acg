@@ -144,11 +144,15 @@ void Camera::perspective()
 	float top = _near*tan( (_fovy/2)*(3.1418/180.f) );
 	float right = top * _aspect;
 	
+	//float cot = 1/tan((_fovy/2)*(3.1418/180.f));
+	//_P[0][0] = cot/_aspect;
+	//_P[1][1] = cot;
 	_P[0][0] = _near/right;
 	_P[1][1] = _near/top;	
-	_P[2][2] = (-_far+_near)/(_far-_near);
+	
+	_P[2][2] = -(_far+_near)/(_far-_near);
 	_P[3][3] = 0.f;	
-	_P[2][3] = (-2*_far*_near)/(_far-_near);
+	_P[2][3] = -(2*_far*_near)/(_far-_near);
 	_P[3][2] = -1.f;
 }
 

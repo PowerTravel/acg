@@ -51,7 +51,6 @@ void UpdateVisitor::apply(Camera* cam)
 {
 	if(_windowChanged == true)	
 	{
-		std::cout << "Perspective Change" << std::endl;
     	GLint portSize[4];
     	glGetIntegerv( GL_VIEWPORT, portSize );
 		float w = (float) portSize[2]-portSize[0];

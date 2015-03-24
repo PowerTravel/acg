@@ -63,7 +63,6 @@ void main()
 //	fragColor = vec4(texture2D( shadowMapID, ShadowCoord.xy).x, 0, 0, 1);
 //	fragColor = texture2D(shadowMapID, texCoord0.xy).xxxx;
 //	fragColor = vec4(texture2D(shadowMapID, ShadowCoord.xy).r);
-//	fragColor = vec4(ShadowCoord.xy,0,1);
-//	fragColor = vec4(texCoord0.st,0,1);
+//	fragColor = vec4(ShadowCoord.xy,0,1);	fragColor = vec4(texCoord0.st,0,1);
 //	visibility = texture( shadowMapID, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
 }

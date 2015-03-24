@@ -16,15 +16,14 @@ RenderToTexture::RenderToTexture(std::shared_ptr<Shader> s, int w, int h)
     glGetIntegerv( GL_VIEWPORT, portSize );
 	float ww = (float) portSize[2]-portSize[0];
 	float hh = (float) portSize[3]-portSize[1];
-	std::cout << ww << " " << hh << std::endl;
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16 , ww, hh, 0, GL_DEPTH_COMPONENT, GL_FLOAT,0  );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTex, 0);
-	//glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTex, 0);
+	//glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTex, 0);
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTex, 0);
 
 	// Draw only depth, no color.
 	glDrawBuffer(GL_NONE);
