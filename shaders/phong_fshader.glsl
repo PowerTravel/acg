@@ -40,7 +40,6 @@ void main()
 		float Ks = pow(max( dot(N[i],H[i]), 0.0 ), shininess);
 		specular = Ks * specularProduct[i];
 
-
 		if(dot(L[i],N[i]) < 0.0)
 		{
 			diffuse = vec4(0.0,0.0,0.0,1.0);
@@ -53,19 +52,18 @@ void main()
 		// We only support shadows for the first light
 		if(usingShadowMap != 0 && i==0){
 //			if(texture(shadowMapID, vec3(ShadowCoord.xy,1)) < ShadowCoord.z){	
-			if(texture2D(shadowMapID, ShadowCoord.xy).r < ShadowCoord.z){	
-				visibility=0.5;
-			}
+//			if(texture2D(shadowMapID, ShadowCoord.xy).z < ShadowCoord.z){	
+				//visibility=0.9;
+//			}
 		}
-	
 		color += ambient+visibility*att*(diffuse+specular);
 	}
-//	fragColor = vec4(texture(shadowMapID, vec3(ShadowCoord.xy,1)));
-//	fragColor = vec4(ShadowCoord.xy,0,1);
+
 	fragColor = color;
+//	fragColor = vec4(texture2D( shadowMapID, ShadowCoord.xy).x, 0, 0, 1);
+//	fragColor = texture2D(shadowMapID, texCoord0.xy).xxxx;
+//	fragColor = vec4(texture2D(shadowMapID, ShadowCoord.xy).r);
+//	fragColor = vec4(ShadowCoord.xy,0,1);
 //	fragColor = vec4(texCoord0.st,0,1);
-	//fragColor = texture2D(shadowMapID, texCoord0.xy).xxxx;
-	//fragColor = texture2D(shadowMapID, ShadowCoord.xy).zzzz;
-	//fragColor = vec4(x,y,0,1);
-	//fragColor = ShadowCoord;
+//	visibility = texture( shadowMapID, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
 }

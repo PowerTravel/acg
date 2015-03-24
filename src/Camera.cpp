@@ -160,12 +160,6 @@ void Camera::orthographic(	float left, float right, float bottom,
 	float w = (int) (right - left);
 	float h = (int) (top - bottom);
 
-    GLint portSize[4];
-  	glGetIntegerv(GL_VIEWPORT, portSize);
-	float w2 = (float) portSize[2]-portSize[0];
-	float scale = w/w2;
-	float h2 = (float) portSize[3]-portSize[1];
-
 	float d = (int) (far - near);
 	float asp = (w/h);
 
