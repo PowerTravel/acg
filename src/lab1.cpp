@@ -39,7 +39,6 @@ int main(int argc, char* argv[])
 	// Set up glut and glew
 	setUpGlut(argc, argv);
 	setUpGlew();
-
 //	r = RenderVisitor();
 
 	// Build our scene
@@ -181,6 +180,7 @@ void setUpGlew()
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
+	glFrontFace(GL_CW);
 /*
 	if(	glewGetExtension("GL_ARB_fragment_shader") != GL_TRUE ||
 		glewGetExtension("GL_ARB_vertex_shader") != GL_TRUE ||

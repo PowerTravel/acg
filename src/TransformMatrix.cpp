@@ -18,7 +18,6 @@ TransformMatrix::~TransformMatrix()
 
 void TransformMatrix::rotate(float angle, Vec3 axis)
 {
-
 	//Hmat m_inv = getRigidInverse();
 	// tto = translate TO origin,
 	// tfo = translate (back) FROM origin;
@@ -39,15 +38,15 @@ void TransformMatrix::rotate(float angle, Vec3 axis, Vec3 p)
 {
 	// tto = translate TO origin,
 	// tfo = translate (back) FROM origin to world coordinates;
-	Vec3 tto = Vec3( -p[0], -p[1], -p[2] );
-	translate(tto);
+//	Vec3 tto = Vec3( -p[0], -p[1], -p[2] );
+//	translate(tto);
 
-	Quaternion q = Quaternion(angle,axis);
-	Hmat R = q.asHmat();
+//	Quaternion q = Quaternion(angle,axis);
+//	Hmat R = q.asHmat();
 
-	_m = R*_m;
+//	_m = R*_m;
 
-	translate(p);
+//	translate(p);
 }
 
 void TransformMatrix::scale(Vec3 scale)

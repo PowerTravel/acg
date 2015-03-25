@@ -113,6 +113,7 @@ class Scene{
 			transform_ptr createFloor(group_ptr parent);
 		void buildLab2();
 			transform_ptr createQuad( group_ptr parent, Texture texi );
+			group_ptr buildCoordinateAxis(group_ptr parent);
 		void buildLab3();
 	
 };

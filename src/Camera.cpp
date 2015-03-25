@@ -2,6 +2,7 @@
 #include "Camera.hpp"
 #include "NodeVisitor.hpp"
 #include <cmath>
+
 Camera::Camera()
 {
 	_V.set(Hmat());
@@ -56,9 +57,8 @@ void Camera::acceptVisitor(NodeVisitor& v)
  */
 void Camera::lookAt(Vec3 eye, Vec3 at, Vec3 up)
 {
-	// Calculate the x, y and z axis for the camera.
 	_pos = eye;
-	_z = at-_pos;
+	_z = _pos-at;  // This makes the z-dir point behind the camera
 	_z.normalize();
 	_x = up^_z; // ^ means cross-product
 	_x.normalize();
@@ -134,11 +134,54 @@ void Camera::setOrthographicProjection(float left, float right, float bottom, fl
 {
 	orthographic(left, right, bottom, top, near, far);
 }
-
-
+/*
+void Matrix::makePerspective(double fovy,double aspectRatio,
+                                            double zNear, double zFar)
+{
+    // calculate the appropriate left, right etc.
+    double tan_fovy = tan(DegreesToRadians(fovy*0.5));
+    double right  =  tan_fovy * aspectRatio * zNear;
+    double left   = -right;
+    double top    =  tan_fovy * zNear;
+    double bottom =  -top;
+    makeFrustum(left,right,bottom,top,zNear,zFar);
+}
+void Matrix::makeFrustum(double left, double right,
+                         double bottom, double top,
+                         double zNear, double zFar)
+{
+    // note transpose of Matrix wr.t OpenGL documentation, since the OSG use post multiplication rather than pre.
+    double A = (right+left)/(right-left);
+    double B = (top+bottom)/(top-bottom);
+    double C = -(zFar+zNear)/(zFar-zNear);
+    double D = -2.0*zFar*zNear/(zFar-zNear);
+    SET_ROW(0, 2*(float)zNear/(float)(right-left),                    0.0f, 0.0f,  0.0f )
+    SET_ROW(1,                    0.0f, (float)(2.0*zNear/(top-bottom)), 0.0f,  0.0f )
+    SET_ROW(2,                      (float)A,                      (float)B,   (float)C, -1.0f )
+    SET_ROW(3,                    0.0f,                    0.0f,   (float)D,  0.0f )
+}
+*/
 // The implementation of the perspective projection
 void Camera::perspective()
 {
+	double tan_fovy = tan( (_fovy/2.f)*(3.1415/180.f) );
+	double right = tan_fovy * _aspect * _near;
+	double left = -right;
+	double top = tan_fovy * _near;
+	double bottom = -top;
+
+	double A = (right + left) / (right - left);
+	double B = (top + bottom) / (top - bottom);
+	double C = -(_far + _near) / (_far - _near);
+	double D = -2.f *  (_far * _near) / (_far - _near);
+
+	_P[0] = Vec4(2*_near / (right - left), 0, 0, 0);
+	_P[1] = Vec4(0, 2*_near / (top - bottom) , 0, 0);
+	_P[2] = Vec4(A, B, C, -1);
+	_P[3] = Vec4(0, 0, D, 0);
+
+	_P = _P.T();
+/*
 	_P = Hmat();
 
 	float top = _near*tan( (_fovy/2)*(3.1418/180.f) );
@@ -154,6 +197,8 @@ void Camera::perspective()
 	_P[3][3] = 0.f;	
 	_P[2][3] = -(2*_far*_near)/(_far-_near);
 	_P[3][2] = -1.f;
+*/
+	
 }
 
 
@@ -172,14 +217,11 @@ void Camera::orthographic(	float left, float right, float bottom,
 	ortho[0][0] = 2/w;
 	ortho[1][1] = 2/h;
 	ortho[2][2] = -2/d;
-//	ortho[2][2] = 0;
 	ortho[0][3] = -(right+left)/(right-left);
 	ortho[1][3] = -(top+bottom)/(top-bottom);
 	ortho[2][3] = (far+near)/(far-near);
 
-	Hmat mOrth = Hmat();
-	mOrth[2][2] = 0.f;
-	_P = ortho * mOrth;
+	_P = ortho;
 }
 
 Hmat Camera::getProjectionMat()
@@ -219,14 +261,16 @@ void Camera::update()
 void Camera::updatePosition()
 {
 	float tx,ty,tz;
-	tx = - _pos[0]*_x[0] - _pos[1]*_x[1] - _pos[2]*_x[2]; 
-	ty = - _pos[0]*_y[0] - _pos[1]*_y[1] - _pos[2]*_y[2]; 
-	tz = - _pos[0]*_z[0] - _pos[1]*_z[1] - _pos[2]*_z[2];
+	tx =_pos * _x;// _pos[0]*_x[0] + _pos[1]*_x[1] + _pos[2]*_x[2]; 
+	ty =_pos * _y;// _pos[0]*_y[0] + _pos[1]*_y[1] + _pos[2]*_y[2]; 
+	tz =_pos * _z;// _pos[0]*_z[0] + _pos[1]*_z[1] + _pos[2]*_z[2];
 
-	float v[] = {	_x[0], _x[1], _x[2], tx, 
-					_y[0], _y[1], _y[2], ty, 
-					_z[0], _z[1], _z[2], tz,
+	float v[] = {	_x[0], _x[1], _x[2], -tx, 
+					_y[0], _y[1], _y[2], -ty, 
+					_z[0], _z[1], _z[2], -tz,
 					0.0f ,0.0f, 0.0f, 1};
+
+
 	Hmat V = Hmat(v);
 	_V.set(V);
 }

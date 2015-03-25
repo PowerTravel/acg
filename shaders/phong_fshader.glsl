@@ -1,7 +1,7 @@
 #version 330 core
 out vec4 fragColor;
 
-uniform vec4 ambientProduct[3],diffuseProduct[3],specularProduct[3]; 
+		uniform vec4 ambientProduct[3],diffuseProduct[3],specularProduct[3]; 
 uniform float attenuation[3];
 uniform float shininess;
 uniform int usingDiffTexture, usingShadowMap, nrLights;
@@ -60,9 +60,9 @@ void main()
 	}
 
 	fragColor = color;
-//	fragColor = vec4(texture2D( shadowMapID, ShadowCoord.xy).x, 0, 0, 1);
-//	fragColor = texture2D(shadowMapID, texCoord0.xy).xxxx;
-//	fragColor = vec4(texture2D(shadowMapID, ShadowCoord.xy).r);
-//	fragColor = vec4(ShadowCoord.xy,0,1);	fragColor = vec4(texCoord0.st,0,1);
+	//fragColor = ShadowCoord;
+	//fragColor = texture2D( shadowMapID, ShadowCoord.xy).xxxx;
+	//fragColor = texture2D(shadowMapID, texCoord0.xy).xxxx;
+	//fragColor = vec4(ShadowCoord.xy,0,1);	fragColor = vec4(texCoord0.st,0,1);
 //	visibility = texture( shadowMapID, vec3(ShadowCoord.xy, (ShadowCoord.z)/ShadowCoord.w) );
 }

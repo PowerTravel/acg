@@ -38,8 +38,8 @@ class Camera : public Group
 		Vec3 getPos();
 
 		// Support is given for perspective and orthographic projection
-		void setPerspectiveProjection(float fovy=35.f, float near=-1.f, float far=-10);
-		void setOrthographicProjection(float left=-10.f, float right=10.f, float bottom=-10.f, float top=10.f, float near = 50.f, float far =-50.f );
+		void setPerspectiveProjection(float fovy=35.f, float near=1.f, float far=10);
+		void setOrthographicProjection(float left=-10.f, float right=10.f, float bottom=-10.f, float top=10.f, float near = 10.f, float far =-10.f );
 
 		void setAspect(float aspect);
 

@@ -396,6 +396,34 @@ transform_ptr Scene::createFloor(group_ptr parent)
 	return lower;
 }
 
+group_ptr Scene::buildCoordinateAxis(group_ptr parent)
+{
+	group_ptr axis = group_ptr(new Group());
+	parent -> addChild(axis);
+	//transform_ptr axis =constructTransform(NULL, parent, 0,  Vec3(0,1,0), Vec3(1,0,0), Vec3(1,1,1) );
+
+	State xs = State();
+	xs.setMaterial(Material(Material::RUBBER_RED));
+	xs.setColorMaterial(true);
+	transform_ptr x = constructTransform(&xs, axis, 0,  Vec3(0,1,0), Vec3(1,0,0), Vec3(2,0.1,0.1) );
+
+	State ys = State();
+	ys.setMaterial(Material(Material::PLASTIC_GREEN));
+	ys.setColorMaterial(true);
+	transform_ptr y = constructTransform(&ys, axis, 0,  Vec3(0,1,0), Vec3(0,1,0), Vec3(0.1,2,0.1) );
+
+	State zs = State();
+	zs.setMaterial(Material(Material::OBSIDIAN));
+	zs.setColorMaterial(true);
+	transform_ptr z = constructTransform(&zs, axis, 0,  Vec3(0,1,0), Vec3(0,0,1), Vec3(0.1,0.1,2) );
+
+	linkGeometry("cube", x);
+	linkGeometry("cube", y);
+	linkGeometry("cube", z);
+
+	return axis;
+}
+
 void Scene::buildLab2()
 {
 	// Load the relevant gemoetries from files
@@ -422,25 +450,27 @@ void Scene::buildLab2()
 	// Create lights and add them to the root node
 	State lightState = State();
 	lightState.pushLight(Light(Vec3(0,5,4), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0 ));
+	//lightState.pushLight(Light(Vec3(0,10,1), Vec4(1,1,1), Vec4(1,1,1), Vec4(1,1,1), 0 ));
 	root->setState(&lightState);
 
 	 //Construc the camera and attach it to root
 	 camera_ptr cam = constructCamera(	NULL , root, 
-										Vec3(0.f, 0.f,4.f),
-										Vec3(0.f, 0.f,0.f),
+										Vec3(0.f, 0.f, 4.f),
+										Vec3(0.f, 0.f,3.f),
 										Vec3(0.f, 1.f, 0.f));
 	cam->connectCallback(std::shared_ptr<CameraMovementCallback>(new CameraMovementCallback(cam)));
+	shd -> addChild(cam);
 
 	transform_ptr ffc = createQuad( cam, shd->getTexture() );
 	
 	transform_ptr floor = createFloor(cam);
 
+	group_ptr axis = buildCoordinateAxis(cam);
+
 	transform_ptr pillar = constructTransform(NULL, cam, 0 ,Vec3(0,0,0), Vec3(0,1.5,-2), Vec3(1,6,1));
 	pillar->connectCallback(std::shared_ptr<TransformSpinCallback>(new TransformSpinCallback(pillar, 0.025, Vec3(0,0,1))));
 	linkGeometry("cube", pillar);
 
-
-	shd -> addChild(cam);
 }
 void Scene::buildLab3(){}
 

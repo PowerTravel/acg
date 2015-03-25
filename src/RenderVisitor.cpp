@@ -45,7 +45,7 @@ void RenderVisitor::apply(Geometry* g)
 {
 	// this matrix contain the accumulated ModelMatrix.
 	aList.front().m.get(_M);
-	
+
 	// We sync the geometries state with the lates entry in the aList.
 	state_ptr state = syncStates(aList.front().s.get(),g->getState() );
 	if( state->isShaderSet() )
